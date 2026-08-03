@@ -1,0 +1,209 @@
+/* ============================================================
+   FOCUS — Global stylesheet
+   Design tokens ported from the Claude Design system
+   (Design System/tokens/*.css) + base rules from the original
+   site's <helmet>. Colors stay saturated and are used sparingly
+   as accents against near-black ink or paper — never as flat
+   background fields.
+   ============================================================ */
+
+:root {
+  /* ---- Base palette: pure additive-light primaries + true black/white ---- */
+  --focus-magenta: #ff00ff;
+  --focus-blue: #0033ff;
+  --focus-green: #00ff33;
+  --focus-black: #000000;
+  --focus-white: #ffffff;
+
+  /* Near-black / near-white — the actual surfaces used in layouts. */
+  --focus-ink: #0a0a0b;
+  --focus-ink-2: #17181b;
+  --focus-paper: #f6f6f4;
+
+  /* Cool-toned grays for the desaturated / out-of-focus zones. */
+  --focus-gray-100: #e7e9ec;
+  --focus-gray-300: #a7acb4;
+  --focus-gray-500: #6b7078;
+  --focus-gray-700: #3a3d42;
+  --focus-gray-900: #17181b;
+
+  /* ---- Semantic aliases ---- */
+  --surface-dark: var(--focus-ink);
+  --surface-light: var(--focus-paper);
+  --text-on-dark: var(--focus-white);
+  --text-on-dark-muted: var(--focus-gray-300);
+  --text-on-light: var(--focus-ink);
+  --text-on-light-muted: var(--focus-gray-500);
+
+  --accent-1: var(--focus-magenta);
+  --accent-2: var(--focus-blue);
+  --accent-3: var(--focus-green);
+
+  /* ---- Spacing scale (8px base) ---- */
+  --space-1: 8px;
+  --space-2: 16px;
+  --space-3: 24px;
+  --space-4: 40px;
+  --space-5: 64px;
+  --space-6: 96px;
+  --space-7: 140px;
+
+  /* ---- Type families (wired to next/font in layout.tsx) ---- */
+  --font-body: var(--font-rotis), 'Helvetica Neue', Arial, sans-serif;
+  --font-logo: var(--font-archivo), var(--font-rotis), sans-serif;
+
+  /* Motion easing used throughout the original site. */
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ============================================================
+   Base
+   ============================================================ */
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  background: var(--focus-ink);
+}
+
+body {
+  margin: 0;
+  background: var(--focus-ink);
+  color: var(--focus-paper);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+a {
+  color: var(--focus-paper);
+  text-decoration: none;
+}
+
+a:hover {
+  color: var(--focus-green);
+}
+
+button {
+  font-family: inherit;
+}
+
+::selection {
+  background: var(--focus-magenta);
+  color: var(--focus-ink);
+}
+
+::-webkit-scrollbar {
+  width: 9px;
+}
+::-webkit-scrollbar-track {
+  background: var(--focus-ink);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--focus-gray-700);
+}
+
+/* Hide the native cursor only where the custom lens/spotlight takes over —
+   and only on fine pointers with motion allowed (otherwise keep it). */
+@media (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .foc-cursor-none {
+    cursor: none;
+  }
+}
+
+/* ============================================================
+   Keyframes (ported verbatim from the site's <helmet>)
+   ============================================================ */
+@keyframes focMarquee {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+@keyframes focMarqueeRev {
+  from {
+    transform: translate3d(-50%, 0, 0);
+  }
+  to {
+    transform: translate3d(0, 0, 0);
+  }
+}
+@keyframes focSpin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes focSpinRev {
+  from {
+    transform: rotate(360deg);
+  }
+  to {
+    transform: rotate(0deg);
+  }
+}
+@keyframes focPulse {
+  0%,
+  100% {
+    opacity: 0.25;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.6;
+    transform: scale(1.06);
+  }
+}
+@keyframes focScanline {
+  from {
+    transform: translateY(-100%);
+  }
+  to {
+    transform: translateY(1400%);
+  }
+}
+@keyframes focBlink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.15;
+  }
+}
+@keyframes focDrift {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(0, -22px, 0);
+  }
+}
+@keyframes focOrbit {
+  from {
+    transform: rotate(0deg) translateX(120px) rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg) translateX(120px) rotate(-360deg);
+  }
+}
+
+/* Respect users who ask for less motion: kill the ambient loops. */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}

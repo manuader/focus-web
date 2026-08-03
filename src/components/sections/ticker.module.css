@@ -1,0 +1,26 @@
+.ticker {
+  position: relative;
+  z-index: 2;
+  overflow: hidden;
+  padding: 26px 0;
+  background: var(--focus-paper);
+  color: var(--focus-ink);
+}
+.group {
+  display: flex;
+  align-items: center;
+  gap: 44px;
+  padding-right: 44px;
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  display: block;
+  flex: none;
+}

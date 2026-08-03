@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800" width="800" height="800">
+  
+  <g fill="none" stroke="currentColor" stroke-width="1.5" opacity="0.9">
+    <circle cx="400" cy="400" r="260"></circle>
+    <line x1="400" y1="20" x2="400" y2="150"></line>
+    <line x1="400" y1="650" x2="400" y2="780"></line>
+    <line x1="20" y1="400" x2="150" y2="400"></line>
+    <line x1="650" y1="400" x2="780" y2="400"></line>
+    <line x1="400" y1="185" x2="400" y2="615"></line>
+    <line x1="185" y1="400" x2="615" y2="400"></line>
+    <circle cx="400" cy="400" r="4" fill="currentColor" stroke="none"></circle>
+  </g>
+</svg>

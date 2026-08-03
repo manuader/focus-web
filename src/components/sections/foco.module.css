@@ -1,0 +1,80 @@
+.foco {
+  position: relative;
+  padding: 170px 40px;
+  background: var(--focus-ink);
+  overflow: hidden;
+}
+.eyebrow {
+  position: absolute;
+  left: 40px;
+  top: 64px;
+}
+.wrap {
+  position: relative;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+.text {
+  font-size: clamp(28px, 4vw, 64px);
+  line-height: 1.16;
+  font-weight: 300;
+  letter-spacing: -0.02em;
+  text-wrap: pretty;
+}
+.textDim {
+  color: #33363b;
+}
+.textBright {
+  color: var(--focus-paper);
+}
+.spot {
+  position: absolute;
+  inset: 0;
+  clip-path: circle(0px at 50% 50%);
+  will-change: clip-path;
+  pointer-events: none;
+}
+.em {
+  font-weight: 800;
+  font-style: normal;
+}
+.emBright {
+  color: var(--focus-green);
+}
+.ring {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 280px;
+  height: 280px;
+  margin: -140px 0 0 -140px;
+  border: 1px solid rgba(246, 246, 244, 0.5);
+  border-radius: 50%;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.4s;
+  will-change: transform;
+}
+.tickV,
+.tickH {
+  position: absolute;
+  background: rgba(246, 246, 244, 0.6);
+}
+.tickV {
+  width: 1px;
+  height: 14px;
+  left: 50%;
+}
+.tickH {
+  height: 1px;
+  width: 14px;
+  top: 50%;
+}
+.hint {
+  margin-top: 56px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--focus-gray-700);
+}

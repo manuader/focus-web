@@ -1,0 +1,75 @@
+/* ---- Eyebrow / section label ---- */
+.eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+}
+.eyebrowLine {
+  width: 44px;
+  height: 1px;
+  display: block;
+  flex: none;
+}
+.eyebrowDot {
+  width: 7px;
+  height: 7px;
+  display: block;
+  flex: none;
+  background: var(--focus-green);
+  animation: focBlink 2.4s ease-in-out infinite;
+}
+
+/* ---- Marquee ----
+   Two identical groups + a -50% translate = a seamless loop. */
+.marqueeViewport {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+}
+.marqueeTrack {
+  display: flex;
+  width: max-content;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+/* ---- Buttons / magnetic links ----
+   `--btn-accent` sets the hover color (defaults to green). */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.btnLine {
+  display: block;
+  width: 26px;
+  height: 1px;
+  background: currentColor;
+  flex: none;
+}
+.btnSolid {
+  background: var(--focus-paper);
+  color: var(--focus-ink);
+  transition: background 0.35s, color 0.35s, transform 0.4s var(--ease-out-expo);
+}
+.btnSolid:hover {
+  background: var(--btn-accent, var(--focus-green));
+  color: var(--focus-ink);
+}
+.btnGhost {
+  border: 1px solid rgba(246, 246, 244, 0.32);
+  color: var(--focus-paper);
+  transition: border-color 0.35s, color 0.35s, transform 0.4s var(--ease-out-expo);
+}
+.btnGhost:hover {
+  border-color: var(--btn-accent, var(--focus-green));
+  color: var(--btn-accent, var(--focus-green));
+}

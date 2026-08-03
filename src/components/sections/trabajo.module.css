@@ -1,0 +1,151 @@
+.trabajo {
+  position: relative;
+  height: 340vh;
+  background: var(--focus-ink);
+}
+.sticky {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 40px;
+  padding: 96px 40px 44px;
+  flex-wrap: wrap;
+}
+.title {
+  margin: 0;
+  font-size: clamp(34px, 4.6vw, 72px);
+  line-height: 0.95;
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  text-transform: uppercase;
+}
+.titleYear {
+  font-weight: 300;
+  color: transparent;
+  -webkit-text-stroke: 1.5px var(--focus-paper);
+}
+.hint {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--focus-gray-500);
+}
+.track {
+  display: flex;
+  gap: 2px;
+  padding: 0 40px;
+  will-change: transform;
+}
+.card {
+  position: relative;
+  display: block;
+  flex: none;
+  width: min(480px, 72vw);
+  aspect-ratio: 4 / 5;
+  max-height: 56vh;
+  overflow: hidden;
+  background: var(--focus-ink-2);
+}
+.cardImg {
+  object-fit: cover;
+  filter: grayscale(1) brightness(0.5) contrast(1.2);
+  transition: filter 0.7s, transform 0.9s var(--ease-out-expo);
+}
+.card:hover .cardImg {
+  filter: grayscale(0) brightness(0.8) contrast(1.1) saturate(1.25);
+  transform: scale(1.06);
+}
+.cardGrad {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 40%, rgba(10, 10, 11, 0.9));
+}
+.cardNum {
+  position: absolute;
+  right: 20px;
+  top: 18px;
+  font-size: 44px;
+  font-weight: 300;
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(246, 246, 244, 0.5);
+}
+.cardBody {
+  position: absolute;
+  left: 26px;
+  right: 26px;
+  bottom: 26px;
+}
+.cardCat {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+.cardTitle {
+  font-size: 32px;
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  text-transform: uppercase;
+  line-height: 1;
+}
+.cardMeta {
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition: max-height 0.6s var(--ease-out-expo), opacity 0.5s;
+}
+.card:hover .cardMeta {
+  max-height: 160px;
+  opacity: 1;
+}
+.cardMeta p {
+  margin: 14px 0 0;
+  font-size: 13px;
+  line-height: 1.6;
+  font-weight: 300;
+  color: var(--focus-gray-300);
+}
+.endCard {
+  flex: none;
+  width: min(420px, 60vw);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.footer {
+  padding: 44px 40px 0;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+.progressTrack {
+  flex: 1;
+  height: 1px;
+  background: rgba(246, 246, 244, 0.14);
+  position: relative;
+}
+.progressFill {
+  position: absolute;
+  left: 0;
+  top: -1px;
+  height: 3px;
+  width: 0%;
+  background: linear-gradient(90deg, #ff00ff, #0033ff, #00ff33);
+}
+.count {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  color: var(--focus-gray-500);
+}

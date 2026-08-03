@@ -1,0 +1,75 @@
+.manifiesto {
+  position: relative;
+  height: 260vh;
+  background: var(--focus-ink);
+}
+.sticky {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.ringsWrap {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: min(120vh, 900px);
+  height: min(120vh, 900px);
+  pointer-events: none;
+}
+.rings {
+  width: 100%;
+  height: 100%;
+  color: var(--focus-blue);
+  opacity: 0.3;
+  mix-blend-mode: screen;
+  animation: focSpin 140s linear infinite;
+}
+.text {
+  position: relative;
+  max-width: 1200px;
+  padding: 0 40px;
+  text-align: center;
+  will-change: filter, transform, opacity;
+}
+.label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--focus-gray-500);
+  margin-bottom: 44px;
+}
+.big {
+  font-size: clamp(36px, 5.6vw, 96px);
+  line-height: 1.02;
+  font-weight: 300;
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+}
+.em {
+  font-weight: 800;
+  font-style: normal;
+}
+.sub {
+  margin: 44px auto 0;
+  max-width: 640px;
+  font-size: clamp(16px, 1.6vw, 22px);
+  line-height: 1.6;
+  font-weight: 300;
+  color: var(--focus-gray-300);
+}
+.hint {
+  position: absolute;
+  left: 40px;
+  bottom: 40px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--focus-gray-700);
+}

@@ -1,0 +1,178 @@
+/* ---- Fixed atmospheric overlays (grain, vignette, scanline) ---- */
+.grain {
+  position: fixed;
+  inset: 0;
+  z-index: 400;
+  pointer-events: none;
+  mix-blend-mode: overlay;
+  opacity: 0.34;
+}
+.grain svg {
+  width: 100%;
+  height: 100%;
+}
+
+.vignette {
+  position: fixed;
+  inset: 0;
+  z-index: 399;
+  pointer-events: none;
+  box-shadow: inset 0 0 260px 40px rgba(0, 0, 0, 0.55);
+}
+
+.scanline {
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 2px;
+  z-index: 398;
+  pointer-events: none;
+  background: linear-gradient(90deg, transparent, rgba(0, 255, 51, 0.5), transparent);
+  opacity: 0.35;
+  animation: focScanline 9s linear infinite;
+}
+
+/* ---- Custom cursor ring ---- */
+.cursor {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 38px;
+  height: 38px;
+  margin: -19px 0 0 -19px;
+  border: 1px solid var(--focus-paper);
+  border-radius: 50%;
+  z-index: 401;
+  pointer-events: none;
+  mix-blend-mode: difference;
+  opacity: 0;
+  transition: width 0.25s, height 0.25s, margin 0.25s, opacity 0.25s;
+}
+.cursorGrow {
+  width: 76px;
+  height: 76px;
+  margin: -38px 0 0 -38px;
+}
+
+/* ---- Scroll progress bar ---- */
+.progress {
+  position: fixed;
+  left: 0;
+  top: 0;
+  height: 3px;
+  width: 0%;
+  z-index: 402;
+  pointer-events: none;
+  background: linear-gradient(90deg, #ff00ff, #0033ff, #00ff33);
+}
+
+/* ---- Nav ---- */
+.nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 300;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 22px 40px;
+  transition: background 0.5s, backdrop-filter 0.5s, padding 0.5s, border-color 0.5s;
+  border-bottom: 1px solid rgba(246, 246, 244, 0);
+}
+.navSolid {
+  background: rgba(10, 10, 11, 0.72);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border-bottom-color: rgba(246, 246, 244, 0.14);
+  padding: 14px 40px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.brand img {
+  width: 112px;
+  display: block;
+  height: auto;
+}
+
+.links {
+  display: flex;
+  align-items: center;
+  gap: 34px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+.link {
+  opacity: 0.62;
+  transition: opacity 0.3s, color 0.3s;
+}
+.link:hover {
+  opacity: 1;
+  color: var(--focus-green);
+}
+
+.langSwitch {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding-left: 10px;
+  border-left: 1px solid rgba(246, 246, 244, 0.18);
+}
+.langBtn {
+  background: none;
+  border: none;
+  padding: 2px 4px;
+  font: inherit;
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  color: var(--focus-gray-500);
+  cursor: pointer;
+  transition: color 0.3s;
+}
+.langBtnActive {
+  color: var(--focus-paper);
+}
+.langSep {
+  opacity: 0.3;
+}
+
+/* Nav CTA — fills with green on hover, text stays ink. */
+.navCta {
+  position: relative;
+  padding: 13px 24px;
+  background: var(--focus-paper);
+  color: var(--focus-ink);
+  overflow: hidden;
+  transition: background 0.35s, color 0.35s, transform 0.4s var(--ease-out-expo);
+}
+.navCta:hover {
+  background: var(--focus-green);
+  color: var(--focus-ink);
+}
+
+@media (max-width: 720px) {
+  .nav {
+    padding: 16px 20px;
+  }
+  .navSolid {
+    padding: 12px 20px;
+  }
+  .links {
+    gap: 16px;
+    font-size: 10px;
+    letter-spacing: 0.14em;
+  }
+  .linksText {
+    display: none;
+  }
+  .brand img {
+    width: 92px;
+  }
+}

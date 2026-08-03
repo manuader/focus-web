@@ -1,0 +1,26 @@
+{
+  "name": "focus-web",
+  "version": "1.0.0",
+  "private": true,
+  "description": "FOCUS — agencia de diseño y contenido. Migración a Next.js del sitio hecho con Claude Design.",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "next": "^15.5.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3",
+    "@types/node": "^22",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "^15.5.0",
+    "typescript": "^5"
+  }
+}

@@ -1,0 +1,56 @@
+.refrac {
+  position: relative;
+  height: 92vh;
+  min-height: 560px;
+  overflow: hidden;
+  background: var(--focus-ink);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.eyebrow {
+  position: absolute;
+  left: 40px;
+  top: 64px;
+}
+.center {
+  position: relative;
+  text-align: center;
+  pointer-events: none;
+}
+.stack {
+  position: relative;
+}
+.layer {
+  font-family: var(--font-logo);
+  font-weight: 800;
+  font-size: clamp(44px, 10vw, 180px);
+  line-height: 1;
+  letter-spacing: -0.02em;
+  mix-blend-mode: screen;
+  will-change: transform;
+}
+.layerAbs {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.para {
+  margin: 38px auto 0;
+  font-size: clamp(15px, 1.5vw, 20px);
+  font-weight: 300;
+  color: var(--focus-gray-300);
+  max-width: 560px;
+  line-height: 1.6;
+  padding: 0 40px;
+}
+.hint {
+  margin-top: 22px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--focus-gray-700);
+}

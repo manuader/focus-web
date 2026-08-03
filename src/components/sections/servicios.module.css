@@ -1,0 +1,110 @@
+.servicios {
+  position: relative;
+  padding: 150px 40px 130px;
+  background: var(--focus-paper);
+  color: var(--focus-ink);
+}
+.inner {
+  max-width: 1320px;
+  margin: 0 auto;
+}
+.header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 40px;
+  margin-bottom: 78px;
+  flex-wrap: wrap;
+}
+.eyebrow {
+  margin-bottom: 26px;
+}
+.title {
+  margin: 0;
+  font-size: clamp(38px, 5.4vw, 86px);
+  line-height: 0.95;
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  text-transform: uppercase;
+}
+.intro {
+  margin: 0;
+  max-width: 360px;
+  font-size: 15px;
+  line-height: 1.65;
+  font-weight: 300;
+  color: var(--focus-gray-700);
+}
+.list {
+  display: flex;
+  flex-direction: column;
+  border-top: 2px solid var(--focus-ink);
+}
+.row {
+  display: grid;
+  grid-template-columns: 110px 1fr auto;
+  align-items: center;
+  gap: 28px;
+  padding: 38px 8px;
+  border-bottom: 2px solid var(--focus-ink);
+  color: var(--focus-ink);
+  transition: padding 0.45s var(--ease-out-expo), color 0.35s;
+}
+.row:hover {
+  padding: 38px 8px 38px 34px;
+  color: var(--focus-blue);
+}
+.rowNum {
+  font-size: clamp(28px, 3vw, 48px);
+  font-weight: 300;
+  letter-spacing: -0.02em;
+  color: transparent;
+  -webkit-text-stroke: 1.5px var(--focus-ink);
+}
+.rowTitle {
+  font-size: clamp(28px, 4vw, 60px);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  text-transform: uppercase;
+  line-height: 1;
+}
+.rowDetail {
+  font-size: 12px;
+  font-weight: 300;
+  color: var(--focus-gray-500);
+  max-width: 230px;
+  text-align: right;
+  line-height: 1.5;
+}
+.peek {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 300px;
+  height: 380px;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 250;
+  opacity: 0;
+  transform: translate3d(-9999px, -9999px, 0);
+  transition: opacity 0.4s;
+  will-change: transform;
+  box-shadow: 0 40px 90px rgba(10, 10, 11, 0.4);
+}
+.peekOn {
+  opacity: 1;
+}
+.peekImg {
+  object-fit: cover;
+  filter: saturate(1.2) contrast(1.1);
+}
+
+@media (max-width: 640px) {
+  .row {
+    grid-template-columns: 64px 1fr;
+    gap: 16px;
+  }
+  .rowDetail {
+    display: none;
+  }
+}

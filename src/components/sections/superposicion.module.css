@@ -22,14 +22,21 @@
 }
 .follow {
   position: absolute;
-  left: 0;
-  top: 0;
+  left: 50%;
+  top: 50%;
   width: min(52vh, 480px);
   height: min(52vh, 480px);
+  margin: calc(min(52vh, 480px) / -2) 0 0 calc(min(52vh, 480px) / -2);
   border-radius: 50%;
   background: var(--focus-blue);
   mix-blend-mode: difference;
   will-change: transform;
+}
+/* Touch: no cursor to follow, so it counter-orbits the magenta one. */
+@media (pointer: coarse) and (prefers-reduced-motion: no-preference) {
+  .follow {
+    animation: focOrbit 19s linear infinite reverse;
+  }
 }
 .text {
   position: relative;
@@ -38,11 +45,16 @@
   padding: 0 40px;
   pointer-events: none;
 }
+/* Section label for the whole "Qué es FOCUS" block: serif italic, unnumbered,
+   kept in `difference` with the rest of .text so it inverts over the circles. */
 .eyebrow {
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.3em;
-  text-transform: uppercase;
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 400;
+  font-size: clamp(19px, 1.9vw, 26px);
+  letter-spacing: 0;
+  text-transform: none;
+  line-height: 1.5;
   color: var(--focus-paper);
   margin-bottom: 26px;
 }
@@ -65,4 +77,9 @@
   font-weight: 300;
   color: var(--focus-paper);
   opacity: 0.7;
+}
+
+@media (max-width: 700px) {
+  .sup { height: 78vh; }
+  .text { padding: 0 var(--edge); }
 }

@@ -4,7 +4,6 @@ import Image from 'next/image';
 import { useRef } from 'react';
 import { useTranslate } from '@/hooks/useTranslate';
 import { useWindowScroll } from '@/hooks/useWindowScroll';
-import { Eyebrow } from '@/components/ui/Eyebrow';
 import { COPY } from '@/lib/content';
 import styles from './umbral.module.css';
 
@@ -50,12 +49,8 @@ export function Umbral() {
   return (
     <section ref={sectionRef} className={styles.umbral} aria-label="Umbral">
       <div className={styles.sticky}>
-        <Eyebrow line="var(--focus-green)" className={styles.eyebrow}>
-          05 — Umbral
-        </Eyebrow>
-
         <div ref={doorRef} className={styles.door} aria-hidden="true">
-          <Image src="/assets/img-03.jpg" alt="" fill sizes="100vw" className={styles.doorImg} />
+          <Image src="/assets/img-06.jpg" alt="" fill sizes="100vw" className={styles.doorImg} />
           <div className={styles.doorShade} />
         </div>
         <div ref={edgesRef} className={styles.edges} aria-hidden="true" />

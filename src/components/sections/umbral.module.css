@@ -12,22 +12,19 @@
   align-items: center;
   justify-content: center;
 }
-.eyebrow {
-  position: absolute;
-  left: 40px;
-  top: 64px;
-  z-index: 4;
-}
 .door {
   position: absolute;
   inset: 0;
   clip-path: inset(14% 49.6% 14% 49.6%);
   will-change: clip-path;
 }
+/* The poster is portrait, so on wide viewports only the vertical crop matters:
+   24% lands the dense overlap of circles inside the opening slit and keeps the
+   flat gray field (where the `difference` title would vanish) out of frame. */
 .doorImg {
   object-fit: cover;
-  object-position: 50% 30%;
-  filter: saturate(1.4) contrast(1.12);
+  object-position: 50% 24%;
+  filter: contrast(1.05) brightness(0.92);
 }
 .doorShade {
   position: absolute;
@@ -77,4 +74,12 @@
   letter-spacing: 0.26em;
   text-transform: uppercase;
   color: var(--focus-gray-700);
+}
+
+@media (max-width: 700px) {
+  .umbral { height: 240vh; }
+  /* Portrait viewport: the full height fits, so the crop is horizontal.
+     Pulling left keeps the poster's lockup whole instead of half cut. */
+  .doorImg { object-position: 20% 24%; }
+  .hint { left: var(--edge); bottom: calc(28px + env(safe-area-inset-bottom)); }
 }

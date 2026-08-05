@@ -48,9 +48,15 @@
   --space-6: 96px;
   --space-7: 140px;
 
+  /* Horizontal page gutter — tightens on small screens (see media query below). */
+  --edge: 40px;
+
   /* ---- Type families (wired to next/font in layout.tsx) ---- */
   --font-body: var(--font-rotis), 'Helvetica Neue', Arial, sans-serif;
   --font-logo: var(--font-archivo), var(--font-rotis), sans-serif;
+  /* Serif companion, used italic for the section labels. Stand-in for Rotis
+     Semi Serif, which was never supplied (see Design System/readme.md). */
+  --font-display: var(--font-source-serif), Georgia, 'Times New Roman', serif;
 
   /* Motion easing used throughout the original site. */
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
@@ -75,6 +81,17 @@ body {
   font-family: var(--font-body);
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
+  /* Don't inflate type on iOS rotation; no grey flash on tap. */
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Tighter page gutter on phones — sections read this for edge padding. */
+@media (max-width: 700px) {
+  :root {
+    --edge: 20px;
+  }
 }
 
 a {
@@ -88,6 +105,11 @@ a:hover {
 
 button {
   font-family: inherit;
+}
+
+/* Keep anchored sections clear of the fixed nav when jumped to. */
+section[id] {
+  scroll-margin-top: 72px;
 }
 
 ::selection {
@@ -191,6 +213,36 @@ button {
   }
   to {
     transform: rotate(360deg) translateX(120px) rotate(-360deg);
+  }
+}
+
+/* Touch fallbacks: on coarse pointers the cursor-driven refracción can't run,
+   so the three RGB layers auto-split and recombine instead. */
+@keyframes focRefractA {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(-9px, 4px, 0);
+  }
+}
+@keyframes focRefractB {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(8px, -3px, 0);
+  }
+}
+@keyframes focRefractC {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(2px, 7px, 0);
   }
 }
 

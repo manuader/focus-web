@@ -4,10 +4,13 @@
   background: var(--focus-ink);
   overflow: hidden;
 }
+/* Floated out of flow, so its `top` has to clear the fixed nav (about 72px)
+   on its own while still leaving air above .wrap, which starts at the
+   section's padding-top. The serif label runs roughly 39px tall here. */
 .eyebrow {
   position: absolute;
   left: 40px;
-  top: 64px;
+  top: 96px;
 }
 .wrap {
   position: relative;
@@ -77,4 +80,11 @@
   letter-spacing: 0.24em;
   text-transform: uppercase;
   color: var(--focus-gray-700);
+}
+
+@media (max-width: 700px) {
+  /* Extra head room only: the label (about 29px tall) has to sit below the
+     mobile nav (about 76px) and above the text, which starts at padding-top. */
+  .foco { padding: 144px var(--edge) 96px; }
+  .eyebrow { left: var(--edge); top: 88px; }
 }

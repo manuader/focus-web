@@ -73,8 +73,13 @@ export function Foco() {
       onMouseEnter={onEnter}
       onMouseLeave={onLeave}
     >
-      <Eyebrow line="var(--focus-magenta)" className={styles.eyebrow}>
-        09 — Foco
+      <Eyebrow
+        section
+        line="var(--focus-magenta)"
+        color="var(--focus-gray-300)"
+        className={styles.eyebrow}
+      >
+        {t(COPY.foco.eyebrow)}
       </Eyebrow>
 
       <div ref={wrapRef} className={styles.wrap}>

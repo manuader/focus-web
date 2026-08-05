@@ -8,11 +8,6 @@
   align-items: center;
   justify-content: center;
 }
-.eyebrow {
-  position: absolute;
-  left: 40px;
-  top: 64px;
-}
 .center {
   position: relative;
   text-align: center;
@@ -37,12 +32,25 @@
   align-items: center;
   justify-content: center;
 }
+/* Touch fallback: auto-split the RGB layers (no cursor to drive them). */
+@media (pointer: coarse) and (prefers-reduced-motion: no-preference) {
+  .l0 {
+    animation: focRefractA 6s ease-in-out infinite;
+  }
+  .l1 {
+    animation: focRefractB 6s ease-in-out infinite;
+  }
+  .l2 {
+    animation: focRefractC 6s ease-in-out infinite;
+  }
+}
+
 .para {
-  margin: 38px auto 0;
-  font-size: clamp(15px, 1.5vw, 20px);
+  margin: 34px auto 0;
+  font-size: clamp(15px, 1.4vw, 19px);
   font-weight: 300;
   color: var(--focus-gray-300);
-  max-width: 560px;
+  max-width: 640px;
   line-height: 1.6;
   padding: 0 40px;
 }
@@ -53,4 +61,9 @@
   letter-spacing: 0.24em;
   text-transform: uppercase;
   color: var(--focus-gray-700);
+}
+
+@media (max-width: 700px) {
+  .refrac { height: 80vh; min-height: 600px; }
+  .para { margin-top: 28px; padding: 0 var(--edge); }
 }

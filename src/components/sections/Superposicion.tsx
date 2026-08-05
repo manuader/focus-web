@@ -24,15 +24,24 @@ export function Superposicion() {
     if (!section || !follow) return;
 
     // Independent, slower easing than the shared smoothing (0.07 vs 0.12).
+    // The circle is centered via CSS; the transform offsets it from center.
     let sx = 0;
     let sy = 0;
+    let started = false;
     return subscribe(({ x, y }) => {
       const r = section.getBoundingClientRect();
       if (r.bottom <= 0 || r.top >= window.innerHeight) return;
-      sx += (x - r.left - sx) * 0.07;
-      sy += (y - r.top - sy) * 0.07;
-      const half = follow.offsetWidth / 2;
-      follow.style.transform = `translate3d(${(sx - half).toFixed(1)}px, ${(sy - half).toFixed(1)}px, 0)`;
+      const cx = x - r.left;
+      const cy = y - r.top;
+      if (!started) {
+        sx = cx;
+        sy = cy;
+        started = true;
+      } else {
+        sx += (cx - sx) * 0.07;
+        sy += (cy - sy) * 0.07;
+      }
+      follow.style.transform = `translate3d(${(sx - r.width / 2).toFixed(1)}px, ${(sy - r.height / 2).toFixed(1)}px, 0)`;
     });
   }, [enabled, subscribe]);
 
@@ -46,7 +55,7 @@ export function Superposicion() {
       <div ref={followRef} className={styles.follow} aria-hidden="true" />
 
       <div className={styles.text}>
-        <div className={styles.eyebrow}>03 — Superposición</div>
+        <div className={styles.eyebrow}>{t(COPY.queEsFocus.eyebrow)}</div>
         <div className={styles.title}>
           {t(COPY.superposicion.title1)}
           <br />

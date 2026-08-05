@@ -14,7 +14,7 @@ export function HeroDensidad() {
     <section
       id="top"
       className={`${styles.hero} ${styles.heroC}`}
-      aria-label="FOCUS — Mirar no alcanza"
+      aria-label="FOCUS. Mirar no alcanza"
     >
       <Image src="/assets/img-06.jpg" alt="" fill sizes="100vw" className={styles.cBg} />
 

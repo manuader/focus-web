@@ -40,7 +40,7 @@ export function Contacto() {
       </div>
 
       <div className={styles.inner}>
-        <Reveal className={styles.eyebrow}>11 — {t(COPY.contacto.eyebrow)}</Reveal>
+        <Reveal className={styles.eyebrow}>{t(COPY.contacto.eyebrow)}</Reveal>
 
         <Reveal>
           <h2 ref={titleRef} className={styles.title}>
@@ -53,23 +53,21 @@ export function Contacto() {
         <div className={styles.actions}>
           <MagneticLink
             href={`mailto:${CONTACT.email}`}
-            className={`${ui.btn} ${ui.btnSolid}`}
-            style={{ padding: '22px 38px', fontSize: 12 }}
+            className={`${ui.btn} ${ui.btnSolid} ${styles.btnMail}`}
           >
             {CONTACT.email}
             <span className={ui.btnLine} style={{ width: 30 }} />
           </MagneticLink>
 
           <MagneticLink
-            href={CONTACT.phoneHref}
+            href={CONTACT.whatsappHref}
+            target="_blank"
+            rel="noopener noreferrer"
             accent="var(--focus-magenta)"
-            className={`${ui.btn} ${ui.btnGhost}`}
-            style={{ padding: '22px 34px', fontSize: 12 }}
+            className={`${ui.btn} ${ui.btnGhost} ${styles.btnWa}`}
           >
-            {CONTACT.phone}
+            {`WhatsApp · ${CONTACT.whatsapp}`}
           </MagneticLink>
-
-          <span className={styles.note}>{t(COPY.contacto.note)}</span>
         </div>
       </div>
     </section>

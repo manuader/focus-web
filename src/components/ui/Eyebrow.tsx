@@ -7,6 +7,11 @@ interface EyebrowProps {
   line?: string;
   /** Show the blinking green status dot instead of a rule. */
   dot?: boolean;
+  /**
+   * Section-label treatment: serif italic, a size up, no tracking.
+   * Leave off for the small tracked micro-labels (hero status line).
+   */
+  section?: boolean;
   color?: string;
   gap?: number;
   className?: string;
@@ -14,13 +19,14 @@ interface EyebrowProps {
 }
 
 /**
- * The recurring numbered section label ("06 — Servicios"), optionally prefixed
- * with a colored rule or the blinking live dot.
+ * The recurring section label ("Servicios"), optionally prefixed with a
+ * colored rule or the blinking live dot.
  */
 export function Eyebrow({
   children,
   line,
   dot,
+  section,
   color = 'var(--focus-gray-500)',
   gap,
   className,
@@ -28,7 +34,7 @@ export function Eyebrow({
 }: EyebrowProps) {
   return (
     <div
-      className={`${styles.eyebrow} ${className ?? ''}`}
+      className={`${styles.eyebrow} ${section ? styles.eyebrowSection : ''} ${className ?? ''}`}
       style={{ color, ...(gap != null ? { gap } : null), ...style }}
     >
       {dot ? <span className={styles.eyebrowDot} /> : null}

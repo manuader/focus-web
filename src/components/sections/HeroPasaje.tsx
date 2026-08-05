@@ -13,7 +13,7 @@ export function HeroPasaje() {
   return (
     <section id="top" className={`${styles.hero} ${styles.heroB}`} aria-label="FOCUS">
       <div className={styles.bLeft}>
-        <div className={styles.bEyebrow}>01 — {t(COPY.hero.b.eyebrow)}</div>
+        <div className={styles.bEyebrow}>{t(COPY.hero.b.eyebrow)}</div>
         <h1 className={styles.bHeadline}>
           <span>{t(COPY.hero.b.line1)}</span>
           <span className={styles.bHeadlineAlt}>{t(COPY.hero.b.line2)}</span>

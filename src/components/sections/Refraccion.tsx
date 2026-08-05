@@ -3,7 +3,6 @@
 import { useEffect, useRef } from 'react';
 import { usePointer } from '@/context/PointerContext';
 import { useTranslate } from '@/hooks/useTranslate';
-import { Eyebrow } from '@/components/ui/Eyebrow';
 import { COPY } from '@/lib/content';
 import styles from './refraccion.module.css';
 
@@ -44,10 +43,6 @@ export function Refraccion() {
 
   return (
     <section ref={sectionRef} className={styles.refrac} aria-label="Refracción">
-      <Eyebrow line="var(--focus-blue)" className={styles.eyebrow}>
-        04 — Refracción
-      </Eyebrow>
-
       <div className={styles.center}>
         <div className={styles.stack} aria-label={WORD}>
           {LAYERS.map((layer, i) => (
@@ -56,7 +51,7 @@ export function Refraccion() {
               ref={(el) => {
                 layerRefs.current[i] = el;
               }}
-              className={`${styles.layer} ${layer.abs ? styles.layerAbs : ''}`}
+              className={`${styles.layer} ${layer.abs ? styles.layerAbs : ''} ${styles[`l${i}`]}`}
               style={{ color: layer.color }}
               aria-hidden="true"
             >

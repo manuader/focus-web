@@ -7,10 +7,7 @@ import { Refraccion } from '@/components/sections/Refraccion';
 import { Umbral } from '@/components/sections/Umbral';
 import { Servicios } from '@/components/sections/Servicios';
 import { Trabajo } from '@/components/sections/Trabajo';
-import { Proceso } from '@/components/sections/Proceso';
 import { Foco } from '@/components/sections/Foco';
-import { Cifras } from '@/components/sections/Cifras';
-import { Testimonio } from '@/components/sections/Testimonio';
 import { Contacto } from '@/components/sections/Contacto';
 import { Footer } from '@/components/sections/Footer';
 
@@ -27,10 +24,7 @@ export default function Home() {
         <Umbral />
         <Servicios />
         <Trabajo />
-        <Proceso />
         <Foco />
-        <Cifras />
-        <Testimonio />
         <Contacto />
       </main>
       <Footer />

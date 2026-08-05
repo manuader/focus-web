@@ -135,6 +135,19 @@
 .aMeta {
   border-top: 1px solid rgba(246, 246, 244, 0.12);
   padding-top: 16px;
+  /* Single label: keep it centered on every viewport. */
+  justify-content: center;
+  text-align: center;
+}
+/* Hero eyebrow: long status line, so it has to wrap without dragging the
+   blinking dot along. Scoped to .aCol1 to outrank the base .eyebrow rules. */
+.aCol1 .aEyebrow {
+  align-items: flex-start;
+  margin-bottom: 34px;
+  text-wrap: balance;
+}
+.aCol1 .aEyebrow > span:first-child {
+  margin-top: 5px;
 }
 
 /* ---------- B · Pasaje ---------- */
@@ -335,26 +348,57 @@
   }
 }
 
-@media (max-width: 640px) {
+@media (max-width: 700px) {
+  .metaBar {
+    left: var(--edge);
+    right: var(--edge);
+    bottom: calc(28px + env(safe-area-inset-bottom));
+    font-size: 9px;
+    letter-spacing: 0.16em;
+  }
+  /* Heroes B/C drop their middle label on small screens. Hero A only has that
+     one label left, so it must stay. */
+  .metaBar:not(.aMeta) span:nth-child(2) {
+    display: none;
+  }
+
+  .aCol1 .aEyebrow {
+    max-width: 300px;
+    margin-bottom: 22px;
+    font-size: 10px;
+    letter-spacing: 0.16em;
+  }
+  .aCol1 .aEyebrow > span:first-child {
+    margin-top: 4px;
+  }
+
   .aContent {
-    left: 20px;
-    right: 20px;
-    bottom: 96px;
-    gap: 24px;
+    left: var(--edge);
+    right: var(--edge);
+    bottom: calc(96px + env(safe-area-inset-bottom));
+    gap: 22px;
+  }
+  .aHeadline {
+    font-size: clamp(46px, 14vw, 88px);
   }
   .aHeadline span {
     white-space: normal;
   }
-  .metaBar {
-    left: 20px;
-    right: 20px;
-    font-size: 9px;
-    letter-spacing: 0.16em;
+  .aCol2 {
+    flex-basis: 100%;
+    max-width: 460px;
+    padding-bottom: 0;
   }
-  .metaBar span:nth-child(2) {
-    display: none;
-  }
+
   .bLeft {
-    padding: 0 24px 72px;
+    padding: 0 var(--edge) 80px;
+  }
+  .cRow {
+    padding: 0;
+  }
+  .cFooter {
+    left: var(--edge);
+    right: var(--edge);
+    bottom: calc(28px + env(safe-area-inset-bottom));
   }
 }

@@ -4,7 +4,7 @@
    in sync. Structural, language-independent data (accent colors,
    image sources, ordinals) lives here too, next to the strings
    it belongs with. Voice: Spanish (Río de la Plata), short and
-   aphoristic, no exclamation marks.
+   aphoristic, no exclamation marks, no em dashes.
    ============================================================ */
 
 export type Lang = 'es' | 'en';
@@ -28,6 +28,8 @@ export interface NavLink {
 
 export interface ServiceRow {
   n: string;
+  /** Kept for when the image hover comes back; the rows currently
+      show the animated circuit panel instead. */
   img: string;
   title: Localized;
   detail: Localized;
@@ -37,8 +39,10 @@ export interface WorkCard {
   n: string;
   img: string;
   accent: Accent;
-  /** Category tag — kept in Spanish, as in the source (brand vocabulary). */
-  category: string;
+  /** Where the card points: the account's reels, or the live site. */
+  href: string;
+  /** Rubro of the client, shown above the title. */
+  category: Localized;
   title: string;
   desc: Localized;
 }
@@ -51,30 +55,17 @@ export interface ValueCard {
   dotB: Accent;
 }
 
-export interface ProcessStep {
-  label: string;
-  name: string;
-  desc: Localized;
-  stroke: string;
-}
-
-export interface Stat {
-  value: number;
-  suffix: string;
-  label: Localized;
-}
-
 export const NAV_LINKS: NavLink[] = [
-  { href: '#manifiesto', label: { es: 'Manifiesto', en: 'Manifesto' } },
+  { href: '#nosotros', label: { es: 'Sobre nosotros', en: 'About us' } },
   { href: '#servicios', label: { es: 'Servicios', en: 'Services' } },
   { href: '#trabajo', label: { es: 'Trabajo', en: 'Work' } },
-  { href: '#proceso', label: { es: 'Proceso', en: 'Process' } },
 ];
 
 /** Marquee words — Spanish brand vocabulary, unchanged across languages. */
 export const TICKER_ITEMS = [
   'Identidad de marca',
   'Dirección de arte',
+  'Social media management',
   'Contenido audiovisual',
   'Estrategia',
   'Editorial',
@@ -103,6 +94,15 @@ export const SERVICES: ServiceRow[] = [
   {
     n: '03',
     img: '/assets/img-03.jpg',
+    title: { es: 'Social media management', en: 'Social media management' },
+    detail: {
+      es: 'Contenido, planificación, comunidad, métricas',
+      en: 'Content, planning, community, metrics',
+    },
+  },
+  {
+    n: '04',
+    img: '/assets/img-04.jpg',
     title: { es: 'Contenido audiovisual', en: 'Audiovisual content' },
     detail: {
       es: 'Piezas para social, film de marca, motion',
@@ -110,8 +110,8 @@ export const SERVICES: ServiceRow[] = [
     },
   },
   {
-    n: '04',
-    img: '/assets/img-04.jpg',
+    n: '05',
+    img: '/assets/img-05.jpg',
     title: { es: 'Estrategia', en: 'Strategy' },
     detail: {
       es: 'Posicionamiento, arquitectura, tono de voz',
@@ -119,8 +119,8 @@ export const SERVICES: ServiceRow[] = [
     },
   },
   {
-    n: '05',
-    img: '/assets/img-05.jpg',
+    n: '06',
+    img: '/assets/img-06.jpg',
     title: { es: 'Editorial y packaging', en: 'Editorial & packaging' },
     detail: {
       es: 'Libros, catálogos, etiquetas, estuchería',
@@ -129,71 +129,72 @@ export const SERVICES: ServiceRow[] = [
   },
 ];
 
+/* Real cases. Each card carries the client's logo and links to their
+   Instagram. The artwork in `/assets/clients/*-card.jpg` is the avatar with
+   Instagram's gray frame removed: the logo's own background colour is flooded
+   across the 4:5 card so the mark fills it without being cropped. */
 export const WORKS: WorkCard[] = [
   {
     n: '01',
-    img: '/assets/img-01.jpg',
+    img: '/assets/clients/chuchones-card.jpg',
     accent: 'magenta',
-    category: 'Identidad',
-    title: 'Capella',
+    href: 'https://www.instagram.com/chuchones_wines',
+    category: { es: 'Vinos boutique', en: 'Boutique wines' },
+    title: '@chuchones_wines',
     desc: {
-      es: 'Sistema completo y manual de marca para una productora audiovisual.',
-      en: 'Full system and brand manual for a production studio.',
+      es: 'Servicio integral de social media management.',
+      en: 'Full service social media management.',
     },
   },
   {
     n: '02',
-    img: '/assets/img-02.jpg',
+    img: '/assets/clients/rsh-consultora-card.jpg',
     accent: 'blue',
-    category: 'Campaña',
-    title: 'Limen',
+    href: 'https://www.instagram.com/rsh_consultora',
+    category: {
+      es: 'Licenciado en seguridad e higiene',
+      en: 'Health and safety consultancy',
+    },
+    title: '@rsh_consultora',
     desc: {
-      es: 'Dirección de arte y producción fotográfica para lanzamiento.',
-      en: 'Art direction and photo production for a launch.',
+      es: 'Servicio integral de social media management.',
+      en: 'Full service social media management.',
     },
   },
   {
     n: '03',
-    img: '/assets/img-03.jpg',
+    img: '/assets/clients/fernanda-estetica-card.jpg',
     accent: 'green',
-    category: 'Editorial',
-    title: 'Pasaje',
+    href: 'https://www.instagram.com/esteticaintegralfernanda',
+    category: { es: 'Estética y salud', en: 'Beauty and wellness' },
+    title: '@esteticaintegralfernanda',
     desc: {
-      es: 'Libro de 240 páginas sobre transición y archivo.',
-      en: 'A 240-page book on transition and archive.',
+      es: 'Servicio integral de social media management.',
+      en: 'Full service social media management.',
     },
   },
   {
     n: '04',
-    img: '/assets/img-04.jpg',
+    img: '/assets/clients/santa-tuca-card.jpg',
     accent: 'magenta',
-    category: 'Packaging',
-    title: 'Trama',
+    href: 'https://www.instagram.com/santatuca',
+    category: { es: 'Creador de contenido', en: 'Content creator' },
+    title: '@santatuca',
     desc: {
-      es: 'Estuchería y etiquetas para una línea de edición limitada.',
-      en: 'Boxes and labels for a limited-edition line.',
+      es: 'Edición de reels y videos de YouTube.',
+      en: 'Reels and YouTube video editing.',
     },
   },
   {
     n: '05',
-    img: '/assets/img-05.jpg',
+    img: '/assets/clients/toplaser-card.jpg',
     accent: 'blue',
-    category: 'Motion',
-    title: 'Refracción',
+    href: 'https://www.instagram.com/toplaserimprenta',
+    category: { es: 'Imprenta', en: 'Print shop' },
+    title: 'Top Láser',
     desc: {
-      es: 'Film de marca de 90 segundos y su corte para social.',
-      en: 'A 90-second brand film and its social cut.',
-    },
-  },
-  {
-    n: '06',
-    img: '/assets/img-06.jpg',
-    accent: 'green',
-    category: 'Estrategia',
-    title: 'Densidad',
-    desc: {
-      es: 'Reposicionamiento y arquitectura de marca para retail.',
-      en: 'Repositioning and brand architecture for retail.',
+      es: 'Identidad, página web, producción y postproducción de contenido.',
+      en: 'Identity, website, content production and post production.',
     },
   },
 ];
@@ -203,8 +204,8 @@ export const VALUES: ValueCard[] = [
     n: '01',
     name: 'Libertad',
     desc: {
-      es: 'No pedimos permiso para proponer lo que todavía no existe.',
-      en: "We don't ask permission to propose what doesn't exist yet.",
+      es: 'Creamos sin límites y sin reglas. No pedimos permiso para proponer lo que todavía no existe.',
+      en: "We create with no limits and no rules. We don't ask permission to propose what doesn't exist yet.",
     },
     dotA: 'magenta',
     dotB: 'blue',
@@ -213,8 +214,8 @@ export const VALUES: ValueCard[] = [
     n: '02',
     name: 'Profundidad',
     desc: {
-      es: 'Nada superficial resiste una segunda mirada. Trabajamos para la segunda.',
-      en: 'Nothing superficial survives a second look. We work for the second one.',
+      es: 'Investigamos cada caso a fondo. No hacemos piezas genéricas ni iguales a las de todos los demás.',
+      en: "We research every case in depth. We don't make generic pieces that look like everyone else's.",
     },
     dotA: 'blue',
     dotB: 'green',
@@ -223,8 +224,8 @@ export const VALUES: ValueCard[] = [
     n: '03',
     name: 'Atención',
     desc: {
-      es: 'El detalle no es el final del trabajo. Es la prueba de que hubo trabajo.',
-      en: "Detail isn't the end of the work. It's the proof there was work.",
+      es: 'Prestamos mucha atención a los detalles para que tu marca se sienta única.',
+      en: 'We pay close attention to every detail so your brand feels unlike any other.',
     },
     dotA: 'green',
     dotB: 'magenta',
@@ -233,72 +234,11 @@ export const VALUES: ValueCard[] = [
     n: '04',
     name: 'Curiosidad',
     desc: {
-      es: 'Nos movemos siempre. El ángulo bueno nunca está donde estabas parado.',
-      en: 'We keep moving. The good angle is never where you were standing.',
+      es: 'No paramos de movernos para ofrecerte diferentes puntos de vista.',
+      en: 'We never stop moving, so we can offer you different points of view.',
     },
     dotA: 'magenta',
     dotB: 'green',
-  },
-];
-
-export const PROCESS: ProcessStep[] = [
-  {
-    label: 'M1',
-    name: 'Pasaje',
-    desc: {
-      es: 'Entendemos de dónde viene la marca y qué está dejando de ser. Escuchamos antes de mirar.',
-      en: "We map where the brand comes from and what it's ceasing to be. We listen before we look.",
-    },
-    stroke: 'var(--focus-magenta)',
-  },
-  {
-    label: 'M2',
-    name: 'Refracción',
-    desc: {
-      es: 'Descomponemos el mensaje en sus tres capas hasta ver de qué está hecho.',
-      en: "We split the message into its three layers to see what it's made of.",
-    },
-    stroke: 'var(--focus-blue)',
-  },
-  {
-    label: 'M3',
-    name: 'Superposición',
-    desc: {
-      es: 'Cruzamos dos estados. En el cruce aparece el color que no existía.',
-      en: "We overlap two states. Where they cross, a color appears that didn't exist.",
-    },
-    stroke: 'var(--focus-green)',
-  },
-  {
-    label: 'M4',
-    name: 'Foco',
-    desc: {
-      es: 'Un punto nítido. Todo lo demás se disuelve — y por eso ese punto existe.',
-      en: "One sharp point. Everything else dissolves — that's why the point exists.",
-    },
-    stroke: 'var(--focus-paper)',
-  },
-];
-
-export const STATS: Stat[] = [
-  {
-    value: 12,
-    suffix: '+',
-    label: { es: 'Años enfocando marcas', en: 'Years bringing brands into focus' },
-  },
-  {
-    value: 140,
-    suffix: '+',
-    label: { es: 'Sistemas entregados', en: 'Systems delivered' },
-  },
-  { value: 9, suffix: '', label: { es: 'Países', en: 'Countries' } },
-  {
-    value: 3,
-    suffix: '',
-    label: {
-      es: 'Proyectos por trimestre, no más',
-      en: 'Projects per quarter, no more',
-    },
   },
 ];
 
@@ -306,15 +246,15 @@ export const STATS: Stat[] = [
 export const COPY = {
   hero: {
     eyebrow: {
-      es: 'Agencia de diseño y contenido · Buenos Aires',
-      en: 'Design & content agency · Buenos Aires',
+      es: 'Agencia de diseño integral y creación de contenido · Buenos Aires',
+      en: 'Integral design and content creation agency · Buenos Aires',
     },
     a: {
       line1: { es: 'Mirar', en: 'Looking' },
       line2: { es: 'no alcanza', en: 'is not enough' },
       para: {
-        es: 'No construimos marcas desde cero. Revelamos el ángulo que ya estaba ahí — y lo volvemos imposible de ignorar.',
-        en: "We don't build brands from scratch. We reveal the angle that was already there — and make it impossible to ignore.",
+        es: 'No construimos marcas desde cero. Revelamos el ángulo que ya estaba ahí y lo volvemos imposible de ignorar.',
+        en: "We don't build brands from scratch. We reveal the angle that was already there and make it impossible to ignore.",
       },
       cta: { es: 'Ver trabajo', en: 'See work' },
     },
@@ -337,41 +277,46 @@ export const COPY = {
         en: 'We reveal the angle that was already there.',
       },
     },
-    scroll: { es: 'Desplazá para cruzar', en: 'Scroll to cross' },
+    scroll: {
+      es: 'Desplazá para cruzar el umbral',
+      en: 'Scroll to cross the threshold',
+    },
   },
-  manifiesto: {
-    eyebrow: { es: 'Manifiesto', en: 'Manifesto' },
+  nosotros: {
+    eyebrow: { es: 'Sobre nosotros', en: 'About us' },
     line1: { es: 'Una marca no se inventa.', en: "A brand isn't invented." },
     pre: { es: 'Se ', en: "It's brought into " },
     em: { es: 'enfoca', en: 'focus' },
     post: { es: '.', en: '.' },
     sub: {
-      es: 'El ruido, la tendencia, la copia — todo lo demás se disuelve fuera del plano.',
-      en: 'The noise, the trend, the copy — everything else dissolves out of the frame.',
+      es: 'El ruido, la tendencia, la copia: todo lo demás se disuelve fuera del plano.',
+      en: 'The noise, the trend, the copy: everything else dissolves out of the frame.',
     },
     hint: {
-      es: 'Seguí bajando — el texto enfoca con vos',
-      en: 'Keep scrolling — the text focuses with you',
+      es: 'Seguí bajando, el texto enfoca con vos',
+      en: 'Keep scrolling, the text focuses with you',
     },
   },
   valores: {
-    eyebrow: {
-      es: 'Cuatro valores, cero adornos',
-      en: 'Four values, zero ornament',
-    },
+    eyebrow: { es: 'Nuestros valores', en: 'Our values' },
+  },
+  /* Superposición + Refracción + Umbral read as one block: the label lives
+     on the first panel and the other two run on without repeating it. */
+  queEsFocus: {
+    eyebrow: { es: 'Qué es FOCUS', en: 'What FOCUS is' },
   },
   superposicion: {
     title1: { es: 'El punto donde', en: 'The point where' },
     title2: { es: 'todo cambia', en: 'everything changes' },
     hint: {
-      es: 'Movete — el color aparece donde dos estados se cruzan',
-      en: 'Move — color appears where two states cross',
+      es: 'Movete: el color aparece donde dos estados se cruzan',
+      en: 'Move: color appears where two states cross',
     },
   },
   refraccion: {
     para: {
-      es: 'Descomponemos el mensaje en sus capas. Donde las tres coinciden, la luz vuelve a ser blanca.',
-      en: 'We split the message into its layers. Where all three coincide, light turns white again.',
+      es: 'Ninguna marca tiene un límite claro entre sus capas. Estrategia, imagen y voz se cruzan todo el tiempo. Las separamos para ver de qué está hecha y las volvemos a juntar hasta que la luz es blanca otra vez.',
+      en: 'No brand has a clear line between its layers. Strategy, image and voice overlap all the time. We pull them apart to see what it is made of, then bring them back together until the light turns white again.',
     },
     hint: {
       es: 'Movete y descomponela · quedate quieto y se recompone',
@@ -381,14 +326,14 @@ export const COPY = {
   umbral: {
     line1: { es: 'Lo que parece una puerta', en: 'What looks like a door' },
     line2: { es: 'resulta ser un mundo', en: 'turns out to be a world' },
-    hint: { es: 'Bajá — el umbral se abre', en: 'Scroll — the threshold opens' },
+    hint: { es: 'Bajá: el umbral se abre', en: 'Scroll: the threshold opens' },
   },
   servicios: {
     eyebrow: { es: 'Servicios', en: 'Services' },
     title: { es: 'Qué hacemos', en: 'What we do' },
     intro: {
-      es: 'Cinco disciplinas, un solo criterio: que la pieza no se pueda confundir con la de nadie más.',
-      en: "Five disciplines, one criterion: the piece must be impossible to mistake for anyone else's.",
+      es: 'Seis disciplinas, un solo criterio: que la pieza no se pueda confundir con la de nadie más.',
+      en: "Six disciplines, one criterion: the piece must be impossible to mistake for anyone else's.",
     },
   },
   trabajo: {
@@ -400,15 +345,11 @@ export const COPY = {
     },
     cta: { es: 'Tu caso acá', en: 'Your case here' },
   },
-  proceso: {
-    eyebrow: { es: 'Proceso', en: 'Process' },
-    title1: { es: 'Cuatro movimientos', en: 'Four movements' },
-    title2: { es: 'hasta el foco', en: 'to the focus' },
-  },
   foco: {
+    eyebrow: { es: 'Foco', en: 'Focus' },
     pre: {
-      es: 'La atención es el recurso más caro del mundo. No la pedimos — la ',
-      en: "Attention is the world's most expensive resource. We don't ask for it — we ",
+      es: 'La atención es el recurso más caro del mundo. No la pedimos, la ',
+      en: "Attention is the world's most expensive resource. We don't ask for it, we ",
     },
     em: { es: 'capturamos', en: 'capture' },
     post: {
@@ -416,29 +357,20 @@ export const COPY = {
       en: ' it. One sharp point amid the dispersion is worth more than a thousand messages shouting at once.',
     },
     hint: {
-      es: 'Tu cursor es la lente — enfocá lo que importa',
-      en: 'Your cursor is the lens — focus what matters',
+      es: 'Tu cursor es la lente · enfocá lo que importa',
+      en: 'Your cursor is the lens · focus what matters',
     },
-  },
-  testimonio: {
-    eyebrow: { es: 'Clientes', en: 'Clients' },
-    quote: {
-      es: '“Llegamos con un logo. Nos fuimos con un motivo para existir — y con todo el mundo mirando el mismo punto.”',
-      en: '“We arrived with a logo. We left with a reason to exist — and everyone looking at the same point.”',
-    },
-    role: 'Directora de marca, Capella',
   },
   contacto: {
     eyebrow: { es: 'Trabajemos juntos', en: "Let's work together" },
-    title1: { es: 'El punto', en: 'The point' },
-    title2: { es: 'donde todo cambia', en: 'where everything changes' },
-    note: {
-      es: 'Tomamos tres proyectos por trimestre. Escribinos antes.',
-      en: 'We take three projects a quarter. Write early.',
-    },
+    title1: { es: 'Enfoquemos', en: "Let's focus" },
+    title2: { es: 'lo que ya es tuyo', en: 'what is already yours' },
   },
   footer: {
     nav: { es: 'Navegación', en: 'Navigation' },
+    contacto: { es: 'Contacto', en: 'Contact' },
+    /** Second half of the wordmark lockup; the logo image supplies "FOCUS". */
+    brandSub: 'creatives',
     made: { es: 'Hecho en Buenos Aires', en: 'Made in Buenos Aires' },
   },
   cta: { es: 'Hablemos', en: "Let's talk" },
@@ -447,12 +379,10 @@ export const COPY = {
 
 export const CONTACT = {
   email: 'hola@focus.studio',
-  phone: '+54 11 0000 0000',
-  phoneHref: 'tel:+541100000000',
-  address: ['Bartolomé Mitre 1234, C1036', 'Buenos Aires · Argentina'],
-  social: [
-    { label: 'Instagram', href: '#contacto' },
-    { label: 'Behance', href: '#contacto' },
-    { label: 'LinkedIn', href: '#contacto' },
-  ],
+  /** The studio's real address, shown in the footer. NOTE: `email` above is
+      still the placeholder inherited from the design mock and drives the
+      Contacto button and the mobile menu. */
+  footerEmail: 'serenacapella@focus-creatives.com',
+  whatsapp: '+54 9 11 5926 4267',
+  whatsappHref: 'https://wa.me/5491159264267',
 } as const;

@@ -53,7 +53,7 @@ export function HeroUmbral() {
 
       <div className={styles.aContent}>
         <div className={styles.aCol1}>
-          <Eyebrow dot gap={12} color="var(--focus-gray-300)" style={{ marginBottom: 34 }}>
+          <Eyebrow dot gap={12} color="var(--focus-gray-300)" className={styles.aEyebrow}>
             {t(COPY.hero.eyebrow)}
           </Eyebrow>
           <h1 ref={headlineRef} className={styles.aHeadline}>
@@ -80,9 +80,7 @@ export function HeroUmbral() {
       </div>
 
       <div className={`${styles.metaBar} ${styles.aMeta}`}>
-        <span>El umbral · 2026</span>
         <span>{t(COPY.hero.scroll)}</span>
-        <span>N 34°36&apos; / W 58°22&apos;</span>
       </div>
     </section>
   );

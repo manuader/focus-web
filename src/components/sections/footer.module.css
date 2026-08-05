@@ -9,28 +9,28 @@
   margin: 0 auto;
   display: flex;
   flex-wrap: wrap;
-  gap: 44px;
+  gap: 32px 44px;
   justify-content: space-between;
-  align-items: flex-start;
+  align-items: flex-end;
 }
 .brand img {
   width: 132px;
   display: block;
   height: auto;
-  margin-bottom: 22px;
 }
-.address {
-  font-size: 12px;
-  font-weight: 300;
-  line-height: 1.7;
+/* Tracked out so "creatives" spans the wordmark above it. The negative
+   right margin cancels the trailing letter-space, which would otherwise
+   push the line wider than the logo. */
+.brandSub {
+  display: block;
+  width: 132px;
+  margin-top: 9px;
+  margin-right: -0.5em;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.5em;
+  text-transform: uppercase;
   color: var(--focus-gray-500);
-}
-.cols {
-  display: flex;
-  gap: 56px;
-  flex-wrap: wrap;
-  font-size: 12px;
-  line-height: 2;
 }
 .col {
   display: flex;
@@ -42,7 +42,14 @@
   text-transform: uppercase;
   color: var(--focus-gray-500);
   font-size: 10px;
-  margin-bottom: 12px;
+  margin-bottom: 14px;
+}
+.navLinks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 30px;
+  font-size: 12px;
+  line-height: 1.6;
 }
 .link {
   color: var(--focus-gray-300);
@@ -51,7 +58,12 @@
 .linkNav:hover {
   color: var(--focus-green);
 }
-.linkSocial:hover {
+.linkMail {
+  font-size: 12px;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+.linkMail:hover {
   color: var(--focus-magenta);
 }
 .bottom {
@@ -68,4 +80,12 @@
   letter-spacing: 0.22em;
   text-transform: uppercase;
   color: var(--focus-gray-700);
+}
+
+@media (max-width: 700px) {
+  .footer { padding: 56px var(--edge) calc(32px + env(safe-area-inset-bottom)); }
+  .top { gap: 28px; align-items: flex-start; }
+  .col { width: 100%; }
+  .navLinks { gap: 6px 22px; }
+  .bottom { margin-top: 40px; gap: 12px; }
 }

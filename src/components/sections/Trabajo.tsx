@@ -16,7 +16,7 @@ const pad2 = (n: number) => String(n).padStart(2, '0');
 /**
  * Horizontal case gallery driven by vertical scroll: while the section is
  * pinned, scrolling advances the track sideways, updating a progress bar and
- * an NN / 06 counter. Cards bloom to color on hover and reveal their blurb.
+ * an NN / NN counter. Cards bloom to color on hover and reveal their blurb.
  */
 export function Trabajo() {
   const { t } = useTranslate();
@@ -45,22 +45,31 @@ export function Trabajo() {
       <div className={styles.sticky}>
         <div className={styles.header}>
           <div>
-            <Eyebrow line="var(--focus-green)" style={{ marginBottom: 20 }}>
-              07 — {t(COPY.trabajo.eyebrow)}
+            <Eyebrow
+              section
+              line="var(--focus-green)"
+              color="var(--focus-gray-300)"
+              style={{ marginBottom: 20 }}
+            >
+              {t(COPY.trabajo.eyebrow)}
             </Eyebrow>
-            <h2 className={styles.title}>
-              {t(COPY.trabajo.title)} <span className={styles.titleYear}>2024—26</span>
-            </h2>
+            <h2 className={styles.title}>{t(COPY.trabajo.title)}</h2>
           </div>
           <span className={styles.hint}>{t(COPY.trabajo.hint)} →</span>
         </div>
 
         <div ref={trackRef} className={styles.track}>
           {WORKS.map((w) => (
-            <a key={w.n} href="#contacto" className={styles.card}>
+            <a
+              key={w.n}
+              href={w.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={styles.card}
+            >
               <Image
                 src={w.img}
-                alt={`${w.category} — ${w.title}`}
+                alt={`${t(w.category)}, ${w.title}`}
                 fill
                 sizes="(max-width: 640px) 72vw, 480px"
                 className={styles.cardImg}
@@ -71,7 +80,7 @@ export function Trabajo() {
               </div>
               <div className={styles.cardBody}>
                 <div className={styles.cardCat} style={{ color: ACCENT_HEX[w.accent] }}>
-                  {w.category}
+                  {t(w.category)}
                 </div>
                 <div className={styles.cardTitle}>{w.title}</div>
                 <div className={styles.cardMeta}>

@@ -11,8 +11,9 @@ import styles from './manifiesto.module.css';
 const clamp01 = (v: number) => Math.max(0, Math.min(1, v));
 
 /**
- * A manifesto that literally comes into focus: while the section is pinned, the
- * headline sharpens from blur → crisp as scroll progress crosses it.
+ * "Sobre nosotros": a statement that literally comes into focus. While the
+ * section is pinned, the headline sharpens from blur to crisp as scroll
+ * progress crosses it.
  */
 export function Manifiesto() {
   const { t } = useTranslate();
@@ -34,7 +35,7 @@ export function Manifiesto() {
   });
 
   return (
-    <section ref={sectionRef} id="manifiesto" className={styles.manifiesto}>
+    <section ref={sectionRef} id="nosotros" className={styles.manifiesto}>
       <div className={styles.sticky}>
         <div className={styles.ringsWrap} aria-hidden="true">
           <RingsMotif radii={[90, 170, 260, 350]} strokeWidth={1} className={styles.rings} />
@@ -49,18 +50,18 @@ export function Manifiesto() {
               : { filter: 'blur(14px)', opacity: 0.25, transform: 'scale(0.94)' }
           }
         >
-          <div className={styles.label}>01 — {t(COPY.manifiesto.eyebrow)}</div>
+          <div className={styles.label}>{t(COPY.nosotros.eyebrow)}</div>
           <div className={styles.big}>
-            {t(COPY.manifiesto.line1)}
+            {t(COPY.nosotros.line1)}
             <br />
-            {t(COPY.manifiesto.pre)}
-            <em className={styles.em}>{t(COPY.manifiesto.em)}</em>
-            {t(COPY.manifiesto.post)}
+            {t(COPY.nosotros.pre)}
+            <em className={styles.em}>{t(COPY.nosotros.em)}</em>
+            {t(COPY.nosotros.post)}
           </div>
-          <div className={styles.sub}>{t(COPY.manifiesto.sub)}</div>
+          <div className={styles.sub}>{t(COPY.nosotros.sub)}</div>
         </div>
 
-        <div className={styles.hint}>{t(COPY.manifiesto.hint)}</div>
+        <div className={styles.hint}>{t(COPY.nosotros.hint)}</div>
       </div>
     </section>
   );

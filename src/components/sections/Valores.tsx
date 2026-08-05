@@ -19,7 +19,9 @@ export function Valores() {
 
       <div className={styles.inner}>
         <Reveal className={styles.eyebrow}>
-          <Eyebrow line="var(--focus-magenta)">02 — {t(COPY.valores.eyebrow)}</Eyebrow>
+          <Eyebrow section line="var(--focus-magenta)" color="var(--focus-gray-700)">
+            {t(COPY.valores.eyebrow)}
+          </Eyebrow>
         </Reveal>
 
         <div className={styles.grid}>

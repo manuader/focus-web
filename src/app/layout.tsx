@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import localFont from 'next/font/local';
-import { Archivo_Black } from 'next/font/google';
+import { Archivo_Black, Source_Serif_4 } from 'next/font/google';
 import './globals.css';
 
 import { LanguageProvider } from '@/context/LanguageContext';
@@ -33,15 +33,29 @@ const archivo = Archivo_Black({
   display: 'swap',
 });
 
+/**
+ * Source Serif 4 — the serif companion used, in italic, for every section
+ * label. It stands in for Rotis Semi Serif, which the brand specifies but
+ * never shipped as a font file (see Design System/readme.md). Swap the
+ * `--font-display` token in globals.css the day those OTFs arrive.
+ */
+const sourceSerif = Source_Serif_4({
+  subsets: ['latin'],
+  style: ['normal', 'italic'],
+  variable: '--font-source-serif',
+  display: 'swap',
+  fallback: ['Georgia', 'Times New Roman', 'serif'],
+});
+
 export const metadata: Metadata = {
-  title: 'FOCUS — El punto donde todo cambia',
+  title: 'FOCUS · El punto donde todo cambia',
   description:
-    'FOCUS es una agencia de diseño y contenido en Buenos Aires. No construimos marcas desde cero: revelamos el ángulo que ya estaba ahí y lo volvemos imposible de ignorar.',
+    'FOCUS es una agencia de diseño integral y creación de contenido en Buenos Aires. No construimos marcas desde cero: revelamos el ángulo que ya estaba ahí y lo volvemos imposible de ignorar.',
   metadataBase: new URL('https://focus.studio'),
   openGraph: {
-    title: 'FOCUS — El punto donde todo cambia',
+    title: 'FOCUS · El punto donde todo cambia',
     description:
-      'Agencia de diseño y contenido. Revelamos el ángulo que ya estaba ahí.',
+      'Agencia de diseño integral y creación de contenido. Revelamos el ángulo que ya estaba ahí.',
     locale: 'es_AR',
     type: 'website',
   },
@@ -54,13 +68,18 @@ export const viewport: Viewport = {
   themeColor: '#0a0a0b',
   width: 'device-width',
   initialScale: 1,
+  // Extend under the notch / home indicator so we can honor safe-area insets.
+  viewportFit: 'cover',
 };
 
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="es" className={`${rotis.variable} ${archivo.variable}`}>
+    <html
+      lang="es"
+      className={`${rotis.variable} ${archivo.variable} ${sourceSerif.variable}`}
+    >
       <body>
         <LanguageProvider>
           <PointerProvider>

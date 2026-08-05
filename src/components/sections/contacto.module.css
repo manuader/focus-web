@@ -48,18 +48,27 @@
   margin: 0 auto;
   width: 100%;
 }
+/* Section label: serif italic, unnumbered — matches ui.eyebrowSection. */
 .eyebrow {
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.26em;
-  text-transform: uppercase;
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 400;
+  font-size: clamp(19px, 1.9vw, 26px);
+  letter-spacing: 0;
+  text-transform: none;
+  line-height: 1.5;
   color: var(--focus-gray-300);
-  margin-bottom: 40px;
+  margin-bottom: 28px;
 }
+/* "Lo que ya es tuyo" is 17 characters against the old title's 11, so the ramp
+   is gentler than the previous 46px/9vw/168px. Measured against Rotis: the
+   second line stays unbroken from 375px up, and the 140px cap keeps the long
+   English line ("What is already yours") inside the 1320px column on the
+   widest screens, where 168px would have pushed it onto a third line. */
 .title {
   position: relative;
   margin: 0;
-  font-size: clamp(46px, 9vw, 168px);
+  font-size: clamp(42px, 8.2vw, 140px);
   line-height: 0.88;
   font-weight: 800;
   letter-spacing: -0.04em;
@@ -77,10 +86,21 @@
   gap: 20px;
   margin-top: 64px;
 }
-.note {
+/* Button metrics live here rather than inline so the mobile query can reach
+   them: the WhatsApp label is long and needs to shrink under 700px. */
+.btnMail {
+  padding: 22px 38px;
   font-size: 12px;
-  font-weight: 300;
-  color: var(--focus-gray-300);
-  max-width: 280px;
-  line-height: 1.5;
+}
+.btnWa {
+  padding: 22px 34px;
+  font-size: 12px;
+}
+
+@media (max-width: 700px) {
+  .contacto { padding: 104px var(--edge); }
+  .eyebrow { margin-bottom: 22px; }
+  .actions { margin-top: 44px; gap: 14px; }
+  .btnMail { padding: 20px 26px; font-size: 11px; }
+  .btnWa { padding: 20px 22px; font-size: 11px; }
 }

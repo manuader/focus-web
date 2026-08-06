@@ -378,11 +378,7 @@ export const COPY = {
 } as const;
 
 export const CONTACT = {
-  email: 'hola@focus.studio',
-  /** The studio's real address, shown in the footer. NOTE: `email` above is
-      still the placeholder inherited from the design mock and drives the
-      Contacto button and the mobile menu. */
-  footerEmail: 'serenacapella@focus-creatives.com',
+  email: 'serenacapella@focus-creatives.com',
   whatsapp: '+54 9 11 5926 4267',
   whatsappHref: 'https://wa.me/5491159264267',
 } as const;

@@ -36,10 +36,10 @@ export function Footer() {
         <div className={styles.col}>
           <span className={styles.colHead}>{t(COPY.footer.contacto)}</span>
           <a
-            href={`mailto:${CONTACT.footerEmail}`}
+            href={`mailto:${CONTACT.email}`}
             className={`${styles.link} ${styles.linkMail}`}
           >
-            {CONTACT.footerEmail}
+            {CONTACT.email}
           </a>
         </div>
       </div>

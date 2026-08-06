@@ -65,8 +65,9 @@ export function Contacto() {
             rel="noopener noreferrer"
             accent="var(--focus-magenta)"
             className={`${ui.btn} ${ui.btnGhost} ${styles.btnWa}`}
+            aria-label={`WhatsApp ${CONTACT.whatsapp}`}
           >
-            {`WhatsApp · ${CONTACT.whatsapp}`}
+            WhatsApp
           </MagneticLink>
         </div>
       </div>

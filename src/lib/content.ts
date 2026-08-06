@@ -121,6 +121,15 @@ export const SERVICES: ServiceRow[] = [
   {
     n: '06',
     img: '/assets/img-06.jpg',
+    title: { es: 'Páginas web', en: 'Websites' },
+    detail: {
+      es: 'Diseño, desarrollo, SEO, mantenimiento',
+      en: 'Design, development, SEO, maintenance',
+    },
+  },
+  {
+    n: '07',
+    img: '/assets/img-01.jpg',
     title: { es: 'Editorial y packaging', en: 'Editorial & packaging' },
     detail: {
       es: 'Libros, catálogos, etiquetas, estuchería',
@@ -332,8 +341,8 @@ export const COPY = {
     eyebrow: { es: 'Servicios', en: 'Services' },
     title: { es: 'Qué hacemos', en: 'What we do' },
     intro: {
-      es: 'Seis disciplinas, un solo criterio: que la pieza no se pueda confundir con la de nadie más.',
-      en: "Six disciplines, one criterion: the piece must be impossible to mistake for anyone else's.",
+      es: 'Siete disciplinas, un solo criterio: que la pieza no se pueda confundir con la de nadie más.',
+      en: "Seven disciplines, one criterion: the piece must be impossible to mistake for anyone else's.",
     },
   },
   trabajo: {

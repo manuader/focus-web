@@ -1,7 +1,7 @@
 .sup {
   position: relative;
-  height: 86vh;
-  min-height: 560px;
+  height: 92vh;
+  min-height: 620px;
   overflow: hidden;
   background: var(--focus-ink);
   display: flex;
@@ -11,10 +11,10 @@
 .orbit {
   position: absolute;
   left: 50%;
-  top: 50%;
-  width: min(52vh, 480px);
-  height: min(52vh, 480px);
-  margin: calc(min(52vh, 480px) / -2) 0 0 calc(min(52vh, 480px) / -2);
+  top: 46%;
+  width: min(46vh, 440px);
+  height: min(46vh, 440px);
+  margin: calc(min(46vh, 440px) / -2) 0 0 calc(min(46vh, 440px) / -2);
   border-radius: 50%;
   background: var(--focus-magenta);
   animation: focOrbit 22s linear infinite;
@@ -23,10 +23,10 @@
 .follow {
   position: absolute;
   left: 50%;
-  top: 50%;
-  width: min(52vh, 480px);
-  height: min(52vh, 480px);
-  margin: calc(min(52vh, 480px) / -2) 0 0 calc(min(52vh, 480px) / -2);
+  top: 46%;
+  width: min(46vh, 440px);
+  height: min(46vh, 440px);
+  margin: calc(min(46vh, 440px) / -2) 0 0 calc(min(46vh, 440px) / -2);
   border-radius: 50%;
   background: var(--focus-blue);
   mix-blend-mode: difference;
@@ -71,15 +71,49 @@
   font-weight: 300;
   font-style: italic;
 }
+/* Sits below the circles on clean black, not inside .text: in there it
+   inherited mix-blend-mode:difference and fell on the magenta disc. */
 .hint {
-  margin-top: 34px;
-  font-size: 12px;
+  position: absolute;
+  left: 40px;
+  right: 40px;
+  bottom: clamp(26px, 4.5vh, 52px);
+  text-align: center;
+  font-size: 14px;
   font-weight: 300;
-  color: var(--focus-paper);
-  opacity: 0.7;
+  line-height: 1.5;
+  color: var(--focus-gray-300);
+  pointer-events: none;
+}
+
+/* Short desktop viewports hit the same squeeze: the fixed 120px orbit is a
+   big share of a 700px-tall section, so the discs come down. */
+@media (min-width: 701px) and (max-height: 820px) {
+  .orbit,
+  .follow {
+    top: 43%;
+    width: min(42vh, 440px);
+    height: min(42vh, 440px);
+    margin: calc(min(42vh, 440px) / -2) 0 0 calc(min(42vh, 440px) / -2);
+  }
 }
 
 @media (max-width: 700px) {
-  .sup { height: 78vh; }
+  .sup { height: 84vh; }
   .text { padding: 0 var(--edge); }
+  .hint {
+    left: var(--edge);
+    right: var(--edge);
+    font-size: 13px;
+  }
+  /* The orbit radius is a fixed 120px, so on a short screen it eats a much
+     larger share of the section. The discs shrink and ride higher here to
+     keep the hint on clean black. */
+  .orbit,
+  .follow {
+    top: 42%;
+    width: min(40vh, 300px);
+    height: min(40vh, 300px);
+    margin: calc(min(40vh, 300px) / -2) 0 0 calc(min(40vh, 300px) / -2);
+  }
 }

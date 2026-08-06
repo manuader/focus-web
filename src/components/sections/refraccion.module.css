@@ -55,12 +55,12 @@
   padding: 0 40px;
 }
 .hint {
-  margin-top: 22px;
-  font-size: 11px;
+  margin-top: 24px;
+  font-size: 13px;
   font-weight: 700;
-  letter-spacing: 0.24em;
+  letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: var(--focus-gray-700);
+  color: var(--focus-gray-300);
 }
 
 @media (max-width: 700px) {

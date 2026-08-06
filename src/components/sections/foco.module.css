@@ -75,11 +75,11 @@
 }
 .hint {
   margin-top: 56px;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
-  letter-spacing: 0.24em;
+  letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: var(--focus-gray-700);
+  color: var(--focus-gray-300);
 }
 
 @media (max-width: 700px) {

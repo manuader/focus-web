@@ -61,8 +61,12 @@ export function Superposicion() {
           <br />
           <span className={styles.titleAlt}>{t(COPY.superposicion.title2)}</span>
         </div>
-        <div className={styles.hint}>{t(COPY.superposicion.hint)}</div>
       </div>
+
+      {/* Outside .text on purpose: in there it inherited the difference
+          blend and landed on the magenta circle, where it was unreadable.
+          Down here it sits on clean black. */}
+      <div className={styles.hint}>{t(COPY.superposicion.hint)}</div>
     </section>
   );
 }

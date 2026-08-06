@@ -78,9 +78,6 @@ export function Preloader() {
     <div ref={rootRef} className={styles.root} aria-hidden="true">
       <div className={styles.stage}>
         <div ref={logoRef} className={styles.logo}>
-          {/* Focus ring: contracts onto the aperture while it spins. */}
-          <span className={styles.ring} />
-
           {/* The wordmark, minus the C, in two groups so they resolve from
               opposite sides. Both are the same PNG under a mask. */}
           <span className={`${styles.part} ${styles.left}`} />

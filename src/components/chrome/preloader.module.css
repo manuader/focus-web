@@ -75,22 +75,6 @@
   background: url('/assets/focus-logo-light.png') no-repeat center / contain;
 }
 
-/* ---- Focus ring ----
-   Contracts onto the aperture as it settles, then goes. The brand's
-   densidad motif doing the work of a spinner. */
-.ring {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 58%;
-  aspect-ratio: 1;
-  margin: -29% 0 0 -29%;
-  border: 1px solid var(--focus-green);
-  border-radius: 50%;
-  animation: preRing 1.5s cubic-bezier(0.16, 1, 0.3, 1) 0.06s both;
-  will-change: transform, opacity;
-}
-
 /* ============================================================
    Keyframes
    ============================================================ */
@@ -100,24 +84,6 @@
   }
   to {
     transform: rotate(0deg) scale(1);
-  }
-}
-
-@keyframes preRing {
-  0% {
-    transform: scale(3.4);
-    opacity: 0;
-  }
-  22% {
-    opacity: 0.55;
-  }
-  70% {
-    transform: scale(1.1);
-    opacity: 0.4;
-  }
-  100% {
-    transform: scale(0.94);
-    opacity: 0;
   }
 }
 

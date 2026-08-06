@@ -13,17 +13,23 @@
   justify-content: space-between;
   align-items: flex-end;
 }
-.brand img {
-  width: 132px;
+/* 159px, not the 132px the flat PNG used. The animated crop carries margin
+   around the mark: the wordmark at rest spans 70.8% of the frame, so 159px
+   renders it at the same 112.6px the old logo did, and the lockup below is
+   unchanged. object-fit guards the no-WebP fallback, whose aspect differs. */
+.brandMark {
   display: block;
-  height: auto;
+  width: 159px;
+  height: 49px;
+  object-fit: contain;
+  object-position: center;
 }
 /* Tracked out so "creatives" spans the wordmark above it, and centred
    under it. The left indent cancels the trailing letter-space, which
    would otherwise push the line optically to the right. */
 .brandSub {
   display: block;
-  width: 132px;
+  width: 159px;
   margin-top: 9px;
   padding-left: 0.5em;
   font-size: 11px;

@@ -1,6 +1,5 @@
 'use client';
 
-import Image from 'next/image';
 import { useTranslate } from '@/hooks/useTranslate';
 import { NAV_LINKS, CONTACT, COPY } from '@/lib/content';
 import styles from './footer.module.css';
@@ -11,10 +10,29 @@ export function Footer() {
   return (
     <footer className={styles.footer}>
       <div className={styles.top}>
-        {/* Wordmark lockup: the image carries "FOCUS", the line under it
-            completes the name. */}
+        {/* Wordmark lockup: the mark carries "FOCUS", the line under it
+            completes the name.
+
+            Plain <picture> rather than next/image: the optimiser re-encodes,
+            and an animated WebP does not survive that. The first source wins,
+            so anyone asking for less motion gets the still logo instead of a
+            loop that never stops. */}
         <div className={styles.brand}>
-          <Image src="/assets/focus-logo-light.png" alt="FOCUS creatives" width={457} height={160} />
+          <picture>
+            <source
+              media="(prefers-reduced-motion: reduce)"
+              srcSet="/assets/focus-logo-still.webp"
+              type="image/webp"
+            />
+            <source srcSet="/assets/focus-logo-anim.webp" type="image/webp" />
+            <img
+              className={styles.brandMark}
+              src="/assets/focus-logo-light.png"
+              alt="FOCUS creatives"
+              width={280}
+              height={86}
+            />
+          </picture>
           <span className={styles.brandSub} aria-hidden="true">
             {COPY.footer.brandSub}
           </span>

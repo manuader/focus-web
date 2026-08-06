@@ -40,7 +40,9 @@ export function Preloader() {
     // the animation actually plays in costs nothing.
     const prev = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
-    window.scrollTo(0, 0);
+    // `instant` matters: html carries scroll-behavior: smooth, so a plain
+    // scrollTo would animate the page down behind the overlay.
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
 
     const root = rootRef.current;
     const logo = logoRef.current;

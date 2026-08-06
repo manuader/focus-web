@@ -116,6 +116,25 @@ export const viewport: Viewport = {
   viewportFit: 'cover',
 };
 
+/**
+ * Every load starts on the hero.
+ *
+ * Runs while the HTML is still parsing, which is the only moment early
+ * enough to matter: browsers restore the previous scroll position on reload,
+ * and they jump to `#hash` anchors as soon as the target element parses.
+ * Turning restoration off and dropping the hash before either can happen
+ * beats both without a visible jump. React would hydrate far too late.
+ *
+ * The opening sequence assumes it is playing over the top of the page, so
+ * landing mid-document would leave the logo flying to a header above a
+ * section nobody chose.
+ */
+const START_AT_TOP = `try{
+if('scrollRestoration' in history){history.scrollRestoration='manual'}
+if(location.hash){history.replaceState(null,'',location.pathname+location.search)}
+addEventListener('load',function(){scrollTo({top:0,left:0,behavior:'instant'})})
+}catch(e){}`;
+
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
@@ -125,6 +144,8 @@ export default function RootLayout({
       className={`${rotis.variable} ${archivo.variable} ${sourceSerif.variable}`}
     >
       <body>
+        <script dangerouslySetInnerHTML={{ __html: START_AT_TOP }} />
+
         {/* Server-rendered, so crawlers and generative engines get the graph
             without executing anything. */}
         <script

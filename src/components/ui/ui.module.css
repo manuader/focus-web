@@ -38,6 +38,32 @@
   animation: focBlink 2.4s ease-in-out infinite;
 }
 
+/* ---- Column head ----
+   Shared by the two tracks in the contact section so both start on the
+   same hairline with the same serif-italic legend. Defined once here
+   rather than twice across the two modules, which would drift. */
+.trackHead {
+  border-top: 1px solid rgba(246, 246, 244, 0.16);
+  padding-top: 36px;
+}
+.trackLegend {
+  margin: 0 0 30px;
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 400;
+  font-size: clamp(19px, 1.9vw, 26px);
+  line-height: 1.3;
+  color: var(--focus-gray-300);
+}
+@media (max-width: 640px) {
+  .trackHead {
+    padding-top: 30px;
+  }
+  .trackLegend {
+    margin-bottom: 24px;
+  }
+}
+
 /* ---- Marquee ----
    Two identical groups + a -50% translate = a seamless loop. */
 .marqueeViewport {

@@ -38,8 +38,8 @@ export function ContactForm() {
   };
 
   return (
-    <form className={styles.form} onSubmit={onSubmit}>
-      <h3 className={styles.legend}>{t(f.legend)}</h3>
+    <form className={`${styles.form} ${ui.trackHead}`} onSubmit={onSubmit}>
+      <h3 className={ui.trackLegend}>{t(f.legend)}</h3>
 
       <div className={styles.row}>
         <div className={styles.field}>

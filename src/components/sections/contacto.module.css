@@ -4,7 +4,11 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding: 130px 40px;
+  /* The bottom padding is the watermark's band, reserved. The ghost is
+     26vw tall at line-height 0.8 and hangs 4vw below the edge, so it owns
+     roughly the last 21vw of the section; content stops above it instead
+     of being layered over it. */
+  padding: 130px 40px clamp(150px, 23vw, 330px);
   background: var(--focus-ink);
   overflow: hidden;
 }
@@ -79,28 +83,45 @@
   font-style: italic;
   color: var(--focus-gray-300);
 }
+.cols {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 52px;
+  margin-top: 60px;
+}
+/* Side by side only once the narrow column can still hold the email button
+   without squeezing it; below that they stack. */
+@media (min-width: 1040px) {
+  .cols {
+    grid-template-columns: minmax(300px, 0.85fr) minmax(0, 1.15fr);
+    gap: 72px;
+    align-items: start;
+  }
+}
 .actions {
   display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 20px;
-  margin-top: 64px;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 14px;
 }
-/* Button metrics live here rather than inline so the mobile query can reach
-   them: the WhatsApp label is long and needs to shrink under 700px. */
-.btnMail {
-  padding: 22px 38px;
-  font-size: 12px;
-}
+/* Full-bleed within their column: two stacked bars read as deliberate, and
+   the long address can never overflow a narrow track. */
+.btnMail,
 .btnWa {
-  padding: 22px 34px;
+  justify-content: space-between;
+  padding: 22px 30px;
   font-size: 12px;
+  overflow-wrap: anywhere;
 }
 
 @media (max-width: 700px) {
-  .contacto { padding: 104px var(--edge); }
+  .contacto { padding: 104px var(--edge) clamp(120px, 26vw, 200px); }
   .eyebrow { margin-bottom: 22px; }
-  .actions { margin-top: 44px; gap: 14px; }
-  .btnMail { padding: 20px 26px; font-size: 11px; }
-  .btnWa { padding: 20px 22px; font-size: 11px; }
+  .cols { margin-top: 44px; gap: 40px; }
+  .btnMail,
+  .btnWa {
+    padding: 19px 20px;
+    font-size: 11px;
+    letter-spacing: 0.14em;
+  }
 }

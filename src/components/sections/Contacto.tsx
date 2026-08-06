@@ -51,28 +51,38 @@ export function Contacto() {
           </h2>
         </Reveal>
 
-        <div className={styles.actions}>
-          <MagneticLink
-            href={`mailto:${CONTACT.email}`}
-            className={`${ui.btn} ${ui.btnSolid} ${styles.btnMail}`}
-          >
-            {CONTACT.email}
-            <span className={ui.btnLine} style={{ width: 30 }} />
-          </MagneticLink>
+        {/* Two tracks: the direct ways to reach the studio on the left, the
+            form on the right. Side by side they fill the width that the form
+            alone left empty, and the block stays short enough to clear the
+            FOCUS watermark at the foot of the section. */}
+        <div className={styles.cols}>
+          <div className={ui.trackHead}>
+            <h3 className={ui.trackLegend}>{t(COPY.contacto.directo)}</h3>
+            <div className={styles.actions}>
+              <MagneticLink
+                href={`mailto:${CONTACT.email}`}
+                className={`${ui.btn} ${ui.btnSolid} ${styles.btnMail}`}
+              >
+                {CONTACT.email}
+                <span className={ui.btnLine} style={{ width: 30 }} />
+              </MagneticLink>
 
-          <MagneticLink
-            href={CONTACT.whatsappHref}
-            target="_blank"
-            rel="noopener noreferrer"
-            accent="var(--focus-magenta)"
-            className={`${ui.btn} ${ui.btnGhost} ${styles.btnWa}`}
-            aria-label={`WhatsApp ${CONTACT.whatsapp}`}
-          >
-            WhatsApp
-          </MagneticLink>
+              <MagneticLink
+                href={CONTACT.whatsappHref}
+                target="_blank"
+                rel="noopener noreferrer"
+                accent="var(--focus-magenta)"
+                className={`${ui.btn} ${ui.btnGhost} ${styles.btnWa}`}
+                aria-label={`WhatsApp ${CONTACT.whatsapp}`}
+              >
+                WhatsApp
+                <span className={ui.btnLine} style={{ width: 30 }} />
+              </MagneticLink>
+            </div>
+          </div>
+
+          <ContactForm />
         </div>
-
-        <ContactForm />
       </div>
     </section>
   );

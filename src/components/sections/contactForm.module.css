@@ -1,43 +1,13 @@
 /* Enquiry form. Square corners, hairline rules and a single accent on
    focus: the brand is a print system, so no rounded fields or shadows. */
+/* No scrim here any more. The form used to be layered over the section's
+   FOCUS watermark and needed a wash to stay readable; the section now
+   reserves the watermark its own band at the foot, so the fields sit on
+   clean ink and the hairlines can do the work on their own. The hairline
+   and the legend come from ui.trackHead / ui.trackLegend, shared with the
+   direct-contact column beside it. */
 .form {
   position: relative;
-  /* Own stacking context, so the scrim below can sit at z-index -1 without
-     slipping behind the section's giant FOCUS watermark. */
-  isolation: isolate;
-  margin-top: 56px;
-  max-width: 660px;
-  border-top: 1px solid rgba(246, 246, 244, 0.16);
-  padding-top: 40px;
-}
-/* The watermark runs straight through this area and shreds the hairline
-   fields, so the form sits on its own tonal wash. No border, no corners:
-   just enough separation to read as an input surface. */
-.form::before {
-  content: '';
-  position: absolute;
-  inset: 0 -32px -32px;
-  /* Fades out on the bottom and right edges so it reads as a tonal wash
-     rather than a card: the brand has no card pattern. */
-  background: linear-gradient(
-    180deg,
-    rgba(10, 10, 11, 0.5),
-    rgba(10, 10, 11, 0.88) 45%,
-    rgba(10, 10, 11, 0.88) 86%,
-    rgba(10, 10, 11, 0) 100%
-  );
-  -webkit-mask-image: linear-gradient(90deg, #000 74%, transparent 100%);
-  mask-image: linear-gradient(90deg, #000 74%, transparent 100%);
-  z-index: -1;
-}
-.legend {
-  margin: 0 0 30px;
-  font-family: var(--font-display);
-  font-style: italic;
-  font-weight: 400;
-  font-size: clamp(19px, 1.9vw, 26px);
-  line-height: 1.3;
-  color: var(--focus-gray-300);
 }
 .row {
   display: grid;
@@ -120,10 +90,6 @@
 }
 
 @media (max-width: 640px) {
-  .form {
-    margin-top: 44px;
-    padding-top: 32px;
-  }
   .row {
     grid-template-columns: 1fr;
     gap: 0;

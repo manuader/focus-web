@@ -376,6 +376,7 @@ export const COPY = {
     eyebrow: { es: 'Trabajemos juntos', en: "Let's work together" },
     title1: { es: 'Enfoquemos', en: "Let's focus" },
     title2: { es: 'lo que ya es tuyo', en: 'what is already yours' },
+    directo: { es: 'Escribinos directo', en: 'Write to us directly' },
     form: {
       legend: { es: 'Contanos tu proyecto', en: 'Tell us about your project' },
       nombre: { es: 'Nombre', en: 'Name' },

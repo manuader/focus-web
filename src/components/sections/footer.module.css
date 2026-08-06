@@ -18,17 +18,18 @@
   display: block;
   height: auto;
 }
-/* Tracked out so "creatives" spans the wordmark above it. The negative
-   right margin cancels the trailing letter-space, which would otherwise
-   push the line wider than the logo. */
+/* Tracked out so "creatives" spans the wordmark above it, and centred
+   under it. The left indent cancels the trailing letter-space, which
+   would otherwise push the line optically to the right. */
 .brandSub {
   display: block;
   width: 132px;
   margin-top: 9px;
-  margin-right: -0.5em;
+  padding-left: 0.5em;
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.5em;
+  text-align: center;
   text-transform: uppercase;
   color: var(--focus-gray-500);
 }

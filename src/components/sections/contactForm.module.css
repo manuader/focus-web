@@ -1,0 +1,139 @@
+/* Enquiry form. Square corners, hairline rules and a single accent on
+   focus: the brand is a print system, so no rounded fields or shadows. */
+.form {
+  position: relative;
+  /* Own stacking context, so the scrim below can sit at z-index -1 without
+     slipping behind the section's giant FOCUS watermark. */
+  isolation: isolate;
+  margin-top: 56px;
+  max-width: 660px;
+  border-top: 1px solid rgba(246, 246, 244, 0.16);
+  padding-top: 40px;
+}
+/* The watermark runs straight through this area and shreds the hairline
+   fields, so the form sits on its own tonal wash. No border, no corners:
+   just enough separation to read as an input surface. */
+.form::before {
+  content: '';
+  position: absolute;
+  inset: 0 -32px -32px;
+  /* Fades out on the bottom and right edges so it reads as a tonal wash
+     rather than a card: the brand has no card pattern. */
+  background: linear-gradient(
+    180deg,
+    rgba(10, 10, 11, 0.5),
+    rgba(10, 10, 11, 0.88) 45%,
+    rgba(10, 10, 11, 0.88) 86%,
+    rgba(10, 10, 11, 0) 100%
+  );
+  -webkit-mask-image: linear-gradient(90deg, #000 74%, transparent 100%);
+  mask-image: linear-gradient(90deg, #000 74%, transparent 100%);
+  z-index: -1;
+}
+.legend {
+  margin: 0 0 30px;
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 400;
+  font-size: clamp(19px, 1.9vw, 26px);
+  line-height: 1.3;
+  color: var(--focus-gray-300);
+}
+.row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 26px;
+}
+.field {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 26px;
+  min-width: 0;
+}
+.label {
+  margin-bottom: 10px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--focus-gray-500);
+}
+.input {
+  width: 100%;
+  padding: 14px 0;
+  background: none;
+  border: none;
+  border-bottom: 1px solid rgba(246, 246, 244, 0.28);
+  border-radius: 0;
+  color: var(--focus-paper);
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 300;
+  line-height: 1.5;
+  transition: border-color 0.3s;
+  /* iOS zooms the page on focus for anything under 16px. */
+  -webkit-appearance: none;
+  appearance: none;
+}
+.input::placeholder {
+  color: var(--focus-gray-700);
+}
+.input:focus {
+  outline: none;
+  border-bottom-color: var(--focus-green);
+}
+/* Only scold once the field has actually been filled in wrong. */
+.input:not(:placeholder-shown):invalid {
+  border-bottom-color: var(--focus-magenta);
+}
+.textarea {
+  resize: vertical;
+  min-height: 108px;
+}
+.foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 18px 24px;
+  margin-top: 12px;
+}
+.submit {
+  padding: 20px 34px;
+  font-size: 12px;
+  border: none;
+}
+.nota,
+.ok {
+  margin: 0;
+  max-width: 300px;
+  font-size: 12px;
+  font-weight: 300;
+  line-height: 1.5;
+  color: var(--focus-gray-500);
+}
+.ok {
+  color: var(--focus-gray-300);
+}
+.okMail {
+  color: var(--focus-green);
+  overflow-wrap: anywhere;
+}
+
+@media (max-width: 640px) {
+  .form {
+    margin-top: 44px;
+    padding-top: 32px;
+  }
+  .row {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+  /* 16px keeps iOS Safari from zooming the viewport on focus. */
+  .input {
+    font-size: 16px;
+  }
+  .nota,
+  .ok {
+    max-width: none;
+  }
+}

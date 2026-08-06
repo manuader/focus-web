@@ -8,6 +8,7 @@ import { useReducedMotion } from '@/hooks/useMediaQuery';
 import { useChromaticFlicker } from '@/hooks/useChromaticFlicker';
 import { Reveal } from '@/components/ui/Reveal';
 import { MagneticLink } from '@/components/ui/MagneticLink';
+import { ContactForm } from './ContactForm';
 import { COPY, CONTACT } from '@/lib/content';
 import styles from './contacto.module.css';
 import ui from '@/components/ui/ui.module.css';
@@ -70,6 +71,8 @@ export function Contacto() {
             WhatsApp
           </MagneticLink>
         </div>
+
+        <ContactForm />
       </div>
     </section>
   );

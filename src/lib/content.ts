@@ -365,6 +365,29 @@ export const COPY = {
     eyebrow: { es: 'Trabajemos juntos', en: "Let's work together" },
     title1: { es: 'Enfoquemos', en: "Let's focus" },
     title2: { es: 'lo que ya es tuyo', en: 'what is already yours' },
+    form: {
+      legend: { es: 'Contanos tu proyecto', en: 'Tell us about your project' },
+      nombre: { es: 'Nombre', en: 'Name' },
+      nombrePh: { es: 'Cómo te llamás', en: 'Your name' },
+      email: { es: 'Email', en: 'Email' },
+      emailPh: { es: 'tu@email.com', en: 'you@email.com' },
+      mensaje: { es: 'Qué estás buscando', en: 'What you are looking for' },
+      mensajePh: {
+        es: 'Contanos en qué está tu marca hoy y a dónde querés llevarla.',
+        en: 'Tell us where your brand is today and where you want to take it.',
+      },
+      enviar: { es: 'Enviar', en: 'Send' },
+      /** The form hands off to the visitor's mail client, so say so. */
+      nota: {
+        es: 'Se abre tu cliente de correo con el mensaje ya escrito.',
+        en: 'Your mail client opens with the message already written.',
+      },
+      ok: {
+        es: 'Listo. Si no se abrió tu correo, escribinos directo a',
+        en: 'Done. If your mail client did not open, write to us directly at',
+      },
+      asunto: { es: 'Nuevo proyecto', en: 'New project' },
+    },
   },
   footer: {
     nav: { es: 'Navegación', en: 'Navigation' },

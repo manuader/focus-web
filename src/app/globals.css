@@ -72,6 +72,12 @@
 html {
   scroll-behavior: smooth;
   background: var(--focus-ink);
+  /* Reserve the scrollbar's gutter permanently. Locking body scroll (the
+     opening sequence, the mobile menu) otherwise removes the scrollbar, which
+     widens the viewport and shifts every centred and right-anchored element
+     sideways, then shifts them back on release. On platforms with overlay
+     scrollbars this changes nothing. */
+  scrollbar-gutter: stable;
 }
 
 body {

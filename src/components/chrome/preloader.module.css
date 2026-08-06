@@ -1,0 +1,179 @@
+/* ============================================================
+   Opening sequence
+   Geometry is measured from the logo PNG (457x160): the aperture
+   "C" occupies x 193..265, y 35..124. Boxes below carry 2px of
+   padding so antialiased edges are never clipped.
+     C window   left 191/457  top 33/160  w 76/457  h 93/160
+     mask split 193/457 = 42.23%   265/457 = 57.99%
+   ============================================================ */
+
+.root {
+  position: fixed;
+  inset: 0;
+  z-index: 500; /* over the nav (300) and the grain stack (398-402) */
+  background: var(--focus-ink);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: preOut 0.42s ease 2.98s forwards;
+}
+
+.stage {
+  position: relative;
+  width: min(46vw, 420px);
+}
+
+.logo {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 457 / 160;
+  transform-origin: 0 0;
+  animation: preFly 0.86s cubic-bezier(0.7, 0, 0.2, 1) 2.34s both;
+}
+
+/* ---- The wordmark without its C ---- */
+.part {
+  position: absolute;
+  inset: 0;
+  background: url('/assets/focus-logo-light.png') no-repeat center / contain;
+  will-change: opacity, filter, transform;
+}
+/* Everything left of the C. */
+.left {
+  -webkit-mask-image: linear-gradient(90deg, #000 42.23%, transparent 42.23%);
+  mask-image: linear-gradient(90deg, #000 42.23%, transparent 42.23%);
+  animation: preLeft 0.95s cubic-bezier(0.16, 1, 0.3, 1) 1.16s both;
+}
+/* Everything right of it. */
+.right {
+  -webkit-mask-image: linear-gradient(90deg, transparent 57.99%, #000 57.99%);
+  mask-image: linear-gradient(90deg, transparent 57.99%, #000 57.99%);
+  animation: preRight 0.95s cubic-bezier(0.16, 1, 0.3, 1) 1.29s both;
+}
+
+/* ---- The aperture C ----
+   A window the size of the glyph with the full PNG pushed inside it, so the
+   mark on screen is the supplied artwork rather than a redrawing. Rotating
+   the window turns glyph and frame together, so nothing clips. */
+.cBox {
+  position: absolute;
+  left: 41.79%;
+  top: 20.63%;
+  width: 16.63%;
+  height: 58.13%;
+  overflow: hidden;
+  transform-origin: 50% 50%;
+  animation: preSpin 1.35s cubic-bezier(0.16, 1, 0.3, 1) 0.12s both;
+  will-change: transform;
+}
+.cInk {
+  position: absolute;
+  left: -251.32%;
+  top: -35.48%;
+  width: 601.32%;
+  height: 172.04%;
+  background: url('/assets/focus-logo-light.png') no-repeat center / contain;
+}
+
+/* ---- Focus ring ----
+   Contracts onto the aperture as it settles, then goes. The brand's
+   densidad motif doing the work of a spinner. */
+.ring {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 58%;
+  aspect-ratio: 1;
+  margin: -29% 0 0 -29%;
+  border: 1px solid var(--focus-green);
+  border-radius: 50%;
+  animation: preRing 1.5s cubic-bezier(0.16, 1, 0.3, 1) 0.06s both;
+  will-change: transform, opacity;
+}
+
+/* ============================================================
+   Keyframes
+   ============================================================ */
+@keyframes preSpin {
+  from {
+    transform: rotate(-900deg) scale(2.6);
+  }
+  to {
+    transform: rotate(0deg) scale(1);
+  }
+}
+
+@keyframes preRing {
+  0% {
+    transform: scale(3.4);
+    opacity: 0;
+  }
+  22% {
+    opacity: 0.55;
+  }
+  70% {
+    transform: scale(1.1);
+    opacity: 0.4;
+  }
+  100% {
+    transform: scale(0.94);
+    opacity: 0;
+  }
+}
+
+/* The letters resolve out of blur, converging on the C: the brand's own
+   idea of a thing coming into focus rather than a generic fade. */
+@keyframes preLeft {
+  from {
+    opacity: 0;
+    filter: blur(16px);
+    transform: translateX(-22px);
+  }
+  to {
+    opacity: 1;
+    filter: blur(0);
+    transform: translateX(0);
+  }
+}
+@keyframes preRight {
+  from {
+    opacity: 0;
+    filter: blur(16px);
+    transform: translateX(22px);
+  }
+  to {
+    opacity: 1;
+    filter: blur(0);
+    transform: translateX(0);
+  }
+}
+
+/* --fly-* are measured against the real header logo at runtime. The
+   fallbacks are the identity transform on purpose: if that measurement never
+   happens, because JS failed or hydration landed late, the logo fades out
+   where it stands rather than flying confidently to the wrong place. */
+@keyframes preFly {
+  from {
+    transform: translate(0, 0) scale(1);
+  }
+  to {
+    transform: translate(var(--fly-x, 0px), var(--fly-y, 0px))
+      scale(var(--fly-s, 1));
+  }
+}
+
+@keyframes preOut {
+  to {
+    opacity: 0;
+    pointer-events: none;
+    visibility: hidden;
+  }
+}
+
+/* Never make someone sit through this. CSS handles it so there is no flash
+   between the server-rendered overlay and the client deciding to drop it. */
+@media (prefers-reduced-motion: reduce) {
+  .root {
+    display: none;
+  }
+}

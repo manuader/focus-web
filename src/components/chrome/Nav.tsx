@@ -63,7 +63,9 @@ export function Nav() {
     <>
       <nav className={`${styles.nav} ${solid || open ? styles.navSolid : ''}`}>
         <a href="#top" className={styles.brand} aria-label="FOCUS, inicio" onClick={() => setOpen(false)}>
+          {/* data-nav-logo is where the opening sequence flies the logo to. */}
           <Image
+            data-nav-logo=""
             src="/assets/focus-logo-light.png"
             alt="FOCUS"
             width={457}

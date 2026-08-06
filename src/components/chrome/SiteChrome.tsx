@@ -3,6 +3,7 @@ import { GrainOverlay } from './GrainOverlay';
 import { ScrollProgressBar } from './ScrollProgressBar';
 import { CursorRing } from './CursorRing';
 import { Nav } from './Nav';
+import { Preloader } from './Preloader';
 import styles from './chrome.module.css';
 
 /**
@@ -23,6 +24,9 @@ export function SiteChrome({ children }: { children: ReactNode }) {
       <div style={{ position: 'relative', background: 'var(--focus-ink)' }}>
         {children}
       </div>
+      {/* Last in the tree as well as highest in z-index, so nothing in the
+          grain stack can paint over the opening sequence. */}
+      <Preloader />
     </>
   );
 }

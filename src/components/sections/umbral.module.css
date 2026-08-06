@@ -51,6 +51,7 @@
   pointer-events: none;
 }
 .title {
+  margin: 0;
   font-family: var(--font-body);
   font-weight: 800;
   font-size: clamp(38px, 6.4vw, 120px);

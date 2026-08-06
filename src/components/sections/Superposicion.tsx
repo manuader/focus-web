@@ -56,11 +56,11 @@ export function Superposicion() {
 
       <div className={styles.text}>
         <div className={styles.eyebrow}>{t(COPY.queEsFocus.eyebrow)}</div>
-        <div className={styles.title}>
+        <h2 className={styles.title}>
           {t(COPY.superposicion.title1)}
           <br />
           <span className={styles.titleAlt}>{t(COPY.superposicion.title2)}</span>
-        </div>
+        </h2>
       </div>
 
       {/* Outside .text on purpose: in there it inherited the difference

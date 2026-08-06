@@ -35,7 +35,7 @@ export function Servicios() {
           {SERVICES.map((s) => (
             <a key={s.n} href="#contacto" className={styles.row}>
               <span className={styles.rowNum}>{s.n}</span>
-              <span className={styles.rowTitle}>{t(s.title)}</span>
+              <h3 className={styles.rowTitle}>{t(s.title)}</h3>
               <span className={styles.rowDetail}>{t(s.detail)}</span>
             </a>
           ))}

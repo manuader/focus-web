@@ -30,7 +30,7 @@ export function Valores() {
               <span className={styles.dot} style={{ background: ACCENT_HEX[v.dotA] }} />
               <span className={styles.dot2} style={{ background: ACCENT_HEX[v.dotB] }} />
               <div className={styles.num}>{v.n}</div>
-              <div className={styles.name}>{v.name}</div>
+              <h3 className={styles.name}>{v.name}</h3>
               <p className={styles.desc}>{t(v.desc)}</p>
             </article>
           ))}

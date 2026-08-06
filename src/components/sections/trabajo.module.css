@@ -91,6 +91,7 @@
   margin-bottom: 12px;
 }
 .cardTitle {
+  margin: 0;
   font-size: clamp(20px, 2.1vw, 30px);
   font-weight: 800;
   letter-spacing: -0.025em;

@@ -80,11 +80,11 @@
   margin-bottom: 100px;
 }
 .name {
+  margin: 0 0 14px;
   position: relative;
   font-size: 32px;
   font-weight: 800;
   letter-spacing: -0.02em;
-  margin-bottom: 14px;
 }
 .desc {
   position: relative;

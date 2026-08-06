@@ -56,11 +56,11 @@ export function Umbral() {
         <div ref={edgesRef} className={styles.edges} aria-hidden="true" />
 
         <div ref={textRef} className={styles.text}>
-          <div className={styles.title}>
+          <h2 className={styles.title}>
             {t(COPY.umbral.line1)}
             <br />
             <span className={styles.titleAlt}>{t(COPY.umbral.line2)}</span>
-          </div>
+          </h2>
         </div>
 
         <div className={styles.hint}>{t(COPY.umbral.hint)}</div>

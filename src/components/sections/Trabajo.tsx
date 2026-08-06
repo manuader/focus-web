@@ -82,7 +82,7 @@ export function Trabajo() {
                 <div className={styles.cardCat} style={{ color: ACCENT_HEX[w.accent] }}>
                   {t(w.category)}
                 </div>
-                <div className={styles.cardTitle}>{w.title}</div>
+                <h3 className={styles.cardTitle}>{w.title}</h3>
                 <div className={styles.cardMeta}>
                   <p>{t(w.desc)}</p>
                 </div>

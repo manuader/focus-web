@@ -51,13 +51,13 @@ export function Manifiesto() {
           }
         >
           <div className={styles.label}>{t(COPY.nosotros.eyebrow)}</div>
-          <div className={styles.big}>
+          <h2 className={styles.big}>
             {t(COPY.nosotros.line1)}
             <br />
             {t(COPY.nosotros.pre)}
             <em className={styles.em}>{t(COPY.nosotros.em)}</em>
             {t(COPY.nosotros.post)}
-          </div>
+          </h2>
           <div className={styles.sub}>{t(COPY.nosotros.sub)}</div>
         </div>
 

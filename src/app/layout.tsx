@@ -6,6 +6,13 @@ import './globals.css';
 import { LanguageProvider } from '@/context/LanguageContext';
 import { PointerProvider } from '@/context/PointerContext';
 import { SiteChrome } from '@/components/chrome/SiteChrome';
+import {
+  buildJsonLd,
+  SITE_DESCRIPTION,
+  SITE_KEYWORDS,
+  SITE_NAME,
+  SITE_URL,
+} from '@/lib/seo';
 
 /**
  * Rotis Semi Sans — the real brand body face. The original site only ships
@@ -47,17 +54,54 @@ const sourceSerif = Source_Serif_4({
   fallback: ['Georgia', 'Times New Roman', 'serif'],
 });
 
+const TITLE = 'FOCUS creatives · Agencia de diseño y contenido en Buenos Aires';
+
 export const metadata: Metadata = {
-  title: 'FOCUS · El punto donde todo cambia',
-  description:
-    'FOCUS es una agencia de diseño integral y creación de contenido en Buenos Aires. No construimos marcas desde cero: revelamos el ángulo que ya estaba ahí y lo volvemos imposible de ignorar.',
-  metadataBase: new URL('https://focus.studio'),
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: TITLE,
+    template: '%s · FOCUS creatives',
+  },
+  description: SITE_DESCRIPTION,
+  keywords: SITE_KEYWORDS,
+  applicationName: SITE_NAME,
+  category: 'design',
+  alternates: {
+    canonical: '/',
+  },
   openGraph: {
-    title: 'FOCUS · El punto donde todo cambia',
-    description:
-      'Agencia de diseño integral y creación de contenido. Revelamos el ángulo que ya estaba ahí.',
-    locale: 'es_AR',
     type: 'website',
+    siteName: SITE_NAME,
+    title: TITLE,
+    description: SITE_DESCRIPTION,
+    url: SITE_URL,
+    locale: 'es_AR',
+    alternateLocale: ['en_US'],
+    images: [
+      {
+        url: '/og.png',
+        width: 1200,
+        height: 630,
+        alt: 'FOCUS creatives · El punto donde todo cambia',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: TITLE,
+    description: SITE_DESCRIPTION,
+    images: ['/og.png'],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+      'max-video-preview': -1,
+    },
   },
   icons: {
     icon: '/assets/focus-logo-light.png',
@@ -81,6 +125,12 @@ export default function RootLayout({
       className={`${rotis.variable} ${archivo.variable} ${sourceSerif.variable}`}
     >
       <body>
+        {/* Server-rendered, so crawlers and generative engines get the graph
+            without executing anything. */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: buildJsonLd() }}
+        />
         <LanguageProvider>
           <PointerProvider>
             <SiteChrome>{children}</SiteChrome>

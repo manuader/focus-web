@@ -413,7 +413,7 @@ export const COPY = {
 } as const;
 
 export const CONTACT = {
-  email: 'serenacapella@focus-creatives.com',
+  email: 'info@focus-creatives.com',
   whatsapp: '+54 9 11 5926 4267',
   whatsappHref: 'https://wa.me/5491159264267',
 } as const;

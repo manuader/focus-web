@@ -83,31 +83,20 @@
   font-style: italic;
   color: var(--focus-gray-300);
 }
-.cols {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: 52px;
+.cta {
   margin-top: 60px;
+  max-width: 940px;
 }
-/* Side by side only once the narrow column can still hold the email button
-   without squeezing it; below that they stack. */
-@media (min-width: 1040px) {
-  .cols {
-    grid-template-columns: minmax(300px, 0.85fr) minmax(0, 1.15fr);
-    gap: 72px;
-    align-items: start;
-  }
-}
+/* A row while they fit, stacked once they do not. The buttons size to their
+   own labels, so the row breaks where the content actually needs it rather
+   than at a width guessed in advance. */
 .actions {
   display: flex;
-  flex-direction: column;
+  flex-wrap: wrap;
   align-items: stretch;
   gap: 14px;
 }
-/* Full-bleed within their column: two stacked bars read as deliberate, and
-   the long address can never overflow a narrow track. */
-.btnMail,
-.btnWa {
+.btn {
   justify-content: space-between;
   padding: 22px 30px;
   font-size: 12px;
@@ -117,9 +106,12 @@
 @media (max-width: 700px) {
   .contacto { padding: 104px var(--edge) clamp(120px, 26vw, 200px); }
   .eyebrow { margin-bottom: 22px; }
-  .cols { margin-top: 44px; gap: 40px; }
-  .btnMail,
-  .btnWa {
+  .cta { margin-top: 44px; }
+  /* Full width and stacked: three side-by-side bars would each be too narrow
+     to read, and the address alone is wider than the gutter allows. */
+  .actions { gap: 12px; }
+  .btn {
+    width: 100%;
     padding: 19px 20px;
     font-size: 11px;
     letter-spacing: 0.14em;

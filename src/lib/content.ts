@@ -376,29 +376,12 @@ export const COPY = {
     eyebrow: { es: 'Trabajemos juntos', en: "Let's work together" },
     title1: { es: 'Enfoquemos', en: "Let's focus" },
     title2: { es: 'lo que ya es tuyo', en: 'what is already yours' },
-    directo: { es: 'Escribinos directo', en: 'Write to us directly' },
-    form: {
-      legend: { es: 'Contanos tu proyecto', en: 'Tell us about your project' },
-      nombre: { es: 'Nombre', en: 'Name' },
-      nombrePh: { es: 'Cómo te llamás', en: 'Your name' },
-      email: { es: 'Email', en: 'Email' },
-      emailPh: { es: 'tu@email.com', en: 'you@email.com' },
-      mensaje: { es: 'Qué estás buscando', en: 'What you are looking for' },
-      mensajePh: {
-        es: 'Contanos en qué está tu marca hoy y a dónde querés llevarla.',
-        en: 'Tell us where your brand is today and where you want to take it.',
-      },
-      enviar: { es: 'Enviar', en: 'Send' },
-      /** The form hands off to the visitor's mail client, so say so. */
-      nota: {
-        es: 'Se abre tu cliente de correo con el mensaje ya escrito.',
-        en: 'Your mail client opens with the message already written.',
-      },
-      ok: {
-        es: 'Listo. Si no se abrió tu correo, escribinos directo a',
-        en: 'Done. If your mail client did not open, write to us directly at',
-      },
-      asunto: { es: 'Nuevo proyecto', en: 'New project' },
+    cotiza: { es: 'Cotizá tu proyecto', en: 'Get a quote for your project' },
+    agendar: { es: 'Agendar reunión', en: 'Book a call' },
+    /** Rides along in the wa.me link, so the chat opens already written. */
+    waMensaje: {
+      es: 'Hola FOCUS, quiero cotizar un proyecto.',
+      en: 'Hi FOCUS, I would like a quote for a project.',
     },
   },
   footer: {
@@ -415,5 +398,13 @@ export const COPY = {
 export const CONTACT = {
   email: 'info@focus-creatives.com',
   whatsapp: '+54 9 11 5926 4267',
+  /** Base link. The Contacto section appends the prefilled `?text=`. */
   whatsappHref: 'https://wa.me/5491159264267',
+  /**
+   * PLACEHOLDER. No booking link was supplied, so this points at a Calendly
+   * handle that probably does not exist yet. Swap it for the real one, from
+   * Calendly, Cal.com or whatever the studio ends up using, and the button
+   * follows. Nothing else references it.
+   */
+  meetingHref: 'https://calendly.com/focus-creatives/30min',
 } as const;

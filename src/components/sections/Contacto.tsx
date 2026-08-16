@@ -8,7 +8,6 @@ import { useReducedMotion } from '@/hooks/useMediaQuery';
 import { useChromaticFlicker } from '@/hooks/useChromaticFlicker';
 import { Reveal } from '@/components/ui/Reveal';
 import { MagneticLink } from '@/components/ui/MagneticLink';
-import { ContactForm } from './ContactForm';
 import { COPY, CONTACT } from '@/lib/content';
 import styles from './contacto.module.css';
 import ui from '@/components/ui/ui.module.css';
@@ -29,6 +28,12 @@ export function Contacto() {
     const p = (r.top + r.height / 2 - window.innerHeight / 2) * 0.14;
     el.style.transform = `translate3d(0, ${(-p).toFixed(1)}px, 0)`;
   });
+
+  // The chat opens with the first line already typed, in whichever language
+  // the visitor is reading.
+  const waHref = `${CONTACT.whatsappHref}?text=${encodeURIComponent(
+    t(COPY.contacto.waMensaje),
+  )}`;
 
   return (
     <section className={styles.contacto} id="contacto" aria-label="Contacto">
@@ -51,37 +56,42 @@ export function Contacto() {
           </h2>
         </Reveal>
 
-        {/* Two tracks: the direct ways to reach the studio on the left, the
-            form on the right. Side by side they fill the width that the form
-            alone left empty, and the block stays short enough to clear the
-            FOCUS watermark at the foot of the section. */}
-        <div className={styles.cols}>
-          <div className={ui.trackHead}>
-            <h3 className={ui.trackLegend}>{t(COPY.contacto.directo)}</h3>
-            <div className={styles.actions}>
-              <MagneticLink
-                href={`mailto:${CONTACT.email}`}
-                className={`${ui.btn} ${ui.btnSolid} ${styles.btnMail}`}
-              >
-                {CONTACT.email}
-                <span className={ui.btnLine} style={{ width: 30 }} />
-              </MagneticLink>
+        {/* Three ways in, one row: write, message, or book time. */}
+        <div className={`${ui.trackHead} ${styles.cta}`}>
+          <h3 className={ui.trackLegend}>{t(COPY.contacto.cotiza)}</h3>
 
-              <MagneticLink
-                href={CONTACT.whatsappHref}
-                target="_blank"
-                rel="noopener noreferrer"
-                accent="var(--focus-magenta)"
-                className={`${ui.btn} ${ui.btnGhost} ${styles.btnWa}`}
-                aria-label={`WhatsApp ${CONTACT.whatsapp}`}
-              >
-                WhatsApp
-                <span className={ui.btnLine} style={{ width: 30 }} />
-              </MagneticLink>
-            </div>
+          <div className={styles.actions}>
+            <MagneticLink
+              href={`mailto:${CONTACT.email}`}
+              className={`${ui.btn} ${ui.btnSolid} ${styles.btn}`}
+            >
+              {CONTACT.email}
+              <span className={ui.btnLine} style={{ width: 30 }} />
+            </MagneticLink>
+
+            <MagneticLink
+              href={waHref}
+              target="_blank"
+              rel="noopener noreferrer"
+              accent="var(--focus-green)"
+              className={`${ui.btn} ${ui.btnGhost} ${styles.btn}`}
+              aria-label={`WhatsApp ${CONTACT.whatsapp}`}
+            >
+              WhatsApp
+              <span className={ui.btnLine} style={{ width: 30 }} />
+            </MagneticLink>
+
+            <MagneticLink
+              href={CONTACT.meetingHref}
+              target="_blank"
+              rel="noopener noreferrer"
+              accent="var(--focus-magenta)"
+              className={`${ui.btn} ${ui.btnGhost} ${styles.btn}`}
+            >
+              {t(COPY.contacto.agendar)}
+              <span className={ui.btnLine} style={{ width: 30 }} />
+            </MagneticLink>
           </div>
-
-          <ContactForm />
         </div>
       </div>
     </section>

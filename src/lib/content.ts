@@ -346,6 +346,18 @@ export const COPY = {
       es: 'Siete disciplinas, un solo criterio: que la pieza no se pueda confundir con la de nadie más.',
       en: "Seven disciplines, one criterion: the piece must be impossible to mistake for anyone else's.",
     },
+    /* El prisma invertido: cada servicio es una banda del espectro y todas
+       convergen en un solo haz blanco, que es la marca del cliente. */
+    beam: { es: 'TU MARCA', en: 'YOUR BRAND' },
+    beamCta: { es: 'Tu marca: hablemos', en: 'Your brand: let us talk' },
+    footIn: {
+      es: 'El espectro entra · un solo haz sale',
+      en: 'The spectrum enters · one beam exits',
+    },
+    footScroll: {
+      es: 'El scroll acerca la luz al prisma',
+      en: 'Scroll drives the light into the prism',
+    },
   },
   trabajo: {
     eyebrow: { es: 'Trabajo seleccionado', en: 'Selected work' },

@@ -204,6 +204,17 @@ section[id] {
     opacity: 0.15;
   }
 }
+/* El haz blanco del prisma, una vez que llegó del todo: una respiración
+   apenas perceptible para que la escena no quede muerta. */
+@keyframes focBeamBreath {
+  0%,
+  100% {
+    opacity: 0.72;
+  }
+  50% {
+    opacity: 1;
+  }
+}
 @keyframes focDrift {
   0%,
   100% {

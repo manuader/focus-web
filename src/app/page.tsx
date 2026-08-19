@@ -20,9 +20,9 @@ export default function Home() {
         <Manifiesto />
         <Valores />
         <Superposicion />
+        <Servicios />
         <Refraccion />
         <Umbral />
-        <Servicios />
         <Trabajo />
         <Foco />
         <Contacto />

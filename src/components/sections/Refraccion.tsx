@@ -3,6 +3,7 @@
 import { useEffect, useRef } from 'react';
 import { usePointer } from '@/context/PointerContext';
 import { useTranslate } from '@/hooks/useTranslate';
+import { Eyebrow } from '@/components/ui/Eyebrow';
 import { COPY } from '@/lib/content';
 import styles from './refraccion.module.css';
 
@@ -43,6 +44,12 @@ export function Refraccion() {
 
   return (
     <section ref={sectionRef} className={styles.refrac} aria-label="Refracción">
+      {/* El rótulo del bloque vive acá y no en Superposición: el prisma se
+          metió en el medio, así que el concepto se presenta de este lado. */}
+      <Eyebrow section line="var(--focus-blue)" color="var(--focus-gray-300)" className={styles.eyebrow}>
+        {t(COPY.queEsFocus.eyebrow)}
+      </Eyebrow>
+
       <div className={styles.center}>
         <div className={styles.stack} aria-label={WORD}>
           {LAYERS.map((layer, i) => (

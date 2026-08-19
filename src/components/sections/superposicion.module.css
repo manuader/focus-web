@@ -45,19 +45,6 @@
   padding: 0 40px;
   pointer-events: none;
 }
-/* Section label for the whole "Qué es FOCUS" block: serif italic, unnumbered,
-   kept in `difference` with the rest of .text so it inverts over the circles. */
-.eyebrow {
-  font-family: var(--font-display);
-  font-style: italic;
-  font-weight: 400;
-  font-size: clamp(19px, 1.9vw, 26px);
-  letter-spacing: 0;
-  text-transform: none;
-  line-height: 1.5;
-  color: var(--focus-paper);
-  margin-bottom: 26px;
-}
 .title {
   margin: 0;
   font-family: var(--font-body);

@@ -1,27 +1,51 @@
-.servicios {
+/* ============================================================
+   Servicios — el prisma invertido
+   El espectro entra, un solo haz blanco sale. Es la refracción
+   al revés, y se apoya justo antes de la sección Refracción
+   para que esa pantalla llegue ya legible.
+
+   Scroll-scrubbed: 260vh de recorrido, etapa sticky de 100vh.
+   Todo lo que anima por frame lo escribe el componente sobre
+   `style`; acá viven el layout y los estados de reposo.
+   ============================================================ */
+
+.prisma {
   position: relative;
-  padding: 150px 40px 130px;
-  background: var(--focus-paper);
-  color: var(--focus-ink);
+  height: 260vh;
+  background: var(--focus-ink);
+  color: var(--focus-paper);
 }
-.inner {
+.sticky {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  padding: 0 40px;
+}
+
+/* ---- Encabezado ---- */
+.header {
   max-width: 1320px;
   margin: 0 auto;
-}
-.header {
+  width: 100%;
+  flex: none;
+  padding-top: 88px;
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
   gap: 40px;
-  margin-bottom: 78px;
   flex-wrap: wrap;
 }
 .eyebrow {
-  margin-bottom: 26px;
+  margin-bottom: 16px;
 }
+/* Más chico que en el resto del sitio: acá el título comparte una
+   ventana de 100vh con el banco óptico completo. */
 .title {
   margin: 0;
-  font-size: clamp(38px, 5.4vw, 86px);
+  font-size: clamp(28px, 3.4vw, 54px);
   line-height: 0.95;
   font-weight: 800;
   letter-spacing: -0.035em;
@@ -29,70 +53,255 @@
 }
 .intro {
   margin: 0;
-  max-width: 360px;
-  font-size: 15px;
-  line-height: 1.65;
+  max-width: 340px;
+  font-size: 13.5px;
+  line-height: 1.6;
   font-weight: 300;
-  color: var(--focus-gray-700);
+  color: var(--focus-gray-300);
 }
-.list {
+
+/* ---- Banco óptico ---- */
+.stage {
+  position: relative;
+  max-width: 1320px;
+  margin: 0 auto;
+  width: 100%;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  align-items: stretch;
+  padding: 22px 0 14px;
+}
+.bands {
+  flex: 0 0 min(42%, 520px);
   display: flex;
   flex-direction: column;
-  border-top: 2px solid var(--focus-ink);
+  justify-content: center;
+  gap: 7px;
+  position: relative;
+  z-index: 2;
 }
-.row {
-  display: grid;
-  grid-template-columns: 110px 1fr auto;
-  align-items: center;
-  gap: 28px;
-  padding: 38px 8px;
-  border-bottom: 2px solid var(--focus-ink);
+
+/* ---- Las bandas ---- */
+.band {
+  position: relative;
+  display: block;
+  height: 54px;
+  color: var(--focus-paper);
+  /* Arranca fuera de cuadro: el scrub lo trae. */
+  opacity: 0;
+  transform: translateX(-44px);
+}
+/* Magenta, cian y verde son claros: ahí el texto va en tinta. */
+.bandInk {
   color: var(--focus-ink);
-  transition: padding 0.45s var(--ease-out-expo), color 0.35s;
 }
-.row:hover {
-  padding-left: 34px;
-  color: var(--focus-blue);
+.bandFill {
+  position: absolute;
+  inset: 0;
+  transition:
+    transform 0.35s var(--ease-out-expo),
+    filter 0.35s var(--ease-out-expo);
 }
-.rowNum {
-  font-size: clamp(28px, 3vw, 48px);
+.bandRow {
+  position: relative;
+  z-index: 1;
+  height: 100%;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 16px;
+  padding: 0 20px;
+}
+/* Contorneado, como el resto de los números del sitio. El relleno se vacía
+   con text-fill-color y no con `color`, porque el trazo es currentColor y
+   con `color: transparent` se volvía transparente él también. */
+.bandNum {
+  font-size: clamp(15px, 1.3vw, 21px);
   font-weight: 300;
-  letter-spacing: -0.02em;
-  color: transparent;
-  -webkit-text-stroke: 1.5px var(--focus-ink);
+  -webkit-text-fill-color: transparent;
+  -webkit-text-stroke: 1.1px currentColor;
 }
-.rowTitle {
+.bandTitle {
   margin: 0;
-  font-size: clamp(28px, 4vw, 60px);
+  font-size: clamp(13px, 1.35vw, 20px);
   font-weight: 800;
-  letter-spacing: -0.03em;
+  letter-spacing: 0.02em;
   text-transform: uppercase;
   line-height: 1;
 }
-.rowDetail {
-  font-size: 12px;
-  font-weight: 300;
-  color: var(--focus-gray-500);
-  max-width: 230px;
+.bandDetail {
+  font-size: 10.5px;
+  font-weight: 400;
+  line-height: 1.4;
+  max-width: 220px;
   text-align: right;
-  line-height: 1.5;
+  opacity: 0;
+  transform: translateX(10px);
+  transition: opacity 0.35s, transform 0.35s;
+}
+/* El teclado tiene que encender la banda igual que el mouse. */
+.band:focus-visible {
+  outline: 2px solid var(--focus-paper);
+  outline-offset: 3px;
 }
 
-@media (max-width: 640px) {
-  .row {
-    grid-template-columns: 64px 1fr;
-    gap: 16px;
-    padding: 26px 4px;
+/* ---- Prisma y haces ---- */
+.bench {
+  flex: 1 1 420px;
+  position: relative;
+  min-width: 320px;
+}
+.svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  overflow: visible;
+  pointer-events: none;
+}
+.ray {
+  mix-blend-mode: screen;
+  opacity: 0.92;
+  clip-path: inset(0 100% 0 0);
+  transition: opacity 0.3s, filter 0.3s;
+}
+.screen {
+  mix-blend-mode: screen;
+}
+/* El barrido lo escribe el scrub; acá solo el estado inicial. */
+.wipe {
+  clip-path: inset(0 100% 0 0);
+}
+.flash {
+  opacity: 0;
+  mix-blend-mode: screen;
+}
+.glass {
+  opacity: 0;
+}
+.outline {
+  stroke-dasharray: 100;
+  stroke-dashoffset: 100;
+}
+.beamLabel {
+  font: 800 19px var(--font-body);
+  letter-spacing: 0.32em;
+  fill: var(--focus-ink);
+}
+/* Zona sensible sobre el haz: enciende las siete bandas a la vez. */
+.beamHit {
+  position: absolute;
+  right: 0;
+  top: 36%;
+  width: 36%;
+  height: 22%;
+  display: block;
+}
+.beamHit:focus-visible {
+  outline: 2px solid var(--focus-paper);
+  outline-offset: 2px;
+}
+
+/* ---- Pie ---- */
+.foot {
+  max-width: 1320px;
+  margin: 0 auto;
+  width: 100%;
+  flex: none;
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 14px;
+  padding-bottom: 28px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--focus-gray-500);
+}
+
+/* ============================================================
+   Angosto: no hay lugar para el banco óptico, así que las bandas
+   quedan solas. Y sin animación que recorrer, la sección deja de
+   ser de 260vh: si no, serían dos pantallas y media de scroll
+   muerto frente a algo estático.
+   ============================================================ */
+@media (max-width: 760px) {
+  .prisma {
+    height: auto;
   }
-  .row:hover {
-    padding-left: 18px;
+  .sticky {
+    position: static;
+    height: auto;
+    padding: 96px var(--edge) 88px;
   }
-  .rowDetail {
+  .header {
+    padding-top: 0;
+    margin-bottom: 40px;
+  }
+  .stage {
+    padding: 0;
+    display: block;
+  }
+  .bands {
+    flex: none;
+    gap: 8px;
+  }
+  .bench {
+    display: none;
+  }
+  .band {
+    height: auto;
+    /* El scrub las deja visibles en angosto, pero si el JS nunca
+       corre tienen que estar igual. */
+    opacity: 1;
+    transform: none;
+  }
+  .bandRow {
+    grid-template-columns: auto 1fr;
+    grid-template-areas: 'num title' 'num detail';
+    row-gap: 4px;
+    padding: 14px 16px;
+  }
+  .bandNum {
+    grid-area: num;
+  }
+  .bandTitle {
+    grid-area: title;
+    font-size: 15px;
+  }
+  .bandDetail {
+    grid-area: detail;
+    text-align: left;
+    max-width: none;
+    opacity: 1;
+    transform: none;
+    font-size: 11px;
+  }
+  .foot {
+    padding: 32px 0 0;
+    font-size: 9px;
+    letter-spacing: 0.18em;
+  }
+  .footScroll {
     display: none;
   }
 }
 
-@media (max-width: 700px) {
-  .servicios { padding: 96px var(--edge) 88px; }
-  .header { margin-bottom: 48px; }
+/* ============================================================
+   Sin movimiento: nada de secuencia ni de respiración. El estado
+   final, quieto y completo. El componente ya salta el bucle del
+   haz; esto cubre el resto.
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  .band {
+    opacity: 1;
+    transform: none;
+  }
+  .bandDetail {
+    opacity: 1;
+    transform: none;
+  }
 }

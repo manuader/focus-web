@@ -55,7 +55,6 @@ export function Superposicion() {
       <div ref={followRef} className={styles.follow} aria-hidden="true" />
 
       <div className={styles.text}>
-        <div className={styles.eyebrow}>{t(COPY.queEsFocus.eyebrow)}</div>
         <h2 className={styles.title}>
           {t(COPY.superposicion.title1)}
           <br />

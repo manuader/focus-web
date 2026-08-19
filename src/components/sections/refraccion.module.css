@@ -8,6 +8,12 @@
   align-items: center;
   justify-content: center;
 }
+.eyebrow {
+  position: absolute;
+  left: 40px;
+  top: 96px;
+  z-index: 2;
+}
 .center {
   position: relative;
   text-align: center;
@@ -65,5 +71,6 @@
 
 @media (max-width: 700px) {
   .refrac { height: 80vh; min-height: 600px; }
+  .eyebrow { left: var(--edge); top: 88px; }
   .para { margin-top: 28px; padding: 0 var(--edge); }
 }

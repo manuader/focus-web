@@ -6,7 +6,7 @@ import { useTranslate } from '@/hooks/useTranslate';
 import { useWindowScroll } from '@/hooks/useWindowScroll';
 import { Eyebrow } from '@/components/ui/Eyebrow';
 import { MagneticLink } from '@/components/ui/MagneticLink';
-import { WORKS, ACCENT_HEX, COPY } from '@/lib/content';
+import { WORKS, ACCENT_TEXT, COPY } from '@/lib/content';
 import styles from './trabajo.module.css';
 import ui from '@/components/ui/ui.module.css';
 
@@ -79,7 +79,7 @@ export function Trabajo() {
                 {w.n}
               </div>
               <div className={styles.cardBody}>
-                <div className={styles.cardCat} style={{ color: ACCENT_HEX[w.accent] }}>
+                <div className={styles.cardCat} style={{ color: ACCENT_TEXT[w.accent] }}>
                   {t(w.category)}
                 </div>
                 <h3 className={styles.cardTitle}>{w.title}</h3>

@@ -19,11 +19,11 @@
   display: flex;
   justify-content: space-between;
   gap: 16px;
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.24em;
   text-transform: uppercase;
-  color: var(--focus-gray-500);
+  color: var(--focus-gray-400);
 }
 
 /* ---------- A · Umbral ---------- */
@@ -328,11 +328,11 @@
   color: var(--focus-gray-100);
 }
 .cLabel {
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.24em;
   text-transform: uppercase;
-  color: var(--focus-gray-500);
+  color: var(--focus-gray-400);
 }
 
 /* ---------- Responsive ---------- */
@@ -353,8 +353,8 @@
     left: var(--edge);
     right: var(--edge);
     bottom: calc(28px + env(safe-area-inset-bottom));
-    font-size: 9px;
-    letter-spacing: 0.16em;
+    font-size: 10.5px;
+    letter-spacing: 0.14em;
   }
   /* Heroes B/C drop their middle label on small screens. Hero A only has that
      one label left, so it must stay. */

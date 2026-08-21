@@ -26,9 +26,6 @@ const SPECTRUM = [
   '#00FF33',
 ] as const;
 
-/** Which bands are light enough to need ink text instead of paper. */
-const INK_TEXT = new Set([0, 5, 6]);
-
 /** Below this the optical bench has no room; the bands stand on their own. */
 const NARROW_AT = 760;
 
@@ -62,6 +59,10 @@ export function Servicios() {
   const fillRefs = useRef<Array<HTMLSpanElement | null>>([]);
   const detailRefs = useRef<Array<HTMLSpanElement | null>>([]);
   const rayRefs = useRef<Array<SVGPolygonElement | null>>([]);
+  const benchVRef = useRef<HTMLDivElement>(null);
+  const rayVRefs = useRef<Array<SVGPolygonElement | null>>([]);
+  const glassVRef = useRef<SVGGElement>(null);
+  const beamVRef = useRef<SVGGElement>(null);
   const outlineRef = useRef<SVGPathElement>(null);
   const glassRef = useRef<SVGGElement>(null);
   const fanRef = useRef<SVGGElement>(null);
@@ -87,11 +88,12 @@ export function Servicios() {
         outlineRef.current.style.strokeDashoffset = (100 * (1 - pd)).toFixed(2);
       }
       if (glassRef.current) glassRef.current.style.opacity = pd.toFixed(3);
+      if (glassVRef.current) glassVRef.current.style.opacity = pd.toFixed(3);
 
       SERVICES.forEach((_, i) => {
         const band = bandRefs.current[i];
         if (!band) return;
-        const bp = narrow ? 1 : clamp01((p - 0.03 - i * 0.028) / 0.09);
+        const bp = clamp01((p - 0.03 - i * 0.028) / 0.09);
         const lit = hover === i || hover === 99;
         const dim = hover !== -1 && !lit;
 
@@ -114,12 +116,22 @@ export function Servicios() {
           detail.style.transform = show ? 'none' : 'translateX(10px)';
         }
 
+        const rp = clamp01((p - 0.15 - i * 0.045) / 0.32);
+        const rayOpacity = hover === -1 ? '.92' : lit ? '1' : '.14';
+        const rayFilter = lit ? `drop-shadow(0 0 10px ${SPECTRUM[i]})` : 'none';
+
         const ray = rayRefs.current[i];
         if (ray) {
-          const rp = clamp01((p - 0.15 - i * 0.045) / 0.32);
           ray.style.clipPath = `inset(0 ${(100 * (1 - rp)).toFixed(2)}% 0 0)`;
-          ray.style.opacity = hover === -1 ? '.92' : lit ? '1' : '.14';
-          ray.style.filter = lit ? `drop-shadow(0 0 10px ${SPECTRUM[i]})` : 'none';
+          ray.style.opacity = rayOpacity;
+          ray.style.filter = rayFilter;
+        }
+        // El vertical barre de arriba hacia abajo, no de izquierda a derecha.
+        const rayV = rayVRefs.current[i];
+        if (rayV) {
+          rayV.style.clipPath = `inset(0 0 ${(100 * (1 - rp)).toFixed(2)}% 0)`;
+          rayV.style.opacity = rayOpacity;
+          rayV.style.filter = rayFilter;
         }
       });
 
@@ -140,6 +152,14 @@ export function Servicios() {
       }
 
       const wp = clamp01((p - 0.72) / 0.2);
+      if (beamVRef.current) {
+        beamVRef.current.style.clipPath = `inset(0 0 ${(100 * (1 - wp)).toFixed(2)}% 0)`;
+      }
+      if (benchVRef.current) {
+        // La etiqueta del haz llega con él.
+        benchVRef.current.style.setProperty('--beam-in', wp.toFixed(3));
+      }
+
       const beam = beamRef.current;
       if (beam) {
         beam.style.clipPath = `inset(0 ${(100 * (1 - wp)).toFixed(2)}% 0 0)`;
@@ -258,7 +278,7 @@ export function Servicios() {
                   bandRefs.current[i] = el;
                 }}
                 href="#contacto"
-                className={`${styles.band} ${INK_TEXT.has(i) ? styles.bandInk : ''}`}
+                className={styles.band}
                 onMouseEnter={() => setHover(i)}
                 onMouseLeave={() => setHover(-1)}
                 onFocus={() => setHover(i)}
@@ -270,7 +290,14 @@ export function Servicios() {
                   }}
                   className={styles.bandFill}
                   style={{
-                    background: `linear-gradient(90deg, ${SPECTRUM[i]}b8, ${SPECTRUM[i]} 26%)`,
+                    // Arranca mezclado con tinta y se abre al color pleno hacia
+                    // el prisma. El texto vive sobre ese extremo oscuro, así el
+                    // contraste no depende del tono: un color saturado de tono
+                    // medio no le da 4.5:1 ni al blanco ni al negro.
+                    background:
+                      `linear-gradient(90deg,` +
+                      ` color-mix(in srgb, ${SPECTRUM[i]} 38%, var(--focus-ink)) 0%,` +
+                      ` ${SPECTRUM[i]} 62%)`,
                   }}
                   aria-hidden="true"
                 />
@@ -290,6 +317,68 @@ export function Servicios() {
                 </span>
               </a>
             ))}
+          </div>
+
+          {/* Banco vertical, sólo en pantallas angostas. Mismo aparato girado
+              90 grados: las bandas entran desde arriba, convergen hacia abajo
+              y el haz sale hacia abajo, en el sentido del scroll. Es un SVG
+              aparte y no una rotación por CSS, porque el texto del haz tiene
+              que quedar horizontal y los rayos apuntan a bandas de ancho
+              completo, no de alto completo. */}
+          <div ref={benchVRef} className={styles.benchV} aria-hidden="true">
+            <svg viewBox="0 0 400 460" preserveAspectRatio="none" className={styles.svgV}>
+              <defs>
+                {SPECTRUM.map((c, i) => (
+                  <linearGradient key={c} id={`prVRay${i}`} x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0" stopColor={c} stopOpacity="1" />
+                    <stop offset="1" stopColor={c} stopOpacity=".62" />
+                  </linearGradient>
+                ))}
+                {/* No baja de .84: la etiqueta va en tinta sobre el extremo
+                    inferior, y con .55 ahí el contraste caía a 3.66:1. */}
+                <linearGradient id="prVBeam" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0" stopColor="#FFFFFF" stopOpacity=".97" />
+                  <stop offset="1" stopColor="#FFFFFF" stopOpacity=".84" />
+                </linearGradient>
+                <linearGradient id="prVGlass" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0" stopColor="#F6F6F4" stopOpacity=".16" />
+                  <stop offset="1" stopColor="#F6F6F4" stopOpacity=".03" />
+                </linearGradient>
+              </defs>
+
+              {SPECTRUM.map((c, i) => {
+                // Cada banda arranca en su franja de ancho completo y se
+                // cierra sobre la cara del prisma.
+                const x0 = 8 + i * 55.4;
+                const x1 = x0 + 55.4;
+                return (
+                  <polygon
+                    key={c}
+                    ref={(el) => {
+                      rayVRefs.current[i] = el;
+                    }}
+                    className={styles.ray}
+                    points={`${x0},0 ${x1},0 ${203 + i * 1.6},238 ${200 + i * 1.6},238`}
+                    fill={`url(#prVRay${i})`}
+                  />
+                );
+              })}
+
+              <g ref={glassVRef} className={styles.glass}>
+                <path
+                  d="M200,236 L292,392 L108,392 Z"
+                  fill="url(#prVGlass)"
+                  stroke="rgba(246,246,244,.55)"
+                  strokeWidth="1"
+                  vectorEffect="non-scaling-stroke"
+                />
+              </g>
+
+              <g ref={beamVRef} className={styles.wipeV}>
+                <polygon points="178,392 222,392 264,452 136,452" fill="url(#prVBeam)" />
+              </g>
+            </svg>
+            <span className={styles.beamLabelV}>{t(COPY.servicios.beam)}</span>
           </div>
 
           <div ref={rightRef} className={styles.bench}>

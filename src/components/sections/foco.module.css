@@ -24,8 +24,11 @@
   letter-spacing: -0.02em;
   text-wrap: pretty;
 }
+/* Apagado a propósito, pero legible: #33363b daba 1.63:1 y el párrafo
+   directamente no se veía hasta pasar el cursor. Esto da 3.1:1, que es
+   AA para texto grande y sigue leyéndose como fuera de foco. */
 .textDim {
-  color: #33363b;
+  color: #5b5f67;
 }
 .textBright {
   color: var(--focus-paper);
@@ -75,9 +78,9 @@
 }
 .hint {
   margin-top: 56px;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 700;
-  letter-spacing: 0.22em;
+  letter-spacing: 0.2em;
   text-transform: uppercase;
   color: var(--focus-gray-300);
 }

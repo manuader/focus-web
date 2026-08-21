@@ -54,7 +54,7 @@
 .intro {
   margin: 0;
   max-width: 340px;
-  font-size: 13.5px;
+  font-size: 15px;
   line-height: 1.6;
   font-weight: 300;
   color: var(--focus-gray-300);
@@ -86,15 +86,11 @@
 .band {
   position: relative;
   display: block;
-  height: 54px;
+  height: 60px;
   color: var(--focus-paper);
   /* Arranca fuera de cuadro: el scrub lo trae. */
   opacity: 0;
   transform: translateX(-44px);
-}
-/* Magenta, cian y verde son claros: ahí el texto va en tinta. */
-.bandInk {
-  color: var(--focus-ink);
 }
 .bandFill {
   position: absolute;
@@ -117,24 +113,24 @@
    con text-fill-color y no con `color`, porque el trazo es currentColor y
    con `color: transparent` se volvía transparente él también. */
 .bandNum {
-  font-size: clamp(15px, 1.3vw, 21px);
+  font-size: clamp(16px, 1.4vw, 23px);
   font-weight: 300;
   -webkit-text-fill-color: transparent;
   -webkit-text-stroke: 1.1px currentColor;
 }
 .bandTitle {
   margin: 0;
-  font-size: clamp(13px, 1.35vw, 20px);
+  font-size: clamp(15px, 1.55vw, 23px);
   font-weight: 800;
   letter-spacing: 0.02em;
   text-transform: uppercase;
   line-height: 1;
 }
 .bandDetail {
-  font-size: 10.5px;
+  font-size: clamp(11.5px, 1.05vw, 13px);
   font-weight: 400;
-  line-height: 1.4;
-  max-width: 220px;
+  line-height: 1.45;
+  max-width: 240px;
   text-align: right;
   opacity: 0;
   transform: translateX(10px);
@@ -204,6 +200,44 @@
   outline-offset: 2px;
 }
 
+/* ---- Banco vertical (sólo en angosto) ---- */
+.benchV {
+  display: none;
+  position: relative;
+  flex: 1;
+  min-height: 200px;
+  margin-top: 10px;
+}
+.svgV {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  overflow: visible;
+}
+.wipeV {
+  clip-path: inset(0 0 100% 0);
+}
+/* Llega con el haz: --beam-in lo escribe el scrub. */
+.beamLabelV {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 8px;
+  text-align: center;
+  font-size: 12px;
+  font-weight: 800;
+  /* Menos tracking que en desktop: tiene que entrar entera dentro del haz,
+     donde el fondo claro le da 6.4:1 en tinta. A caballo entre el haz y el
+     negro quedaba ilegible en el medio. */
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--focus-ink);
+  opacity: var(--beam-in, 0);
+  pointer-events: none;
+}
+
 /* ---- Pie ---- */
 .foot {
   max-width: 1320px;
@@ -215,75 +249,87 @@
   flex-wrap: wrap;
   gap: 14px;
   padding-bottom: 28px;
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.26em;
   text-transform: uppercase;
-  color: var(--focus-gray-500);
+  color: var(--focus-gray-400);
 }
 
 /* ============================================================
-   Angosto: no hay lugar para el banco óptico, así que las bandas
-   quedan solas. Y sin animación que recorrer, la sección deja de
-   ser de 260vh: si no, serían dos pantallas y media de scroll
-   muerto frente a algo estático.
+   Angosto: el banco horizontal no entra, así que el aparato gira
+   90 grados. Las bandas quedan de ancho completo arriba, los rayos
+   convergen hacia abajo sobre el prisma y el haz sale hacia abajo,
+   en el mismo sentido que el scroll. La sección sigue siendo de
+   260vh porque acá también hay una secuencia que recorrer.
    ============================================================ */
 @media (max-width: 760px) {
-  .prisma {
-    height: auto;
-  }
   .sticky {
-    position: static;
-    height: auto;
-    padding: 96px var(--edge) 88px;
+    padding: 0 var(--edge);
   }
   .header {
-    padding-top: 0;
-    margin-bottom: 40px;
+    padding-top: 76px;
+    display: block;
+  }
+  .title {
+    font-size: clamp(26px, 8vw, 40px);
+  }
+  /* La bajada se va: en 100vh el aparato necesita ese alto más que
+     una frase que ya dice el título. */
+  .intro {
+    display: none;
   }
   .stage {
-    padding: 0;
-    display: block;
+    display: flex;
+    flex-direction: column;
+    padding: 16px 0 6px;
   }
   .bands {
     flex: none;
-    gap: 8px;
+    gap: 5px;
+    justify-content: flex-start;
   }
   .bench {
     display: none;
   }
+  .benchV {
+    display: block;
+  }
   .band {
-    height: auto;
-    /* El scrub las deja visibles en angosto, pero si el JS nunca
-       corre tienen que estar igual. */
-    opacity: 1;
-    transform: none;
+    height: 46px;
   }
   .bandRow {
     grid-template-columns: auto 1fr;
     grid-template-areas: 'num title' 'num detail';
-    row-gap: 4px;
-    padding: 14px 16px;
+    row-gap: 1px;
+    align-content: center;
+    gap: 0 14px;
+    padding: 0 14px;
   }
   .bandNum {
     grid-area: num;
+    align-self: center;
+    font-size: 17px;
   }
   .bandTitle {
     grid-area: title;
-    font-size: 15px;
+    font-size: 14px;
+    align-self: end;
   }
   .bandDetail {
     grid-area: detail;
     text-align: left;
     max-width: none;
+    font-size: 11px;
+    align-self: start;
+    /* Sin hover en touch: el detalle está siempre. */
     opacity: 1;
     transform: none;
-    font-size: 11px;
   }
   .foot {
-    padding: 32px 0 0;
-    font-size: 9px;
-    letter-spacing: 0.18em;
+    padding-bottom: 20px;
+    font-size: 10.5px;
+    letter-spacing: 0.14em;
   }
   .footScroll {
     display: none;
@@ -296,12 +342,11 @@
    haz; esto cubre el resto.
    ============================================================ */
 @media (prefers-reduced-motion: reduce) {
-  .band {
-    opacity: 1;
-    transform: none;
-  }
+  .band,
   .bandDetail {
     opacity: 1;
     transform: none;
   }
+  /* El scrub sigue corriendo con el scroll, así que el aparato se arma
+     igual; lo que no hay es respiración del haz (la corta el componente). */
 }

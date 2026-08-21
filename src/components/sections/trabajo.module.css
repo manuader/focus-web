@@ -29,11 +29,11 @@
   text-transform: uppercase;
 }
 .hint {
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
-  letter-spacing: 0.22em;
+  letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: var(--focus-gray-500);
+  color: var(--focus-gray-400);
 }
 .track {
   display: flex;
@@ -83,7 +83,7 @@
   bottom: 26px;
 }
 .cardCat {
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.24em;
   text-transform: uppercase;
@@ -143,10 +143,10 @@
   background: linear-gradient(90deg, #ff00ff, #0033ff, #00ff33);
 }
 .count {
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.22em;
-  color: var(--focus-gray-500);
+  color: var(--focus-gray-400);
 }
 
 /* Touch has no hover: show the logos in full colour and their blurb outright,

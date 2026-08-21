@@ -132,7 +132,7 @@
   font: inherit;
   font-size: 11px;
   letter-spacing: 0.16em;
-  color: var(--focus-gray-500);
+  color: var(--focus-gray-400);
   cursor: pointer;
   transition: color 0.3s;
 }

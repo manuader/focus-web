@@ -21,6 +21,17 @@ export const ACCENT_HEX: Record<Accent, string> = {
   green: 'var(--focus-green)',
 };
 
+/**
+ * The same accents, but safe to set small text in on ink. Only blue differs:
+ * #0033FF against #0A0A0B is 2.47:1, well under AA, so text uses a lighter
+ * variant. Magenta and green already clear it on their own.
+ */
+export const ACCENT_TEXT: Record<Accent, string> = {
+  magenta: 'var(--focus-magenta)',
+  blue: 'var(--focus-blue-text)',
+  green: 'var(--focus-green)',
+};
+
 export interface NavLink {
   href: string;
   label: Localized;

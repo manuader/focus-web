@@ -438,10 +438,9 @@ export const CONTACT = {
   /** Base link. The Contacto section appends the prefilled `?text=`. */
   whatsappHref: 'https://wa.me/5491159264267',
   /**
-   * PLACEHOLDER. No booking link was supplied, so this points at a Calendly
-   * handle that probably does not exist yet. Swap it for the real one, from
-   * Calendly, Cal.com or whatever the studio ends up using, and the button
-   * follows. Nothing else references it.
+   * The studio's booking page, behind "Agendar reunión". Any scheduling URL
+   * works — Calendly, Cal.com, whatever the studio moves to — because nothing
+   * else in the site reads this and the button just opens it.
    */
-  meetingHref: 'https://calendly.com/focus-creatives/30min',
+  meetingHref: 'https://calendly.com/focus-creatives-info/30min',
 } as const;

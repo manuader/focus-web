@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from 'react';
 import { usePointer } from '@/context/PointerContext';
+import { watchVisibility } from '@/lib/visibility';
 
 /**
  * The hero "lens": a circular magnifier that follows the smoothed pointer,
@@ -52,11 +53,18 @@ export function useHeroLens() {
       };
     }
 
+    // Below the hero this loop would go on measuring it for the whole page.
+    const seen = watchVisibility(section);
     const unsub = subscribe(({ sx, sy }) => {
+      if (!seen.visible) return;
       const r = section.getBoundingClientRect();
       const half = lens.offsetWidth / 2;
       const ox = sx - r.left - half;
-      const oy = sy - r.top - half;
+      // The fade that keeps the headline readable paints over the lower 60% of
+      // the hero, and over the lens with it. A cursor finds the bright half on
+      // its own; the drift has to be aimed at it. It also puts the lens above
+      // the fingertip rather than under it, where a finger would cover it.
+      const oy = (virtual ? (sy - r.top) * 0.55 : sy - r.top) - half;
       lens.style.transform = `translate3d(${ox.toFixed(1)}px, ${oy.toFixed(1)}px, 0)`;
       img.style.transform = `translate3d(${(-ox).toFixed(1)}px, ${(-oy).toFixed(1)}px, 0)`;
       if (virtual) {
@@ -68,6 +76,7 @@ export function useHeroLens() {
 
     return () => {
       detach?.();
+      seen.stop();
       unsub();
       if (release) release();
     };

@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from 'react';
 import { usePointer } from '@/context/PointerContext';
+import { watchVisibility } from '@/lib/visibility';
 import { useTranslate } from '@/hooks/useTranslate';
 import { Eyebrow } from '@/components/ui/Eyebrow';
 import { COPY } from '@/lib/content';
@@ -44,7 +45,11 @@ export function Foco() {
     if (ring) ring.style.transition = 'none';
     const clamp = (v: number, lo: number, hi: number) =>
       Math.min(Math.max(v, lo), Math.max(lo, hi));
-    return subscribe(({ sx, sy }) => {
+    // Two rects a frame is the most expensive subscriber; away from the
+    // paragraph it should cost nothing at all.
+    const seen = watchVisibility(wrap);
+    const unsub = subscribe(({ sx, sy }) => {
+      if (!seen.visible) return;
       const r = wrap.getBoundingClientRect();
       const tr = text.getBoundingClientRect();
       const vh = window.innerHeight;
@@ -60,6 +65,10 @@ export function Foco() {
       const y = clamp(sy, tr.top + 34, tr.bottom - 34) - r.top;
       paint(x, y, vis * 130);
     });
+    return () => {
+      seen.stop();
+      unsub();
+    };
   }, [enabled, virtual, subscribe]);
 
   const onMove = (e: React.MouseEvent) => {

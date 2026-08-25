@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from 'react';
 import { usePointer } from '@/context/PointerContext';
+import { watchVisibility } from '@/lib/visibility';
 import { useTranslate } from '@/hooks/useTranslate';
 import { Eyebrow } from '@/components/ui/Eyebrow';
 import { COPY } from '@/lib/content';
@@ -30,9 +31,11 @@ export function Refraccion() {
     if (!enabled) return;
     const section = sectionRef.current;
     if (!section) return;
-    return subscribe(({ sx, sy }) => {
+    // Off screen, the loop would still measure this section on every frame.
+    const seen = watchVisibility(section);
+    const unsub = subscribe(({ sx, sy }) => {
+      if (!seen.visible) return;
       const r = section.getBoundingClientRect();
-      if (r.bottom <= 0 || r.top >= window.innerHeight) return;
       const nx = sx - window.innerWidth / 2;
       const ny = sy - (r.top + r.height / 2);
       LAYERS.forEach((layer, i) => {
@@ -41,6 +44,10 @@ export function Refraccion() {
         el.style.transform = `translate3d(${(nx * layer.factor).toFixed(1)}px, ${(ny * layer.factor * 0.6).toFixed(1)}px, 0)`;
       });
     });
+    return () => {
+      seen.stop();
+      unsub();
+    };
   }, [enabled, subscribe]);
 
   return (

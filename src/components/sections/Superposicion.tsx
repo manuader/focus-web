@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from 'react';
 import { usePointer } from '@/context/PointerContext';
+import { watchVisibility } from '@/lib/visibility';
 import { useTranslate } from '@/hooks/useTranslate';
 import { COPY } from '@/lib/content';
 import styles from './superposicion.module.css';
@@ -29,9 +30,11 @@ export function Superposicion() {
     let sx = 0;
     let sy = 0;
     let started = false;
-    return subscribe(({ x, y }) => {
+    // Off screen, the loop would still measure this section on every frame.
+    const seen = watchVisibility(section);
+    const unsub = subscribe(({ x, y }) => {
+      if (!seen.visible) return;
       const r = section.getBoundingClientRect();
-      if (r.bottom <= 0 || r.top >= window.innerHeight) return;
       const cx = x - r.left;
       const cy = y - r.top;
       if (!started) {
@@ -44,6 +47,10 @@ export function Superposicion() {
       }
       follow.style.transform = `translate3d(${(sx - r.width / 2).toFixed(1)}px, ${(sy - r.height / 2).toFixed(1)}px, 0)`;
     });
+    return () => {
+      seen.stop();
+      unsub();
+    };
   }, [enabled, subscribe]);
 
   return (

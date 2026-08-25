@@ -156,8 +156,11 @@ export function PointerProvider({ children }: { children: React.ReactNode }) {
         const ax = Math.min(w * 0.28, 260);
         const ay = Math.min(h * 0.2, 220);
         const dx = w / 2 + ax * Math.sin((phase / DRIFT_X_MS) * Math.PI * 2);
+        // The phase offset decides where the very first frame lands. Negative
+        // starts the curve above centre, on the subject of the hero photo,
+        // rather than down in the gradient where the headline sits.
         const dy =
-          h / 2 + ay * Math.sin((phase / DRIFT_Y_MS) * Math.PI * 2 + 1.1);
+          h / 2 + ay * Math.sin((phase / DRIFT_Y_MS) * Math.PI * 2 - 0.6);
 
         if (held) {
           touchW += (1 - touchW) * TOUCH_ATTACK;

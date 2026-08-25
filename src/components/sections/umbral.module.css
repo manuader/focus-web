@@ -42,6 +42,23 @@
   border-right: 1px solid rgba(246, 246, 244, 0.8);
   will-change: top, bottom, left, right;
 }
+/* `difference` needs a dark backdrop to resolve to white, and the phone crop
+   of the poster is its busiest, brightest corner — the title all but vanished
+   into it. This dims a soft ellipse behind the words only. While the door is
+   still a slit it is black on black and costs nothing. */
+.scrim {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: none;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse 130% 34% at 50% 50%,
+    rgba(10, 10, 11, 0.86),
+    rgba(10, 10, 11, 0.5) 58%,
+    transparent 80%
+  );
+}
 .text {
   position: relative;
   z-index: 3;
@@ -79,6 +96,7 @@
 
 @media (max-width: 700px) {
   .umbral { height: 240vh; }
+  .scrim { display: block; }
   /* Portrait viewport: the full height fits, so the crop is horizontal.
      Pulling left keeps the poster's lockup whole instead of half cut. */
   .doorImg { object-position: 20% 24%; }

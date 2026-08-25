@@ -1,11 +1,31 @@
 'use client';
 
 import Image from 'next/image';
+import { useInView } from '@/hooks/useInView';
 import { useTranslate } from '@/hooks/useTranslate';
 import { Reveal } from '@/components/ui/Reveal';
 import { Eyebrow } from '@/components/ui/Eyebrow';
 import { VALUES, ACCENT_HEX, COPY } from '@/lib/content';
 import styles from './valores.module.css';
+
+/**
+ * One value card. The two accent dots bloom on hover — and on touch, where
+ * there is no hover to give, the card arriving on screen stands in for it.
+ */
+function ValorCard({ value }: { value: (typeof VALUES)[number] }) {
+  const { t } = useTranslate();
+  const [ref, inView] = useInView<HTMLElement>({ rootMargin: '0px 0px -20% 0px' });
+
+  return (
+    <article ref={ref} className={styles.card} data-bloom={inView ? '1' : '0'}>
+      <span className={styles.dot} style={{ background: ACCENT_HEX[value.dotA] }} />
+      <span className={styles.dot2} style={{ background: ACCENT_HEX[value.dotB] }} />
+      <div className={styles.num}>{value.n}</div>
+      <h3 className={styles.name}>{value.name}</h3>
+      <p className={styles.desc}>{t(value.desc)}</p>
+    </article>
+  );
+}
 
 /** Four brand values; hovering a card blooms its two overlapping accent dots. */
 export function Valores() {
@@ -26,13 +46,7 @@ export function Valores() {
 
         <div className={styles.grid}>
           {VALUES.map((v) => (
-            <article key={v.n} className={styles.card}>
-              <span className={styles.dot} style={{ background: ACCENT_HEX[v.dotA] }} />
-              <span className={styles.dot2} style={{ background: ACCENT_HEX[v.dotB] }} />
-              <div className={styles.num}>{v.n}</div>
-              <h3 className={styles.name}>{v.name}</h3>
-              <p className={styles.desc}>{t(v.desc)}</p>
-            </article>
+            <ValorCard key={v.n} value={v} />
           ))}
         </div>
       </div>

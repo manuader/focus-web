@@ -349,6 +349,18 @@
 }
 
 @media (max-width: 700px) {
+  /* `vh` on a phone is the *large* viewport — the one you only get once the
+     browser chrome has scrolled away — so a 100vh hero is taller than what is
+     actually on screen when the page loads, and the bottom bar starts life
+     below the fold. `svh` is that same viewport with the chrome shown, which
+     is the state a visitor arrives in. Browsers without svh keep the 100vh
+     above. The 720px floor goes with it: on a 667px screen it was the reason
+     the meta bar was cut off. */
+  .hero {
+    height: 100svh;
+    min-height: 480px;
+  }
+
   .metaBar {
     left: var(--edge);
     right: var(--edge);

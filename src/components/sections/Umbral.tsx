@@ -54,6 +54,7 @@ export function Umbral() {
           <div className={styles.doorShade} />
         </div>
         <div ref={edgesRef} className={styles.edges} aria-hidden="true" />
+        <div className={styles.scrim} aria-hidden="true" />
 
         <div ref={textRef} className={styles.text}>
           <h2 className={styles.title}>

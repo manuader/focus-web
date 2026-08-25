@@ -81,13 +81,17 @@ export function PointerProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const fine = window.matchMedia('(pointer: fine)').matches;
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const isVirtual = !fine;
+
+    // Set even when the animation is off: the affordance copy follows the
+    // device, and a phone should never be told to move a cursor it has not got.
+    setVirtual(isVirtual);
+
     // Reduced motion means no drift and no lens: the sections all render their
     // resolved, fully legible state instead.
     if (reduce) return;
 
-    const isVirtual = !fine;
     setEnabled(true);
-    setVirtual(isVirtual);
 
     const cx = window.innerWidth / 2;
     const cy = window.innerHeight / 2;

@@ -98,3 +98,12 @@
   }
   .hint { margin-top: 40px; }
 }
+
+/* Reduced motion turns the pointer effects off entirely, and a line inviting
+   you to move something that will not move is worse than no line. `visibility`
+   rather than `display` so the composition does not shift. */
+@media (prefers-reduced-motion: reduce) {
+  .hint {
+    visibility: hidden;
+  }
+}

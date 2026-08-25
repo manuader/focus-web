@@ -65,3 +65,12 @@
   .eyebrow { left: var(--edge); top: 88px; }
   .para { margin-top: 28px; padding: 0 var(--edge); }
 }
+
+/* Reduced motion turns the pointer effects off entirely, and a line inviting
+   you to move something that will not move is worse than no line. `visibility`
+   rather than `display` so the composition does not shift. */
+@media (prefers-reduced-motion: reduce) {
+  .hint {
+    visibility: hidden;
+  }
+}

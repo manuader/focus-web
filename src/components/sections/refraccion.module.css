@@ -38,18 +38,9 @@
   align-items: center;
   justify-content: center;
 }
-/* Touch fallback: auto-split the RGB layers (no cursor to drive them). */
-@media (pointer: coarse) and (prefers-reduced-motion: no-preference) {
-  .l0 {
-    animation: focRefractA 6s ease-in-out infinite;
-  }
-  .l1 {
-    animation: focRefractB 6s ease-in-out infinite;
-  }
-  .l2 {
-    animation: focRefractC 6s ease-in-out infinite;
-  }
-}
+/* El fallback de touch ya no vive acá: el puntero virtual mueve las tres capas
+   con el mismo código que en desktop, y una animación CSS sobre transform le
+   ganaría al estilo inline y lo dejaría congelado. */
 
 .para {
   margin: 34px auto 0;

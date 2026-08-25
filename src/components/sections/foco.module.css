@@ -90,4 +90,11 @@
      mobile nav (about 76px) and above the text, which starts at padding-top. */
   .foco { padding: 144px var(--edge) 96px; }
   .eyebrow { left: var(--edge); top: 88px; }
+  /* Matches the smaller clip radius the virtual pointer paints (130px). */
+  .ring {
+    width: 260px;
+    height: 260px;
+    margin: -130px 0 0 -130px;
+  }
+  .hint { margin-top: 40px; }
 }

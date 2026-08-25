@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { usePointer } from '@/context/PointerContext';
 import { useTranslate } from '@/hooks/useTranslate';
 import { Eyebrow } from '@/components/ui/Eyebrow';
@@ -10,38 +10,74 @@ import styles from './foco.module.css';
 /**
  * Attention as a flashlight: the paragraph reads dim until the cursor — a lens
  * with a viewfinder ring — passes over it, revealing the sharp, green-accented
- * version through a clip-path circle. On touch / reduced motion it's fully lit.
+ * version through a clip-path circle. On touch the virtual pointer sweeps the
+ * lens across the paragraph on its own, and a finger grabs it. Under reduced
+ * motion the paragraph is simply fully lit.
  */
 export function Foco() {
   const { t } = useTranslate();
-  const { enabled, suppressCursor } = usePointer();
+  const { enabled, virtual, subscribe, suppressCursor } = usePointer();
   const wrapRef = useRef<HTMLDivElement>(null);
+  const textRef = useRef<HTMLDivElement>(null);
   const spotRef = useRef<HTMLDivElement>(null);
   const ringRef = useRef<HTMLDivElement>(null);
   const releaseRef = useRef<(() => void) | null>(null);
 
-  const onMove = (e: React.MouseEvent) => {
-    if (!enabled) return;
-    const wrap = wrapRef.current;
-    if (!wrap) return;
-    const r = wrap.getBoundingClientRect();
-    const x = e.clientX - r.left;
-    const y = e.clientY - r.top;
+  /** Paint the lens at a point given in the wrap's own coordinates. */
+  const paint = (x: number, y: number, radius: number) => {
     if (spotRef.current) {
-      spotRef.current.style.clipPath = `circle(150px at ${x.toFixed(0)}px ${y.toFixed(0)}px)`;
+      spotRef.current.style.clipPath = `circle(${radius}px at ${x.toFixed(0)}px ${y.toFixed(0)}px)`;
     }
     if (ringRef.current) {
-      ringRef.current.style.opacity = '1';
       ringRef.current.style.transform = `translate3d(${x.toFixed(0)}px, ${y.toFixed(0)}px, 0)`;
     }
   };
 
+  // Touch: no hover to open the lens, so it rides the drifting pointer for as
+  // long as the paragraph is on screen, and fades out with it.
+  useEffect(() => {
+    if (!enabled || !virtual) return;
+    const wrap = wrapRef.current;
+    const text = textRef.current;
+    if (!wrap || !text) return;
+    const ring = ringRef.current;
+    if (ring) ring.style.transition = 'none';
+    const clamp = (v: number, lo: number, hi: number) =>
+      Math.min(Math.max(v, lo), Math.max(lo, hi));
+    return subscribe(({ sx, sy }) => {
+      const r = wrap.getBoundingClientRect();
+      const tr = text.getBoundingClientRect();
+      const vh = window.innerHeight;
+      // 0 while the paragraph is off screen, 1 once it is comfortably inside.
+      const vis = Math.max(
+        0,
+        Math.min(1, Math.min(tr.bottom - vh * 0.12, vh * 0.9 - tr.top) / 150),
+      );
+      if (ring) ring.style.opacity = (vis * 0.85).toFixed(3);
+      // The drift is viewport-wide; the paragraph is not. Without this the
+      // lens spends most of its time on the empty space beside the text.
+      const x = clamp(sx, tr.left + 44, tr.right - 44) - r.left;
+      const y = clamp(sy, tr.top + 34, tr.bottom - 34) - r.top;
+      paint(x, y, vis * 130);
+    });
+  }, [enabled, virtual, subscribe]);
+
+  const onMove = (e: React.MouseEvent) => {
+    if (!enabled || virtual) return;
+    const wrap = wrapRef.current;
+    if (!wrap) return;
+    const r = wrap.getBoundingClientRect();
+    if (ringRef.current) ringRef.current.style.opacity = '1';
+    paint(e.clientX - r.left, e.clientY - r.top, 150);
+  };
+
   const onEnter = () => {
-    if (!enabled) return;
+    if (!enabled || virtual) return;
     if (!releaseRef.current) releaseRef.current = suppressCursor();
   };
 
   const onLeave = () => {
+    if (virtual) return;
     if (spotRef.current) spotRef.current.style.clipPath = 'circle(0px at 50% 50%)';
     if (ringRef.current) ringRef.current.style.opacity = '0';
     if (releaseRef.current) {
@@ -83,7 +119,9 @@ export function Foco() {
       </Eyebrow>
 
       <div ref={wrapRef} className={styles.wrap}>
-        <div className={`${styles.text} ${styles.textDim}`}>{dim}</div>
+        <div ref={textRef} className={`${styles.text} ${styles.textDim}`}>
+          {dim}
+        </div>
 
         <div
           ref={spotRef}
@@ -101,7 +139,9 @@ export function Foco() {
           <span className={styles.tickH} style={{ right: -7 }} />
         </div>
 
-        <div className={styles.hint}>{t(COPY.foco.hint)}</div>
+        <div className={styles.hint}>
+          {t(virtual ? COPY.foco.hintTouch : COPY.foco.hint)}
+        </div>
       </div>
     </section>
   );

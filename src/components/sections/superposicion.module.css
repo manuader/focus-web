@@ -32,12 +32,8 @@
   mix-blend-mode: difference;
   will-change: transform;
 }
-/* Touch: no cursor to follow, so it counter-orbits the magenta one. */
-@media (pointer: coarse) and (prefers-reduced-motion: no-preference) {
-  .follow {
-    animation: focOrbit 19s linear infinite reverse;
-  }
-}
+/* En touch este disco sigue al puntero virtual, no a una órbita propia: la
+   animación CSS que había acá pisaba el transform inline del JS. */
 .text {
   position: relative;
   mix-blend-mode: difference;

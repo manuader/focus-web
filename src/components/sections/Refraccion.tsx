@@ -17,11 +17,12 @@ const LAYERS = [
 /**
  * The message split into its three additive-light layers. Moving the cursor
  * pulls each layer by a different factor; holding still lets them recombine
- * into white where they overlap.
+ * into white where they overlap. On touch the same split is driven by the
+ * virtual pointer, so the word breathes apart and back on its own.
  */
 export function Refraccion() {
   const { t } = useTranslate();
-  const { enabled, subscribe } = usePointer();
+  const { enabled, virtual, subscribe } = usePointer();
   const sectionRef = useRef<HTMLElement>(null);
   const layerRefs = useRef<Array<HTMLDivElement | null>>([]);
 
@@ -67,7 +68,9 @@ export function Refraccion() {
           ))}
         </div>
         <div className={styles.para}>{t(COPY.refraccion.para)}</div>
-        <div className={styles.hint}>{t(COPY.refraccion.hint)}</div>
+        <div className={styles.hint}>
+          {t(virtual ? COPY.refraccion.hintTouch : COPY.refraccion.hint)}
+        </div>
       </div>
     </section>
   );

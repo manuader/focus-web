@@ -240,36 +240,6 @@ section[id] {
   }
 }
 
-/* Touch fallbacks: on coarse pointers the cursor-driven refracción can't run,
-   so the three RGB layers auto-split and recombine instead. */
-@keyframes focRefractA {
-  0%,
-  100% {
-    transform: translate3d(0, 0, 0);
-  }
-  50% {
-    transform: translate3d(-9px, 4px, 0);
-  }
-}
-@keyframes focRefractB {
-  0%,
-  100% {
-    transform: translate3d(0, 0, 0);
-  }
-  50% {
-    transform: translate3d(8px, -3px, 0);
-  }
-}
-@keyframes focRefractC {
-  0%,
-  100% {
-    transform: translate3d(0, 0, 0);
-  }
-  50% {
-    transform: translate3d(2px, 7px, 0);
-  }
-}
-
 /* Respect users who ask for less motion: kill the ambient loops. */
 @media (prefers-reduced-motion: reduce) {
   html {

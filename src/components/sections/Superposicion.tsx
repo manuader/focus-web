@@ -9,11 +9,12 @@ import styles from './superposicion.module.css';
 /**
  * Two overlapping circles in `difference` blend: one orbits on its own, the
  * other trails the cursor. A new color is born only where they cross —
- * the brand's "superposición" idea made interactive.
+ * the brand's "superposición" idea made interactive. On touch the second
+ * circle trails the drifting virtual pointer, and a finger steers it.
  */
 export function Superposicion() {
   const { t } = useTranslate();
-  const { enabled, subscribe } = usePointer();
+  const { enabled, virtual, subscribe } = usePointer();
   const sectionRef = useRef<HTMLElement>(null);
   const followRef = useRef<HTMLDivElement>(null);
 
@@ -65,7 +66,9 @@ export function Superposicion() {
       {/* Outside .text on purpose: in there it inherited the difference
           blend and landed on the magenta circle, where it was unreadable.
           Down here it sits on clean black. */}
-      <div className={styles.hint}>{t(COPY.superposicion.hint)}</div>
+      <div className={styles.hint}>
+        {t(virtual ? COPY.superposicion.hintTouch : COPY.superposicion.hint)}
+      </div>
     </section>
   );
 }

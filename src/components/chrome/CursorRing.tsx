@@ -8,17 +8,21 @@ import styles from './chrome.module.css';
  * The lens-like cursor ring. Follows the raw pointer immediately, grows over
  * interactive elements, and hides itself when a section (hero lens, foco
  * spotlight) requests to take over via {@link usePointer}'s suppression.
+ *
+ * Strictly a real-cursor object: on touch the pointer is synthesised, and a
+ * ring drifting around on its own would read as a bug rather than a cursor.
  */
 export function CursorRing() {
-  const { enabled, subscribe, onSuppressChange } = usePointer();
+  const { enabled, virtual, subscribe, onSuppressChange } = usePointer();
   const ref = useRef<HTMLDivElement>(null);
   const moved = useRef(false);
   const suppressed = useRef(false);
   const [grown, setGrown] = useState(false);
+  const live = enabled && !virtual;
 
   // Follow the pointer (raw coords) and reveal on first movement.
   useEffect(() => {
-    if (!enabled) return;
+    if (!live) return;
     const el = ref.current;
     if (!el) return;
     return subscribe(({ x, y }) => {
@@ -28,22 +32,22 @@ export function CursorRing() {
         if (!suppressed.current) el.style.opacity = '1';
       }
     });
-  }, [enabled, subscribe]);
+  }, [live, subscribe]);
 
   // Hide / show when a takeover zone is entered or left.
   useEffect(() => {
-    if (!enabled) return;
+    if (!live) return;
     const el = ref.current;
     if (!el) return;
     return onSuppressChange((isSuppressed) => {
       suppressed.current = isSuppressed;
       el.style.opacity = isSuppressed || !moved.current ? '0' : '1';
     });
-  }, [enabled, onSuppressChange]);
+  }, [live, onSuppressChange]);
 
   // Grow over links and buttons (event delegation covers all of them).
   useEffect(() => {
-    if (!enabled) return;
+    if (!live) return;
     const isInteractive = (t: EventTarget | null) =>
       t instanceof Element && !!t.closest('a, button');
     const over = (e: MouseEvent) => {
@@ -58,9 +62,9 @@ export function CursorRing() {
       document.removeEventListener('mouseover', over);
       document.removeEventListener('mouseout', out);
     };
-  }, [enabled]);
+  }, [live]);
 
-  if (!enabled) return null;
+  if (!live) return null;
 
   return (
     <div

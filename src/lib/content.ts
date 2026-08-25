@@ -334,6 +334,12 @@ export const COPY = {
       es: 'Movete: el color aparece donde dos estados se cruzan',
       en: 'Move: color appears where two states cross',
     },
+    /* En touch no hay cursor que mover: el disco va solo y el dedo lo toma
+       prestado. La consigna cambia, la idea es la misma. */
+    hintTouch: {
+      es: 'Tocá y arrastrá: el color aparece donde dos estados se cruzan',
+      en: 'Touch and drag: color appears where two states cross',
+    },
   },
   refraccion: {
     para: {
@@ -343,6 +349,10 @@ export const COPY = {
     hint: {
       es: 'Movete y descomponela · quedate quieto y se recompone',
       en: 'Move to split it · stay still and it reassembles',
+    },
+    hintTouch: {
+      es: 'Arrastrá y descomponela · soltá y se recompone',
+      en: 'Drag to split it · let go and it reassembles',
     },
   },
   umbral: {
@@ -393,6 +403,10 @@ export const COPY = {
     hint: {
       es: 'Tu cursor es la lente · enfocá lo que importa',
       en: 'Your cursor is the lens · focus what matters',
+    },
+    hintTouch: {
+      es: 'Tu dedo es la lente · enfocá lo que importa',
+      en: 'Your finger is the lens · focus what matters',
     },
   },
   contacto: {

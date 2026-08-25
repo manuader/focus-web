@@ -390,6 +390,13 @@
     padding-bottom: 0;
   }
 
+  /* The lens is 360px across, which on a 390px screen is the whole plate and
+     stops reading as a lens at all. */
+  .lens {
+    width: 232px;
+    height: 232px;
+  }
+
   .bLeft {
     padding: 0 var(--edge) 80px;
   }

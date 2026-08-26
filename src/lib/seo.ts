@@ -6,7 +6,7 @@
    a model to infer from the marketing copy.
    ============================================================ */
 
-import { SERVICES, WORKS, CONTACT } from './content';
+import { SERVICES, SERVICE_BY_ID, WORKS, CONTACT } from './content';
 
 /**
  * Canonical origin. Taken from the studio's own mail domain; the previous
@@ -96,9 +96,15 @@ export function buildJsonLd(): string {
        answer "who has FOCUS worked with" without guessing. */
     subjectOf: WORKS.map((w) => ({
       '@type': 'CreativeWork',
-      name: w.title,
+      name: w.client,
       about: w.category.es,
-      description: w.desc.es,
+      /* The services are structured data now, so they can be stated rather
+         than left implied in a sentence: this is the half of the answer to
+         "who has FOCUS worked with" that used to be missing. The description
+         only appears where the case has something to say beyond them, so the
+         two properties never repeat each other. */
+      keywords: w.services.map((id) => SERVICE_BY_ID[id].title.es).join(', '),
+      ...(w.desc ? { description: w.desc.es } : {}),
       url: w.href,
     })),
   };

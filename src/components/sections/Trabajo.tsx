@@ -6,7 +6,7 @@ import { useTranslate } from '@/hooks/useTranslate';
 import { useWindowScroll } from '@/hooks/useWindowScroll';
 import { Eyebrow } from '@/components/ui/Eyebrow';
 import { MagneticLink } from '@/components/ui/MagneticLink';
-import { WORKS, ACCENT_TEXT, COPY } from '@/lib/content';
+import { WORKS, SERVICE_BY_ID, ACCENT_TEXT, COPY } from '@/lib/content';
 import styles from './trabajo.module.css';
 import ui from '@/components/ui/ui.module.css';
 
@@ -16,7 +16,8 @@ const pad2 = (n: number) => String(n).padStart(2, '0');
 /**
  * Horizontal case gallery driven by vertical scroll: while the section is
  * pinned, scrolling advances the track sideways, updating a progress bar and
- * an NN / NN counter. Cards bloom to color on hover and reveal their blurb.
+ * an NN / NN counter. Each card names the client, its rubro and the services
+ * FOCUS provided; cards bloom to color on hover and reveal their blurb.
  */
 export function Trabajo() {
   const { t } = useTranslate();
@@ -59,9 +60,9 @@ export function Trabajo() {
         </div>
 
         <div ref={trackRef} className={styles.track}>
-          {WORKS.map((w) => (
+          {WORKS.map((w, i) => (
             <a
-              key={w.n}
+              key={w.id}
               href={w.href}
               target="_blank"
               rel="noopener noreferrer"
@@ -69,23 +70,34 @@ export function Trabajo() {
             >
               <Image
                 src={w.img}
-                alt={`${t(w.category)}, ${w.title}`}
+                alt={`${t(w.category)}, ${w.client}`}
                 fill
                 sizes="(max-width: 640px) 72vw, 480px"
                 className={styles.cardImg}
               />
               <div className={styles.cardGrad} />
+              {/* The ordinal is the position in WORKS, so adding a case never
+                  means renumbering the ones already there. */}
               <div className={styles.cardNum} aria-hidden="true">
-                {w.n}
+                {pad2(i + 1)}
               </div>
               <div className={styles.cardBody}>
                 <div className={styles.cardCat} style={{ color: ACCENT_TEXT[w.accent] }}>
                   {t(w.category)}
                 </div>
-                <h3 className={styles.cardTitle}>{w.title}</h3>
-                <div className={styles.cardMeta}>
-                  <p>{t(w.desc)}</p>
-                </div>
+                <h3 className={styles.cardTitle}>{w.client}</h3>
+                <ul className={styles.cardTags} aria-label={t(COPY.trabajo.services)}>
+                  {w.services.map((id) => (
+                    <li key={id} className={styles.cardTag}>
+                      {t(SERVICE_BY_ID[id].title)}
+                    </li>
+                  ))}
+                </ul>
+                {w.desc && (
+                  <div className={styles.cardMeta}>
+                    <p>{t(w.desc)}</p>
+                  </div>
+                )}
               </div>
             </a>
           ))}

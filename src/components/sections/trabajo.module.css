@@ -62,10 +62,21 @@
   filter: grayscale(0) brightness(1) contrast(1) saturate(1.08);
   transform: scale(1.04);
 }
+/* The body sits on this, so it has to be dark enough for the rubro — 11px of
+   saturated accent — and not just for the white name. The old ramp only
+   reached 0.9 at the very bottom edge, which left the rubro on the pale part
+   of a light logo at about 2.2:1. It now lands near-opaque by the time the
+   text starts, and the logos are centred, so nothing of them is lost. */
 .cardGrad {
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, transparent 40%, rgba(10, 10, 11, 0.9));
+  background: linear-gradient(
+    180deg,
+    transparent 40%,
+    rgba(10, 10, 11, 0.62) 60%,
+    rgba(10, 10, 11, 0.95) 76%,
+    rgba(10, 10, 11, 0.97)
+  );
 }
 .cardNum {
   position: absolute;
@@ -97,6 +108,33 @@
   letter-spacing: -0.025em;
   line-height: 1.05;
   overflow-wrap: anywhere;
+}
+/* The services, as tags rather than a sentence: they are data — the same
+   labels the Servicios section sets — and should read as data next to the
+   client's name. Always visible, unlike the blurb below them, because this is
+   the part of the card that answers "what did they actually do". */
+.cardTags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 12px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.cardTag {
+  padding: 5px 9px 4px;
+  border: 1px solid rgba(246, 246, 244, 0.28);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.13em;
+  line-height: 1.35;
+  text-transform: uppercase;
+  color: var(--focus-gray-100);
+  transition: border-color 0.5s, color 0.5s;
+}
+.card:hover .cardTag {
+  border-color: rgba(246, 246, 244, 0.6);
+  color: var(--focus-paper);
 }
 .cardMeta {
   max-height: 0;
@@ -181,5 +219,16 @@
   }
   .cardTitle {
     font-size: clamp(18px, 5.4vw, 26px);
+  }
+  /* A three-service card wraps to three rows here, which would climb over the
+     logo. Tighter type and padding keeps it to two. */
+  .cardTags {
+    gap: 5px;
+    margin-top: 10px;
+  }
+  .cardTag {
+    padding: 4px 7px 3px;
+    font-size: 9.5px;
+    letter-spacing: 0.1em;
   }
 }

@@ -37,7 +37,22 @@ export interface NavLink {
   label: Localized;
 }
 
+/**
+ * Stable key for a service. The ordinals in SERVICES are display order and can
+ * be reshuffled at any time; these cannot. That is what lets a case name the
+ * work it got without either side going stale.
+ */
+export type ServiceId =
+  | 'identidad'
+  | 'direccion-de-arte'
+  | 'social-media'
+  | 'audiovisual'
+  | 'estrategia'
+  | 'web'
+  | 'editorial-packaging';
+
 export interface ServiceRow {
+  id: ServiceId;
   n: string;
   /** Kept for when the image hover comes back; the rows currently
       show the animated circuit panel instead. */
@@ -46,16 +61,34 @@ export interface ServiceRow {
   detail: Localized;
 }
 
+/**
+ * One case in the Casos gallery. Everything a card shows lives in here, so
+ * adding a client is appending one object to WORKS: the ordinal on the card,
+ * the NN / NN counter, the progress bar and the JSON-LD all follow from the
+ * length and order of the list.
+ */
 export interface WorkCard {
-  n: string;
+  /** Stable key, never shown. Used as the React key so reordering is safe. */
+  id: string;
+  /** The client as it should read on the card: the @handle, or the brand. */
+  client: string;
+  /** Rubro of the client, shown above the name. */
+  category: Localized;
+  /**
+   * What FOCUS did, by id rather than free text. The labels are read off
+   * SERVICES, so a service cannot end up named two different ways in two
+   * sections, and both languages arrive without being written twice.
+   */
+  services: ServiceId[];
+  /** Optional line under the tags — only where there is more to say than the
+      tags already say. Leave it out and the card simply does not show one. */
+  desc?: Localized;
+  /** Card artwork: the client's mark on its own background, 4:5. */
   img: string;
-  accent: Accent;
   /** Where the card points: the account's reels, or the live site. */
   href: string;
-  /** Rubro of the client, shown above the title. */
-  category: Localized;
-  title: string;
-  desc: Localized;
+  /** Brand accent tinting the rubro. */
+  accent: Accent;
 }
 
 export interface ValueCard {
@@ -87,6 +120,7 @@ export const TICKER_ITEMS = [
 
 export const SERVICES: ServiceRow[] = [
   {
+    id: 'identidad',
     n: '01',
     img: '/assets/img-01.jpg',
     title: { es: 'Identidad de marca', en: 'Brand identity' },
@@ -96,6 +130,7 @@ export const SERVICES: ServiceRow[] = [
     },
   },
   {
+    id: 'direccion-de-arte',
     n: '02',
     img: '/assets/img-02.jpg',
     title: { es: 'Dirección de arte', en: 'Art direction' },
@@ -105,6 +140,7 @@ export const SERVICES: ServiceRow[] = [
     },
   },
   {
+    id: 'social-media',
     n: '03',
     img: '/assets/img-03.jpg',
     title: { es: 'Social media management', en: 'Social media management' },
@@ -114,6 +150,7 @@ export const SERVICES: ServiceRow[] = [
     },
   },
   {
+    id: 'audiovisual',
     n: '04',
     img: '/assets/img-04.jpg',
     title: { es: 'Contenido audiovisual', en: 'Audiovisual content' },
@@ -123,6 +160,7 @@ export const SERVICES: ServiceRow[] = [
     },
   },
   {
+    id: 'estrategia',
     n: '05',
     img: '/assets/img-05.jpg',
     title: { es: 'Estrategia', en: 'Strategy' },
@@ -132,6 +170,7 @@ export const SERVICES: ServiceRow[] = [
     },
   },
   {
+    id: 'web',
     n: '06',
     img: '/assets/img-06.jpg',
     title: { es: 'Páginas web', en: 'Websites' },
@@ -141,6 +180,7 @@ export const SERVICES: ServiceRow[] = [
     },
   },
   {
+    id: 'editorial-packaging',
     n: '07',
     img: '/assets/img-01.jpg',
     title: { es: 'Editorial y packaging', en: 'Editorial & packaging' },
@@ -151,73 +191,75 @@ export const SERVICES: ServiceRow[] = [
   },
 ];
 
+/**
+ * Services by id, so a case can name its work without repeating the labels.
+ * The cast is the one TypeScript cannot avoid: Object.fromEntries widens the
+ * keys to string, and the union above is exactly the set SERVICES covers.
+ */
+export const SERVICE_BY_ID = Object.fromEntries(
+  SERVICES.map((s) => [s.id, s] as const),
+) as Record<ServiceId, ServiceRow>;
+
 /* Real cases. Each card carries the client's logo and links to their
    Instagram. The artwork in `/assets/clients/*-card.jpg` is the avatar with
    Instagram's gray frame removed: the logo's own background colour is flooded
-   across the 4:5 card so the mark fills it without being cropped. */
+   across the 4:5 card so the mark fills it without being cropped.
+
+   To add a case: append one object. `services` are ids from SERVICES; the
+   ordinal on the card and the counter come from the position in this list. */
 export const WORKS: WorkCard[] = [
   {
-    n: '01',
-    img: '/assets/clients/chuchones-card.jpg',
-    accent: 'magenta',
-    href: 'https://www.instagram.com/chuchones_wines',
+    id: 'chuchones',
+    client: '@chuchones_wines',
     category: { es: 'Vinos boutique', en: 'Boutique wines' },
-    title: '@chuchones_wines',
-    desc: {
-      es: 'Servicio integral de social media management.',
-      en: 'Full service social media management.',
-    },
+    services: ['social-media'],
+    img: '/assets/clients/chuchones-card.jpg',
+    href: 'https://www.instagram.com/chuchones_wines',
+    accent: 'magenta',
   },
   {
-    n: '02',
-    img: '/assets/clients/rsh-consultora-card.jpg',
-    accent: 'blue',
-    href: 'https://www.instagram.com/rsh_consultora',
+    id: 'rsh-consultora',
+    client: '@rsh_consultora',
     category: {
       es: 'Licenciado en seguridad e higiene',
       en: 'Health and safety consultancy',
     },
-    title: '@rsh_consultora',
-    desc: {
-      es: 'Servicio integral de social media management.',
-      en: 'Full service social media management.',
-    },
+    services: ['social-media'],
+    img: '/assets/clients/rsh-consultora-card.jpg',
+    href: 'https://www.instagram.com/rsh_consultora',
+    accent: 'blue',
   },
   {
-    n: '03',
-    img: '/assets/clients/fernanda-estetica-card.jpg',
-    accent: 'green',
-    href: 'https://www.instagram.com/esteticaintegralfernanda',
+    id: 'fernanda-estetica',
+    client: '@esteticaintegralfernanda',
     category: { es: 'Estética y salud', en: 'Beauty and wellness' },
-    title: '@esteticaintegralfernanda',
-    desc: {
-      es: 'Servicio integral de social media management.',
-      en: 'Full service social media management.',
-    },
+    services: ['social-media'],
+    img: '/assets/clients/fernanda-estetica-card.jpg',
+    href: 'https://www.instagram.com/esteticaintegralfernanda',
+    accent: 'green',
   },
   {
-    n: '04',
-    img: '/assets/clients/santa-tuca-card.jpg',
-    accent: 'magenta',
-    href: 'https://www.instagram.com/santatuca',
+    id: 'santa-tuca',
+    client: '@santatuca',
     category: { es: 'Creador de contenido', en: 'Content creator' },
-    title: '@santatuca',
+    services: ['audiovisual'],
+    /* The one line the tags do not already carry: which formats. */
     desc: {
       es: 'Edición de reels y videos de YouTube.',
       en: 'Reels and YouTube video editing.',
     },
+    img: '/assets/clients/santa-tuca-card.jpg',
+    href: 'https://www.instagram.com/santatuca',
+    accent: 'magenta',
   },
   {
-    n: '05',
-    img: '/assets/clients/toplaser-card.jpg',
-    accent: 'blue',
-    href: 'https://www.instagram.com/toplaserimprenta',
+    id: 'top-laser',
+    client: 'Top Láser',
     category: { es: 'Imprenta', en: 'Print shop' },
-    title: 'Top Láser',
-    desc: {
-      es: 'Identidad, página web, producción y postproducción de contenido.',
-      en: 'Identity, website, content production and post production.',
-    },
+    services: ['identidad', 'web', 'audiovisual'],
+    img: '/assets/clients/toplaser-card.jpg',
+    href: 'https://www.instagram.com/toplaserimprenta',
+    accent: 'blue',
   },
 ];
 
@@ -387,6 +429,8 @@ export const COPY = {
       es: 'El scroll vertical avanza la galería',
       en: 'Vertical scroll drives the gallery',
     },
+    /** Names the tag list on each card for screen readers; never drawn. */
+    services: { es: 'Servicios provistos', en: 'Services provided' },
     cta: { es: 'Tu caso acá', en: 'Your case here' },
   },
   foco: {

@@ -207,11 +207,17 @@ export const SERVICE_BY_ID = Object.fromEntries(
    cropped. For the Instagram cases the mark is the avatar with Instagram's
    gray frame removed; for the sites, the logo file the site itself serves.
 
-   To add a case: add one object where it should appear, since the order here
-   is the order on the page. `services` are ids from SERVICES; the ordinal on
-   the card and the counter come from the position in this list. The accents
-   cycle magenta, blue, green down the list, so no two neighbours share one. */
+   The order here is the order on the page: the sites first, then the rest,
+   led by social media. A client with two separate jobs gets one card per job,
+   each linking to where that job can be seen, which is why Top Láser appears
+   twice.
+
+   To add a case: add one object where it belongs in that order. `services`
+   are ids from SERVICES; the ordinal on the card and the counter come from the
+   position in this list. The accents cycle magenta, blue, green down the list,
+   so no two neighbours share one. */
 export const WORKS: WorkCard[] = [
+  /* The sites. */
   {
     id: 'ader-studio',
     client: 'Ader Studio',
@@ -231,19 +237,38 @@ export const WORKS: WorkCard[] = [
     accent: 'blue',
   },
   {
+    id: 'top-laser-web',
+    client: 'Top Láser',
+    category: { es: 'Imprenta', en: 'Print shop' },
+    services: ['web'],
+    img: '/assets/clients/toplaser-web-card.jpg',
+    href: 'https://toplaserimprenta.com',
+    accent: 'green',
+  },
+  /* Everything else, social media first. */
+  {
+    id: 'chillin',
+    client: '@chillin1390bar',
+    category: { es: 'Bar', en: 'Bar' },
+    services: ['social-media'],
+    img: '/assets/clients/chillin-card.jpg',
+    href: 'https://www.instagram.com/chillin1390bar',
+    accent: 'magenta',
+  },
+  {
     id: 'top-laser',
     client: 'Top Láser',
     category: { es: 'Imprenta', en: 'Print shop' },
-    services: ['identidad', 'web', 'audiovisual'],
+    services: ['identidad', 'social-media', 'audiovisual'],
     img: '/assets/clients/toplaser-card.jpg',
     href: 'https://www.instagram.com/toplaserimprenta',
-    accent: 'green',
+    accent: 'blue',
   },
   {
     id: 'santa-tuca',
     client: '@santatuca',
     category: { es: 'Creador de contenido', en: 'Content creator' },
-    services: ['audiovisual'],
+    services: ['audiovisual', 'social-media'],
     /* The one line the tags do not already carry: which formats. */
     desc: {
       es: 'Edición de reels y videos de YouTube.',
@@ -251,7 +276,7 @@ export const WORKS: WorkCard[] = [
     },
     img: '/assets/clients/santa-tuca-card.jpg',
     href: 'https://www.instagram.com/santatuca',
-    accent: 'magenta',
+    accent: 'green',
   },
   {
     id: 'chuchones',
@@ -260,7 +285,7 @@ export const WORKS: WorkCard[] = [
     services: ['social-media'],
     img: '/assets/clients/chuchones-card.jpg',
     href: 'https://www.instagram.com/chuchones_wines',
-    accent: 'blue',
+    accent: 'magenta',
   },
   {
     id: 'rsh-consultora',
@@ -272,7 +297,7 @@ export const WORKS: WorkCard[] = [
     services: ['social-media'],
     img: '/assets/clients/rsh-consultora-card.jpg',
     href: 'https://www.instagram.com/rsh_consultora',
-    accent: 'green',
+    accent: 'blue',
   },
   {
     id: 'fernanda-estetica',
@@ -281,7 +306,7 @@ export const WORKS: WorkCard[] = [
     services: ['social-media'],
     img: '/assets/clients/fernanda-estetica-card.jpg',
     href: 'https://www.instagram.com/esteticaintegralfernanda',
-    accent: 'magenta',
+    accent: 'green',
   },
 ];
 

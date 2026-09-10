@@ -258,15 +258,6 @@ export const WORKS: WorkCard[] = [
   //   accent: 'magenta',
   // },
   {
-    id: 'top-laser',
-    client: 'Top Láser',
-    category: { es: 'Imprenta', en: 'Print shop' },
-    services: ['identidad', 'social-media', 'audiovisual'],
-    img: '/assets/clients/toplaser-card.jpg',
-    href: 'https://www.instagram.com/toplaserimprenta',
-    accent: 'blue',
-  },
-  {
     id: 'santa-tuca',
     client: '@santatuca',
     category: { es: 'Creador de contenido', en: 'Content creator' },
@@ -278,6 +269,15 @@ export const WORKS: WorkCard[] = [
     },
     img: '/assets/clients/santa-tuca-card.jpg',
     href: 'https://www.instagram.com/santatuca',
+    accent: 'blue',
+  },
+  {
+    id: 'top-laser',
+    client: 'Top Láser',
+    category: { es: 'Imprenta', en: 'Print shop' },
+    services: ['identidad', 'social-media', 'audiovisual'],
+    img: '/assets/clients/toplaser-card.jpg',
+    href: 'https://www.instagram.com/toplaserimprenta',
     accent: 'green',
   },
   {

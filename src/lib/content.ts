@@ -200,42 +200,43 @@ export const SERVICE_BY_ID = Object.fromEntries(
   SERVICES.map((s) => [s.id, s] as const),
 ) as Record<ServiceId, ServiceRow>;
 
-/* Real cases. Each card carries the client's logo and links to their
-   Instagram. The artwork in `/assets/clients/*-card.jpg` is the avatar with
-   Instagram's gray frame removed: the logo's own background colour is flooded
-   across the 4:5 card so the mark fills it without being cropped.
+/* Real cases. Each card carries the client's logo and links to where the work
+   can be seen: their Instagram, or the live site when the job was the site.
+   The artwork in `/assets/clients/*-card.jpg` is the logo's own background
+   colour flooded across the 4:5 card, so the mark fills it without being
+   cropped. For the Instagram cases the mark is the avatar with Instagram's
+   gray frame removed; for the sites, the logo file the site itself serves.
 
-   To add a case: append one object. `services` are ids from SERVICES; the
-   ordinal on the card and the counter come from the position in this list. */
+   To add a case: add one object where it should appear, since the order here
+   is the order on the page. `services` are ids from SERVICES; the ordinal on
+   the card and the counter come from the position in this list. The accents
+   cycle magenta, blue, green down the list, so no two neighbours share one. */
 export const WORKS: WorkCard[] = [
   {
-    id: 'chuchones',
-    client: '@chuchones_wines',
-    category: { es: 'Vinos boutique', en: 'Boutique wines' },
-    services: ['social-media'],
-    img: '/assets/clients/chuchones-card.jpg',
-    href: 'https://www.instagram.com/chuchones_wines',
+    id: 'ader-studio',
+    client: 'Ader Studio',
+    category: { es: 'Arquitectura', en: 'Architecture' },
+    services: ['web'],
+    img: '/assets/clients/ader-studio-card.jpg',
+    href: 'https://ader-studio.vercel.app',
     accent: 'magenta',
   },
   {
-    id: 'rsh-consultora',
-    client: '@rsh_consultora',
-    category: {
-      es: 'Licenciado en seguridad e higiene',
-      en: 'Health and safety consultancy',
-    },
-    services: ['social-media'],
-    img: '/assets/clients/rsh-consultora-card.jpg',
-    href: 'https://www.instagram.com/rsh_consultora',
+    id: 'oushy',
+    client: 'OUSHY Studio',
+    category: { es: 'Estudio creativo', en: 'Creative studio' },
+    services: ['web'],
+    img: '/assets/clients/oushy-card.jpg',
+    href: 'https://oushy-web.vercel.app',
     accent: 'blue',
   },
   {
-    id: 'fernanda-estetica',
-    client: '@esteticaintegralfernanda',
-    category: { es: 'Estética y salud', en: 'Beauty and wellness' },
-    services: ['social-media'],
-    img: '/assets/clients/fernanda-estetica-card.jpg',
-    href: 'https://www.instagram.com/esteticaintegralfernanda',
+    id: 'top-laser',
+    client: 'Top Láser',
+    category: { es: 'Imprenta', en: 'Print shop' },
+    services: ['identidad', 'web', 'audiovisual'],
+    img: '/assets/clients/toplaser-card.jpg',
+    href: 'https://www.instagram.com/toplaserimprenta',
     accent: 'green',
   },
   {
@@ -253,13 +254,34 @@ export const WORKS: WorkCard[] = [
     accent: 'magenta',
   },
   {
-    id: 'top-laser',
-    client: 'Top Láser',
-    category: { es: 'Imprenta', en: 'Print shop' },
-    services: ['identidad', 'web', 'audiovisual'],
-    img: '/assets/clients/toplaser-card.jpg',
-    href: 'https://www.instagram.com/toplaserimprenta',
+    id: 'chuchones',
+    client: '@chuchones_wines',
+    category: { es: 'Vinos boutique', en: 'Boutique wines' },
+    services: ['social-media'],
+    img: '/assets/clients/chuchones-card.jpg',
+    href: 'https://www.instagram.com/chuchones_wines',
     accent: 'blue',
+  },
+  {
+    id: 'rsh-consultora',
+    client: '@rsh_consultora',
+    category: {
+      es: 'Licenciado en seguridad e higiene',
+      en: 'Health and safety consultancy',
+    },
+    services: ['social-media'],
+    img: '/assets/clients/rsh-consultora-card.jpg',
+    href: 'https://www.instagram.com/rsh_consultora',
+    accent: 'green',
+  },
+  {
+    id: 'fernanda-estetica',
+    client: '@esteticaintegralfernanda',
+    category: { es: 'Estética y salud', en: 'Beauty and wellness' },
+    services: ['social-media'],
+    img: '/assets/clients/fernanda-estetica-card.jpg',
+    href: 'https://www.instagram.com/esteticaintegralfernanda',
+    accent: 'magenta',
   },
 ];
 

@@ -1,7 +1,7 @@
 'use client';
 
 import Image from 'next/image';
-import { useRef } from 'react';
+import { useRef, type CSSProperties } from 'react';
 import { useTranslate } from '@/hooks/useTranslate';
 import { useWindowScroll } from '@/hooks/useWindowScroll';
 import { Eyebrow } from '@/components/ui/Eyebrow';
@@ -42,7 +42,13 @@ export function Trabajo() {
   });
 
   return (
-    <section ref={sectionRef} id="trabajo" className={styles.trabajo} aria-label="Trabajo">
+    <section
+      ref={sectionRef}
+      id="trabajo"
+      className={styles.trabajo}
+      style={{ '--cases': n } as CSSProperties}
+      aria-label="Trabajo"
+    >
       <div className={styles.sticky}>
         <div className={styles.header}>
           <div>

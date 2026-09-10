@@ -1,6 +1,9 @@
 .trabajo {
   position: relative;
-  height: 300vh;
+  /* One screen to pin, plus 40vh of scroll per case: 300vh at five cases, the
+     pace the gallery was tuned at. Adding cases lengthens the section instead
+     of speeding the track up. --cases is set from WORKS in Trabajo.tsx. */
+  height: calc(100vh + var(--cases, 5) * 40vh);
   background: var(--focus-ink);
 }
 .sticky {

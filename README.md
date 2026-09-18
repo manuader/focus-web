@@ -40,6 +40,8 @@ src/
   lib/
     content.ts        # todo el copy ES/EN + datos (servicios, casos, valores…)
     config.ts         # HERO_DIRECTION ('A' por defecto)
+    locale.ts         # idioma inicial: Accept-Language (+ país) → ES/EN
+  middleware.ts       # aplica esa detección en cada visita, vía cookie
 ```
 
 ### Decisiones clave
@@ -55,8 +57,12 @@ src/
 - **Scroll-driven** (manifiesto, umbral, trabajo horizontal, parallax): listeners
   pasivos con throttle por frame (`useWindowScroll`).
 - **Reveals:** `IntersectionObserver` (`useReveal`) en vez del rect-sweep manual.
-- **i18n:** diccionario co-localizado ES/EN + `useTranslate`; persiste en
-  `localStorage` y refleja `<html lang>`.
+- **i18n:** diccionario co-localizado ES/EN + `useTranslate`. El idioma
+  inicial sale del navegador: `middleware.ts` lee `Accept-Language` y deja
+  una cookie que el provider aplica al cargar (inglés si el navegador lo
+  prefiere; sin header, como piden los crawlers, queda en español). Lo que
+  se elige con el toggle persiste en `localStorage` y tiene prioridad. Se
+  refleja en `<html lang>`.
 - **`data-magnet` / `style-hover`:** el runtime de Claude Design nunca los
   aplicaba; acá se implementan como efecto magnético real (`useMagnetic`) e
   `:hover` en CSS, respetando la intención del diseño.

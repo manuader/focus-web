@@ -57,7 +57,7 @@ export function Superposicion() {
     <section
       ref={sectionRef}
       className={`${styles.sup} foc-cursor-none`}
-      aria-label="Superposición"
+      aria-label={t(COPY.a11y.superposicion)}
     >
       <div className={styles.orbit} aria-hidden="true" />
       <div ref={followRef} className={styles.follow} aria-hidden="true" />

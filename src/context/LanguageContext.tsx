@@ -8,7 +8,7 @@ import {
   useMemo,
   useState,
 } from 'react';
-import type { Lang } from '@/lib/content';
+import { COPY, type Lang } from '@/lib/content';
 import { DETECTED_LANG_COOKIE } from '@/lib/locale';
 
 interface LanguageContextValue {
@@ -60,9 +60,20 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
     if (start) setLangState(start);
   }, []);
 
-  // Mirrored however it was set, the start above included.
+  // Mirrored however it was set, the start above included. The tab title
+  // follows it. The server can only render the Spanish one, and React
+  // re-commits the text of Next's <title> just after this runs, which would
+  // put the Spanish back, so the title is held rather than set once.
   useEffect(() => {
     document.documentElement.lang = lang;
+    const title = COPY.meta.title[lang];
+    const hold = () => {
+      if (document.title !== title) document.title = title;
+    };
+    hold();
+    const observer = new MutationObserver(hold);
+    observer.observe(document.head, { subtree: true, childList: true, characterData: true });
+    return () => observer.disconnect();
   }, [lang]);
 
   const setLang = useCallback((next: Lang) => {

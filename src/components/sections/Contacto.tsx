@@ -36,7 +36,7 @@ export function Contacto() {
   )}`;
 
   return (
-    <section className={styles.contacto} id="contacto" aria-label="Contacto">
+    <section className={styles.contacto} id="contacto" aria-label={t(COPY.a11y.contacto)}>
       <div ref={bgRef} className={styles.bgWrap} aria-hidden="true">
         <Image src="/assets/img-04.jpg" alt="" fill sizes="100vw" className={styles.bg} />
       </div>

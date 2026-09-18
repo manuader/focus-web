@@ -47,7 +47,7 @@ export function Trabajo() {
       id="trabajo"
       className={styles.trabajo}
       style={{ '--cases': n } as CSSProperties}
-      aria-label="Trabajo"
+      aria-label={t(COPY.a11y.trabajo)}
     >
       <div className={styles.sticky}>
         <div className={styles.header}>

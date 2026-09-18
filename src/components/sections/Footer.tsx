@@ -64,7 +64,7 @@ export function Footer() {
 
       <div className={styles.bottom}>
         <span>© 2026 FOCUS</span>
-        <span>{COPY.tagline}</span>
+        <span>{t(COPY.tagline)}</span>
         <span>{t(COPY.footer.made)}</span>
       </div>
     </footer>

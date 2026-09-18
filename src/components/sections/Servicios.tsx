@@ -254,7 +254,7 @@ export function Servicios() {
       ref={sectionRef}
       id="servicios"
       className={styles.prisma}
-      aria-label="Servicios"
+      aria-label={t(COPY.a11y.servicios)}
     >
       <div className={styles.sticky}>
         <div className={styles.header}>

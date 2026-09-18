@@ -62,7 +62,7 @@ export function Nav() {
   return (
     <>
       <nav className={`${styles.nav} ${solid || open ? styles.navSolid : ''}`}>
-        <a href="#top" className={styles.brand} aria-label="FOCUS, inicio" onClick={() => setOpen(false)}>
+        <a href="#top" className={styles.brand} aria-label={t(COPY.a11y.home)} onClick={() => setOpen(false)}>
           {/* data-nav-logo is where the opening sequence flies the logo to. */}
           <Image
             data-nav-logo=""
@@ -91,7 +91,7 @@ export function Nav() {
         <button
           type="button"
           className={`${styles.burger} ${open ? styles.burgerOpen : ''}`}
-          aria-label={open ? 'Cerrar menú' : 'Abrir menú'}
+          aria-label={t(open ? COPY.a11y.closeMenu : COPY.a11y.openMenu)}
           aria-expanded={open}
           onClick={() => setOpen((v) => !v)}
         >
@@ -105,7 +105,7 @@ export function Nav() {
       {/* Mobile overlay menu */}
       <div className={`${styles.menu} ${open ? styles.menuOpen : ''}`} aria-hidden={!open}>
         <div className={styles.menuGlow} aria-hidden="true" />
-        <nav className={styles.menuLinks} aria-label="Navegación">
+        <nav className={styles.menuLinks} aria-label={t(COPY.a11y.menu)}>
           {NAV_LINKS.map((l, i) => (
             <a
               key={l.href}

@@ -4,7 +4,7 @@ import Image from 'next/image';
 import { useRef } from 'react';
 import { useTranslate } from '@/hooks/useTranslate';
 import { useWindowScroll } from '@/hooks/useWindowScroll';
-import { COPY } from '@/lib/content';
+import { COPY, POSTER } from '@/lib/content';
 import styles from './umbral.module.css';
 
 const clamp01 = (v: number) => Math.max(0, Math.min(1, v));
@@ -47,10 +47,10 @@ export function Umbral() {
   });
 
   return (
-    <section ref={sectionRef} className={styles.umbral} aria-label="Umbral">
+    <section ref={sectionRef} className={styles.umbral} aria-label={t(COPY.a11y.umbral)}>
       <div className={styles.sticky}>
         <div ref={doorRef} className={styles.door} aria-hidden="true">
-          <Image src="/assets/img-06.jpg" alt="" fill sizes="100vw" className={styles.doorImg} />
+          <Image src={t(POSTER)} alt="" fill sizes="100vw" className={styles.doorImg} />
           <div className={styles.doorShade} />
         </div>
         <div ref={edgesRef} className={styles.edges} aria-hidden="true" />

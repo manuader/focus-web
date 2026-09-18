@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import { useTranslate } from '@/hooks/useTranslate';
 import { Marquee } from '@/components/ui/Marquee';
-import { COPY } from '@/lib/content';
+import { COPY, POSTER } from '@/lib/content';
 import styles from './hero.module.css';
 
 /** Hero direction C — "Densidad": stacked marquees with a sharp lens at center. */
@@ -14,9 +14,9 @@ export function HeroDensidad() {
     <section
       id="top"
       className={`${styles.hero} ${styles.heroC}`}
-      aria-label="FOCUS. Mirar no alcanza"
+      aria-label={`FOCUS. ${t(COPY.hero.c.m1)}`}
     >
-      <Image src="/assets/img-06.jpg" alt="" fill sizes="100vw" className={styles.cBg} />
+      <Image src={t(POSTER)} alt="" fill sizes="100vw" className={styles.cBg} />
 
       <Marquee
         duration={26}
@@ -53,12 +53,12 @@ export function HeroDensidad() {
 
       <div className={styles.cLens} aria-hidden="true">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/assets/img-06.jpg" alt="" className={styles.cLensImg} />
+        <img src={t(POSTER)} alt="" className={styles.cLensImg} />
       </div>
 
       <div className={styles.cFooter}>
         <p className={styles.cPara}>{t(COPY.hero.c.para)}</p>
-        <span className={styles.cLabel}>Densidad · el umbral · 2026</span>
+        <span className={styles.cLabel}>{t(COPY.hero.c.label)}</span>
       </div>
     </section>
   );

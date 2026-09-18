@@ -6,6 +6,7 @@ import './globals.css';
 import { LanguageProvider } from '@/context/LanguageContext';
 import { PointerProvider } from '@/context/PointerContext';
 import { SiteChrome } from '@/components/chrome/SiteChrome';
+import { COPY } from '@/lib/content';
 import {
   buildJsonLd,
   SITE_DESCRIPTION,
@@ -54,7 +55,7 @@ const sourceSerif = Source_Serif_4({
   fallback: ['Georgia', 'Times New Roman', 'serif'],
 });
 
-const TITLE = 'FOCUS creatives · Agencia de diseño y contenido en Buenos Aires';
+const TITLE = COPY.meta.title.es;
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),

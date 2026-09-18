@@ -113,7 +113,7 @@ export function Foco() {
   return (
     <section
       className={`${styles.foco} foc-cursor-none`}
-      aria-label="Foco"
+      aria-label={t(COPY.a11y.foco)}
       onMouseMove={onMove}
       onMouseEnter={onEnter}
       onMouseLeave={onLeave}

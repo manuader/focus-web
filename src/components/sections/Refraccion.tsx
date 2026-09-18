@@ -8,7 +8,6 @@ import { Eyebrow } from '@/components/ui/Eyebrow';
 import { COPY } from '@/lib/content';
 import styles from './refraccion.module.css';
 
-const WORD = 'REFRACCIÓN';
 const LAYERS = [
   { color: 'var(--focus-magenta)', factor: 0.09, abs: true },
   { color: 'var(--focus-blue)', factor: -0.07, abs: true },
@@ -23,6 +22,7 @@ const LAYERS = [
  */
 export function Refraccion() {
   const { t } = useTranslate();
+  const word = t(COPY.refraccion.word);
   const { enabled, virtual, subscribe } = usePointer();
   const sectionRef = useRef<HTMLElement>(null);
   const layerRefs = useRef<Array<HTMLDivElement | null>>([]);
@@ -51,7 +51,7 @@ export function Refraccion() {
   }, [enabled, subscribe]);
 
   return (
-    <section ref={sectionRef} className={styles.refrac} aria-label="Refracción">
+    <section ref={sectionRef} className={styles.refrac} aria-label={t(COPY.a11y.refraccion)}>
       {/* El rótulo del bloque vive acá y no en Superposición: el prisma se
           metió en el medio, así que el concepto se presenta de este lado. */}
       <Eyebrow section line="var(--focus-blue)" color="var(--focus-gray-300)" className={styles.eyebrow}>
@@ -59,7 +59,7 @@ export function Refraccion() {
       </Eyebrow>
 
       <div className={styles.center}>
-        <div className={styles.stack} aria-label={WORD}>
+        <div className={styles.stack} aria-label={word}>
           {LAYERS.map((layer, i) => (
             <div
               key={layer.color}
@@ -70,7 +70,7 @@ export function Refraccion() {
               style={{ color: layer.color }}
               aria-hidden="true"
             >
-              {WORD}
+              {word}
             </div>
           ))}
         </div>

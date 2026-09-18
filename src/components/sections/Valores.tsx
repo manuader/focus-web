@@ -21,7 +21,7 @@ function ValorCard({ value }: { value: (typeof VALUES)[number] }) {
       <span className={styles.dot} style={{ background: ACCENT_HEX[value.dotA] }} />
       <span className={styles.dot2} style={{ background: ACCENT_HEX[value.dotB] }} />
       <div className={styles.num}>{value.n}</div>
-      <h3 className={styles.name}>{value.name}</h3>
+      <h3 className={styles.name}>{t(value.name)}</h3>
       <p className={styles.desc}>{t(value.desc)}</p>
     </article>
   );
@@ -32,7 +32,7 @@ export function Valores() {
   const { t } = useTranslate();
 
   return (
-    <section className={styles.valores} aria-label="Valores">
+    <section className={styles.valores} aria-label={t(COPY.a11y.valores)}>
       <div className={styles.cornerImg} aria-hidden="true">
         <Image src="/assets/img-04.jpg" alt="" fill sizes="520px" />
       </div>

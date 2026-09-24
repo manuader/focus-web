@@ -248,17 +248,15 @@ export const WORKS: WorkCard[] = [
     accent: 'green',
   },
   /* Everything else, social media first. */
-  // On hold for now. Uncomment to bring it back: the card art is already in
-  // /assets/clients and its accent is the one the cycle expects here.
-  // {
-  //   id: 'chillin',
-  //   client: '@chillin1390bar',
-  //   category: { es: 'Bar', en: 'Bar' },
-  //   services: ['social-media'],
-  //   img: '/assets/clients/chillin-card.jpg',
-  //   href: 'https://www.instagram.com/chillin1390bar',
-  //   accent: 'magenta',
-  // },
+  {
+    id: 'chillin',
+    client: '@chillin1390bar',
+    category: { es: 'Bar', en: 'Bar' },
+    services: ['social-media'],
+    img: '/assets/clients/chillin-card.jpg',
+    href: 'https://www.instagram.com/chillin1390bar',
+    accent: 'magenta',
+  },
   {
     id: 'santa-tuca',
     client: '@santatuca',

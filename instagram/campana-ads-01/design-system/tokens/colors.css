@@ -1,0 +1,44 @@
+/* FOCUS — Color tokens
+   Base palette: pure additive-light primaries + true black/white.
+   These stay saturated and are used sparingly, as accents against
+   clean negative space — never as flat background fields. */
+:root {
+  /* ---- Base ---- */
+  --focus-magenta: #FF00FF;
+  --focus-blue: #0033FF;
+  --focus-green: #00FF33;
+  --focus-black: #000000;
+  --focus-white: #FFFFFF;
+
+  /* Near-black / near-white — the actual surfaces used in layouts.
+     True #000/#FFF are reserved for the logo and pure accents. */
+  --focus-ink: #0A0A0B;
+  --focus-ink-2: #17181B;
+  --focus-paper: #F6F6F4;
+
+  /* Cool-toned grays for the desaturated / out-of-focus zones
+     (viraje tonal frío) */
+  --focus-gray-100: #E7E9EC;
+  --focus-gray-300: #A7ACB4;
+  --focus-gray-500: #6B7078;
+  --focus-gray-700: #3A3D42;
+  --focus-gray-900: #17181B;
+
+  /* ---- Semantic aliases ---- */
+  --surface-dark: var(--focus-ink);
+  --surface-light: var(--focus-paper);
+  --text-on-dark: var(--focus-white);
+  --text-on-dark-muted: var(--focus-gray-300);
+  --text-on-light: var(--focus-ink);
+  --text-on-light-muted: var(--focus-gray-500);
+
+  --accent-1: var(--focus-magenta);
+  --accent-2: var(--focus-blue);
+  --accent-3: var(--focus-green);
+
+  /* Chromatic-aberration triplet, always used together, always in
+     this order (magenta / blue / green), offset 2–6px apart */
+  --aberration-a: var(--focus-magenta);
+  --aberration-b: var(--focus-blue);
+  --aberration-c: var(--focus-green);
+}

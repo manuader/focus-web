@@ -312,6 +312,17 @@ de desarrollo · CTA · hashtags.
 - Keywords en el texto (Instagram indexa captions para búsqueda):
   "identidad de marca", "dirección de arte", "agencia de diseño Buenos Aires".
 
+## 14b. Anuncios pagos (campaña "Sin plantilla", v2)
+
+Para anuncios en Reels rigen, además de todo lo anterior:
+- **Plataforma:** "Sin plantilla". IA para explorar, criterio para decidir, oficio para terminar. Rótulo de cierre "Sin plantilla · NN / 10".
+- **Atlas óptico:** diez fenómenos (superposición, profundidad de campo, reflexión, difracción, densidad, exposición larga, cáustica, umbral, órbita, recomposición). Uno dominante por pieza, nunca dos piezas seguidas con el mismo. Detalle: `instagram/campana-ads-01/03-sistema-creativo.md` (B2).
+- **Composición:** texto solo entre y = 280 e y = 1240, en la franja superior (280-620) o inferior (1000-1240); la imagen ocupa el centro óptico. Nunca texto sobre texto (24 px mínimo entre bloques) ni texto sobre luz. Se verifica con `instagram/campana-ads-01/produccion/qa.mjs`.
+- **Glifos ópticos** por servicio en `instagram/campana-ads-01/design-system/assets/glyphs/`.
+- **Sonido:** identidad sonora en `design-system/tokens/sound.md`; la grilla musical se ancla a los cortes; -14 LUFS, true peak menor a -1 dBTP.
+- **Precios:** nunca en pantalla, caption ni rótulo. Nunca mezclar proyecto con abono en la misma pieza.
+- **Renderer:** el motor propio (`instagram/campana-ads-01/produccion/`) es el renderer por defecto de FOCUS para video. La skill de HyperFrames se usa solo como lectura (se define a sí misma como "mandatory entry point"; en este repo no lo es).
+
 ## 15. Producción con /brag
 
 Para los reels se usa la skill `latent-spaces/brag`, que en Opus 5.5 corre

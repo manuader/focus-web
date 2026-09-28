@@ -1,0 +1,233 @@
+{
+  "main": {
+    "id": "e103bc963bd7230d",
+    "type": "split",
+    "children": [
+      {
+        "id": "390cff30dbefe40e",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "01fb6710dc11fcf7",
+            "type": "leaf",
+            "state": {
+              "type": "empty",
+              "state": {},
+              "icon": "lucide-file",
+              "title": "New tab"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "24f45b6f7667d937",
+    "type": "split",
+    "children": [
+      {
+        "id": "f9f4b758b524a05c",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "2d7e4cdca0f5e3cf",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical",
+                "autoReveal": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-folder-closed",
+              "title": "Files"
+            }
+          },
+          {
+            "id": "bf711bc742d503ff",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "Search"
+            }
+          },
+          {
+            "id": "fed4160df2068001",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-bookmark",
+              "title": "Bookmarks"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "8291f5ab4e8cfab9",
+    "type": "split",
+    "children": [
+      {
+        "id": "919443f73b47541e",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "7276e94fa6d20330",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "Backlinks"
+            }
+          },
+          {
+            "id": "d0ce297d20b0646a",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "Outgoing links"
+            }
+          },
+          {
+            "id": "017ca21b5c94d88b",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-tags",
+              "title": "Tags"
+            }
+          },
+          {
+            "id": "f6f772020847e629",
+            "type": "leaf",
+            "state": {
+              "type": "all-properties",
+              "state": {
+                "sortOrder": "frequency",
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-archive",
+              "title": "All properties"
+            }
+          },
+          {
+            "id": "085ab288c1a638e4",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-list",
+              "title": "Outline"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:Open quick switcher": false,
+      "graph:Open graph view": false,
+      "canvas:Create new canvas": false,
+      "daily-notes:Open today's daily note": false,
+      "templates:Insert template": false,
+      "command-palette:Open command palette": false,
+      "bases:Create new base": false
+    }
+  },
+  "active": "01fb6710dc11fcf7",
+  "lastOpenFiles": [
+    "instagram/campana-ads-01/entregables/_control/a07_039.00.jpg",
+    "instagram/campana-ads-01/entregables/_control/a07_036.00.jpg",
+    "instagram/campana-ads-01/entregables/_control/a07_022.00.jpg",
+    "instagram/campana-ads-01/entregables/_control/a07_016.00.jpg",
+    "instagram/campana-ads-01/entregables/_control/a07_002.00.jpg",
+    "instagram/campana-ads-01/entregables/_control/a04_033.00.jpg",
+    "instagram/campana-ads-01/entregables/_control/a04_026.00.jpg",
+    "instagram/campana-ads-01/entregables/_control/a04_024.00.jpg",
+    "instagram/campana-ads-01/entregables/_control/a04_020.00.jpg",
+    "instagram/campana-ads-01/entregables/_control/a04_016.80.jpg",
+    "instagram/campana-ads-01/entregables/_control/a03_027.00.jpg",
+    "instagram/campana-ads-01/entregables/anuncios/focus_ad10_proximo-caso_b.mp4",
+    "instagram/campana-ads-01/entregables/anuncios/focus_ad10_proximo-caso_b.wav",
+    "instagram/campana-ads-01/entregables/anuncios/focus_ad10_proximo-caso_b.cues.json",
+    "instagram/campana-ads-01/entregables/anuncios/focus_ad09_todos-los-meses_b.mp4",
+    "instagram/campana-ads-01/entregables/anuncios/focus_ad09_todos-los-meses_b.wav",
+    "instagram/campana-ads-01/entregables/anuncios/focus_ad09_todos-los-meses_b.cues.json",
+    "instagram/campana-ads-01/entregables/anuncios/focus_ad10_proximo-caso_b.silent.mp4",
+    "instagram/campana-ads-01/entregables/anuncios/focus_ad09_todos-los-meses_b.silent.mp4",
+    "instagram/campana-ads-01/entregables/anuncios/focus_ad07_primera-reunion_b.mp4",
+    "instagram/campana-ads-01/entregables/anuncios/focus_ad07_primera-reunion_b.wav",
+    "instagram/campana-ads-01/08-variantes-ab.md",
+    "instagram/campana-ads-01/07-control-de-calidad.md",
+    "instagram/campana-ads-01/README.md",
+    "instagram/campana-ads-01/design-system/tokens/sound.md",
+    "instagram/campana-ads-01/produccion/node_modules/pngjs/README.md",
+    "instagram/campana-ads-01/produccion/node_modules/pngjs/CHANGELOG.md",
+    "instagram/campana-ads-01/06-entregables.md",
+    "instagram/campana-ads-01/05-guiones.md",
+    "instagram/campana-ads-01/04-estrategia-y-matriz.md",
+    "instagram/campana-ads-01/03-sistema-creativo.md",
+    "instagram/campana-ads-01/01-investigacion-competitiva.md",
+    "instagram/campana-ads-01/design-system/readme.md",
+    "instagram/campana-ads-01/design-system/SKILL.md",
+    "instagram/campana-ads-01/02-auditoria-skills-y-herramientas.md",
+    "instagram/campana-ads-01/produccion/node_modules/playwright-core/lib/tools/skills/playwright-component-testing/references/vue.md",
+    "instagram/campana-ads-01/produccion/node_modules/playwright-core/lib/tools/skills/playwright-component-testing/references/typing.md",
+    "instagram/campana-ads-01/produccion/node_modules/playwright-core/lib/tools/skills/playwright-component-testing/references/gallery-spec.md",
+    "instagram/campana-ads-01/produccion/node_modules/playwright-core/lib/tools/skills/playwright-component-testing/references/react.md",
+    "instagram/campana-ads-01/produccion/node_modules/playwright-core/lib/tools/skills/playwright-component-testing/references/migration.md",
+    "instagram/campana-ads-01/produccion/node_modules/playwright-core/lib/tools/skills/playwright-cli/references/video-recording.md",
+    "instagram/campana-ads-01/produccion/node_modules/playwright-core/lib/tools/skills/playwright-cli/references/tracing.md",
+    "instagram/campana-ads-01/produccion/node_modules/playwright-core/lib/tools/skills/playwright-cli/references/test-generation.md",
+    "instagram/campana-ads-01/produccion/node_modules/playwright-core/lib/tools/skills/playwright-cli/references/playwright-tests.md",
+    "instagram/campana-ads-01/produccion/node_modules/playwright-core/lib/tools/skills/playwright-cli/references/storage-state.md",
+    "instagram/campana-ads-01/produccion/node_modules/playwright-core/lib/tools/skills/playwright-cli/references/session-management.md"
+  ]
+}

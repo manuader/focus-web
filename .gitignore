@@ -30,3 +30,12 @@ next-env.d.ts
 # instagram: capturas del sitio (se regeneran con capture.mjs) y cuadros de control
 /instagram/produccion/capturas/
 /instagram/entregables/_control/
+
+# campaña de anuncios: dependencias, capturas y cuadros de control (se regeneran)
+/instagram/campana-ads-01/produccion/node_modules/
+/instagram/campana-ads-01/produccion/capturas/
+/instagram/campana-ads-01/produccion/proto/
+/instagram/campana-ads-01/entregables/_control/
+/instagram/campana-ads-01/entregables/anuncios/*.silent.mp4
+/instagram/campana-ads-01/entregables/anuncios/*.wav
+/instagram/campana-ads-01/entregables/anuncios/*.cues.json

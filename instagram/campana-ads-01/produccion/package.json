@@ -1,0 +1,11 @@
+{
+  "name": "focus-campana-ads-01",
+  "private": true,
+  "type": "module",
+  "description": "Motor de render de la campaña de anuncios FOCUS (Reels 9:16).",
+  "dependencies": {
+    "playwright": "^1.55.0",
+    "pngjs": "^7.0.0",
+    "three": "^0.180.0"
+  }
+}

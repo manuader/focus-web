@@ -1,0 +1,21 @@
+/* FOCUS — Motion tokens (v2, campaña "Sin plantilla")
+   Carácter: lento para entrar, preciso para resolver. Nada rebota, tiembla
+   ni hace "pop". Todo movimiento es uno de los gestos ópticos del atlas. */
+:root {
+  --ease-focus: cubic-bezier(0.16, 1, 0.3, 1);     /* ease-out-expo: toda entrada */
+  --ease-cross: cubic-bezier(0.65, 0, 0.35, 1);    /* ease-in-out: cámaras, barridos */
+  --ease-exit: cubic-bezier(0.7, 0, 0.84, 0);      /* ease-in-expo: salidas */
+
+  --dur-rack: 900ms;        /* rack focus de texto: blur 16px → 0 */
+  --dur-refract: 800ms;     /* tres capas RGB que convergen a blanco */
+  --dur-sweep: 800ms;       /* barrido de umbral (línea de 2px con halo) */
+  --dur-iris: 800ms;        /* iris circular */
+  --dur-hold-min: 1500ms;   /* nadie ve un plano menos que esto */
+  --stagger-word: 70ms;     /* palabra por palabra (60-90ms) */
+  --read-per-word: 300ms;   /* + 500ms de respiro desde que la línea está completa */
+
+  --blur-in: 16px;          /* desenfoque de entrada de texto */
+  --blur-out: 10px;         /* desenfoque de salida */
+  --rgb-offset: 26px;       /* separación máxima de la refracción de texto */
+  --rise: 14px;             /* el texto sube apenas al entrar en foco */
+}

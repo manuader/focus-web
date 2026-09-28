@@ -1,0 +1,24 @@
+/* FOCUS — Formato de anuncio en Reels (v2)
+   Lienzo 1080×1920. La interfaz de Instagram tapa arriba, abajo y a la
+   derecha: el texto vive en la columna segura. */
+:root {
+  --reel-w: 1080px;
+  --reel-h: 1920px;
+  --reel-safe-top: 280px;      /* arriba: nombre de cuenta y "Patrocinado" */
+  --reel-safe-bottom: 1240px;  /* abajo: caption, CTA del anuncio, audio */
+  --reel-safe-left: 80px;
+  --reel-safe-right: 1000px;   /* 80px de margen + 140px de botones laterales para texto importante */
+  --reel-gap-block: 24px;      /* mínimo entre dos bloques de texto */
+
+  /* Zonas de composición: texto arriba o abajo, imagen en el centro óptico */
+  --zone-top: 280px 620px;
+  --zone-image: 620px 1000px;
+  --zone-bottom: 1000px 1240px;
+
+  /* Escala tipográfica de reel (Rotis Semi Sans) */
+  --reel-h1: 120px;   /* 104-140 */
+  --reel-h2: 96px;    /* 84-104 */
+  --reel-h3: 76px;    /* 64-84 */
+  --reel-body: 44px;  /* 40-56, nunca menos de 40 para leer */
+  --reel-label: 24px; /* rótulos técnicos: datos, nunca mensaje */
+}

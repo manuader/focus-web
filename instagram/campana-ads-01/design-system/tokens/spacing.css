@@ -1,0 +1,18 @@
+/* FOCUS — Spacing & composition tokens
+   The rule of the system: one sharp point, always off-center, near a
+   third or an edge — never centered, never symmetric. These tokens
+   describe the safe margins used across posters/slides. */
+:root {
+  --space-1: 8px;
+  --space-2: 16px;
+  --space-3: 24px;
+  --space-4: 40px;
+  --space-5: 64px;
+  --space-6: 96px;
+  --space-7: 140px;
+
+  /* Slide/poster safe margin (1920x1080 canvas) */
+  --canvas-margin: 80px;
+  /* Logo corner offset */
+  --logo-offset: 56px;
+}

@@ -1,0 +1,35 @@
+/* FOCUS · piezas de interfaz para la línea de software.
+   Reglas de la marca: sin esquinas redondas, sin sombras, marco de 1 px,
+   tipografía Rotis, color solo como luz (un punto, un filo, un estado). */
+.ui { color: var(--paper); font-weight: 300; }
+.ui .win { border: 1px solid rgba(167,172,180,.32); background: rgba(23,24,27,.78); }
+.ui .bar { display: flex; align-items: center; gap: 14px; height: 64px; padding: 0 24px; border-bottom: 1px solid rgba(167,172,180,.18);
+  font-weight: 700; font-size: 20px; letter-spacing: .14em; text-transform: uppercase; color: var(--g400); }
+.ui .dot { width: 10px; height: 10px; background: var(--g700); display: inline-block; }
+.ui .dot.on { background: var(--green); box-shadow: 0 0 12px var(--green); }
+.ui .dot.m { background: var(--magenta); box-shadow: 0 0 12px var(--magenta); }
+.ui .dot.b { background: #5b8cff; box-shadow: 0 0 12px #3366ff; }
+.ui .body { padding: 28px 30px; }
+.ui .mono { font-family: 'Rotis', monospace; font-weight: 700; letter-spacing: .06em; }
+.ui .row { display: flex; align-items: baseline; gap: 18px; padding: 14px 0; border-bottom: 1px solid rgba(167,172,180,.12); font-size: 34px; }
+.ui .row .k { font-weight: 700; font-size: 20px; letter-spacing: .14em; text-transform: uppercase; color: var(--g400); width: 210px; flex: none; }
+.ui .row .v { flex: 1; }
+.ui .muted { color: var(--g400); }
+.ui .soft { color: var(--g300); }
+.ui .ok { color: var(--green); }
+.ui .mg { color: var(--magenta); }
+.ui .bl { color: #5b8cff; }
+.ui .caret { display: inline-block; width: .5em; height: 1em; background: var(--paper); vertical-align: -.12em; margin-left: 2px; }
+.ui .term { font-size: 30px; line-height: 1.5; white-space: pre-wrap; }
+.ui .term .p { color: var(--g400); }
+.ui .chip { display: inline-block; font-weight: 700; font-size: 19px; letter-spacing: .14em; text-transform: uppercase; color: var(--g100);
+  border: 1px solid var(--g700); padding: 8px 12px; margin: 0 8px 8px 0; }
+.ui .chip.on { border-color: var(--green); color: var(--green); }
+.ui .bar-fill { height: 2px; background: var(--g700); position: relative; overflow: hidden; }
+.ui .bar-fill > i { position: absolute; left: 0; top: 0; bottom: 0; background: var(--paper); }
+.ui .node { border: 1px solid rgba(167,172,180,.35); padding: 18px 20px; background: rgba(10,10,11,.8); }
+.ui .node .n { font-weight: 700; font-size: 19px; letter-spacing: .14em; text-transform: uppercase; color: var(--g400); }
+.ui .node .t { font-size: 32px; margin-top: 6px; }
+.t-huge { font-weight: 300; letter-spacing: -0.035em; line-height: .92; }
+.t-lock { font-weight: 700; text-transform: uppercase; letter-spacing: -0.01em; line-height: .95; }
+.t-lock-sub { font-weight: 300; font-style: italic; text-transform: uppercase; letter-spacing: .005em; }

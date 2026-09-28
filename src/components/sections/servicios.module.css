@@ -200,44 +200,6 @@
   outline-offset: 2px;
 }
 
-/* ---- Banco vertical (sólo en angosto) ---- */
-.benchV {
-  display: none;
-  position: relative;
-  flex: 1;
-  min-height: 200px;
-  margin-top: 10px;
-}
-.svgV {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  display: block;
-  overflow: visible;
-}
-.wipeV {
-  clip-path: inset(0 0 100% 0);
-}
-/* Llega con el haz: --beam-in lo escribe el scrub. */
-.beamLabelV {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 8px;
-  text-align: center;
-  font-size: 12px;
-  font-weight: 800;
-  /* Menos tracking que en desktop: tiene que entrar entera dentro del haz,
-     donde el fondo claro le da 6.4:1 en tinta. A caballo entre el haz y el
-     negro quedaba ilegible en el medio. */
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--focus-ink);
-  opacity: var(--beam-in, 0);
-  pointer-events: none;
-}
-
 /* ---- Pie ---- */
 .foot {
   max-width: 1320px;
@@ -256,83 +218,225 @@
   color: var(--focus-gray-400);
 }
 
+/* ---- Escena móvil: oculta en desktop ---- */
+.movil {
+  display: none;
+}
+
 /* ============================================================
-   Angosto: el banco horizontal no entra, así que el aparato gira
-   90 grados. Las bandas quedan de ancho completo arriba, los rayos
-   convergen hacia abajo sobre el prisma y el haz sale hacia abajo,
-   en el mismo sentido que el scroll. La sección sigue siendo de
-   260vh porque acá también hay una secuencia que recorrer.
+   Angosto: el banco horizontal no entra en el ancho de un
+   teléfono, así que la historia se cuenta en secuencia. Un
+   prisma de verdad (canvas, en perspectiva), el espectro que
+   sube desde abajo a la izquierda, un servicio por rayo con su
+   leyenda abajo, y al final el haz blanco. Ver PrismaMovil.tsx.
+
+   Más recorrido que en desktop: son siete pasos, y cada uno
+   necesita su tramo de scroll para leerse.
    ============================================================ */
 @media (max-width: 760px) {
+  .prisma {
+    height: 460vh;
+    height: 460svh;
+  }
+  /* svh y no vh: con la barra de Safari entrando y saliendo, 100vh
+     cambiaría el alto del canvas en pleno scroll. */
   .sticky {
+    height: 100vh;
+    height: 100svh;
     padding: 0 var(--edge);
   }
   .header {
-    padding-top: 76px;
+    position: relative;
+    z-index: 1;
+    padding-top: 84px;
     display: block;
   }
   .title {
-    font-size: clamp(26px, 8vw, 40px);
+    font-size: clamp(30px, 9vw, 42px);
   }
-  /* La bajada se va: en 100vh el aparato necesita ese alto más que
-     una frase que ya dice el título. */
   .intro {
     display: none;
   }
-  .stage {
+  .stage,
+  .foot {
+    display: none;
+  }
+
+  .movil {
     display: flex;
     flex-direction: column;
-    padding: 16px 0 6px;
+    justify-content: flex-end;
+    flex: 1;
+    min-height: 0;
   }
-  .bands {
-    flex: none;
-    gap: 5px;
-    justify-content: flex-start;
-  }
-  .bench {
-    display: none;
-  }
-  .benchV {
+  /* A sangre, detrás del título y de la leyenda: el haz y los rayos
+     pueden correr hasta los bordes de la pantalla. */
+  .canvasM {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
     display: block;
+    z-index: 0;
+    pointer-events: none;
   }
-  .band {
-    height: 46px;
+
+  /* La etiqueta del haz. La posición y el giro los escribe el loop. */
+  .tagM {
+    position: absolute;
+    left: 0;
+    top: 0;
+    z-index: 1;
+    padding: 6px 4px;
+    font-size: 10.5px;
+    font-weight: 800;
+    letter-spacing: 0.2em;
+    white-space: nowrap;
+    color: var(--focus-ink);
+    opacity: 0;
+    pointer-events: none;
   }
-  .bandRow {
+
+  /* ---- Leyenda ---- */
+  .legend {
+    position: relative;
+    z-index: 1;
+    padding-bottom: max(26px, env(safe-area-inset-bottom));
+  }
+  /* Un velo de tinta: los rayos nacen debajo de la leyenda y se
+     apagan antes de llegar al texto. */
+  .legend::before {
+    content: '';
+    position: absolute;
+    z-index: -1;
+    left: calc(-1 * var(--edge));
+    right: calc(-1 * var(--edge));
+    top: -64px;
+    bottom: 0;
+    background: linear-gradient(
+      to top,
+      var(--focus-ink) 0%,
+      var(--focus-ink) calc(100% - 64px),
+      color-mix(in srgb, var(--focus-ink) 0%, transparent) 100%
+    );
+    pointer-events: none;
+  }
+  .segs {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 18px;
+  }
+  .seg {
+    position: relative;
+    flex: 1;
+    height: 3px;
+    overflow: hidden;
+    background: rgba(246, 246, 244, 0.12);
+  }
+  .seg::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--c);
+    transform: scaleX(var(--lit, 0));
+    transform-origin: left;
+    box-shadow: 0 0 10px var(--c);
+  }
+
+  /* Todas las leyendas ocupan la misma celda: la leyenda mide lo que
+     la más alta y no salta de alto al cambiar de servicio. */
+  .slides {
+    display: grid;
+  }
+  .slide {
+    grid-area: 1 / 1;
+    display: grid;
     grid-template-columns: auto 1fr;
-    grid-template-areas: 'num title' 'num detail';
-    row-gap: 1px;
-    align-content: center;
-    gap: 0 14px;
-    padding: 0 14px;
+    align-items: start;
+    gap: 0 16px;
+    color: var(--focus-paper);
+    opacity: 0;
+    transform: translateY(12px);
+    transition:
+      opacity 0.4s ease,
+      transform 0.7s var(--ease-out-expo);
+    pointer-events: none;
   }
-  .bandNum {
-    grid-area: num;
-    align-self: center;
-    font-size: 17px;
-  }
-  .bandTitle {
-    grid-area: title;
-    font-size: 14px;
-    align-self: end;
-  }
-  .bandDetail {
-    grid-area: detail;
-    text-align: left;
-    max-width: none;
-    font-size: 11px;
-    align-self: start;
-    /* Sin hover en touch: el detalle está siempre. */
+  .slide[data-on='1'] {
     opacity: 1;
     transform: none;
+    pointer-events: auto;
   }
-  .foot {
-    padding-bottom: 20px;
-    font-size: 10.5px;
-    letter-spacing: 0.14em;
+  .slide:focus-visible {
+    outline: 2px solid var(--focus-paper);
+    outline-offset: 4px;
   }
-  .footScroll {
-    display: none;
+  .slideNum {
+    font-size: 46px;
+    font-weight: 300;
+    line-height: 0.82;
+    letter-spacing: -0.02em;
+    -webkit-text-fill-color: transparent;
+    /* Aclarado con blanco: el azul de marca puro casi no se ve sobre tinta. */
+    -webkit-text-stroke: 1.2px color-mix(in srgb, var(--c) 70%, #fff);
+    filter: drop-shadow(0 0 12px color-mix(in srgb, var(--c) 55%, transparent));
+  }
+  .slideText {
+    display: block;
+    min-width: 0;
+  }
+  .slideTitle {
+    margin: 0 0 6px;
+    font-size: 19px;
+    font-weight: 800;
+    line-height: 1.05;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+  }
+  .slideDetail {
+    display: block;
+    font-size: 14px;
+    font-weight: 300;
+    line-height: 1.45;
+    color: var(--focus-gray-300);
+  }
+
+  /* El cierre: los siete nombres en su color, uno detrás del otro,
+     y el llamado. Los colores se aclaran con blanco para que el azul
+     de marca pase contraste como texto chico. */
+  .slideEnd {
+    display: block;
+  }
+  .endList {
+    margin: 0 0 14px;
+    font-size: 12.5px;
+    font-weight: 800;
+    line-height: 1.6;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .endList span {
+    color: color-mix(in srgb, var(--c) 62%, #fff);
+  }
+  .endList span:not(:last-child)::after {
+    content: ' · ';
+    color: var(--focus-gray-500);
+  }
+  .endCta {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 12px 18px;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--focus-ink);
+    background: var(--focus-paper);
+  }
+  .endCta:focus-visible {
+    outline: 2px solid var(--focus-paper);
+    outline-offset: 3px;
   }
 }
 

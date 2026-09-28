@@ -495,6 +495,12 @@ export const COPY = {
     /** Names the tag list on each card for screen readers; never drawn. */
     services: { es: 'Servicios provistos', en: 'What we did' },
     cta: { es: 'Tu caso acá', en: "You're next" },
+    /* The card's link line, by where it goes. */
+    visitSite: { es: 'Ver sitio', en: 'Visit site' },
+    visitIg: { es: 'Ver en Instagram', en: 'View on Instagram' },
+    /* The empty frame that closes the gallery. */
+    nextCat: { es: 'Próximo caso', en: 'Next case' },
+    nextName: { es: 'Tu marca', en: 'Your brand' },
   },
   foco: {
     eyebrow: { es: 'Foco', en: 'Focus' },

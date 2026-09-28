@@ -1,0 +1,4 @@
+"Give phones a real prism." Así se llama uno de los 34 commits que llevó focuscreatives.net entre el 3 de agosto y el 28 de septiembre.
+Cada línea del historial es una decisión: dar vuelta el prisma de servicios, darle un puntero al teléfono, dejar de medir cinco secciones para animar una.
+Diseño y código en la misma mesa. Seguinos para ver el proceso de cada pieza.
+#focuscreatives #procesocreativo #desarrolloweb #nextjs #diseñoweb

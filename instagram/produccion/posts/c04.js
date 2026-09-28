@@ -13,7 +13,7 @@ F.deck({
   name: 'focus_car04_anatomia-de-un-sitio', format: 'post',
   frames: [
     (i) => [
-      image({ src: cap('prisma', 200), x: 0, y: 0, w: 1080, h: 1350, t0: i, fin: 0.01, blur: 0, pos: '50% 62%' }),
+      image({ src: cap('prisma', 200), x: 0, y: 0, w: 1080, h: 1350, t0: i, fin: 0.01, blur: 0, pos: '50% 78%' }),
       box({ x: 0, y: 700, w: 1080, h: 650, t0: i, fin: 0.01, blur: false, style: { background: 'linear-gradient(transparent, rgba(10,10,11,.95) 55%)' } }),
       text({ lines: ['Anatomía de un sitio', 'que se *mueve.*'], size: 92, x: 80, y: 1000, t0: i, by: 'all' }),
       text({ lines: ['focuscreatives.net, desarmado en cinco piezas.'], cls: 't-body', size: 36, x: 80, y: 1210, t0: i, by: 'all', color: 's' })],

@@ -12,6 +12,8 @@ F.mount({
   items: [
     seq({ dir: '/instagram/produccion/capturas/superposicion', count: 150, t0: 0, t1: 5.4, fin: 0.3, offset: 0 }),
     box({ x: 0, y: 0, w: 1080, h: 1920, t0: 0, t1: 2.9, fin: 0.01, blur: false, style: { background: 'rgba(10,10,11,.72)' } }),
+    // La barra superior del sitio queda en la zona de la interfaz de Instagram: se funde a tinta.
+    box({ x: 0, y: 0, w: 1080, h: 300, t0: 0, t1: 15.4, fin: 0.01, blur: false, style: { background: 'linear-gradient(#0a0a0b 70%, transparent)' } }),
     text({ lines: ['Esto no es', 'un video editado.'], size: 108, x: 80, y: 640, t0: 0.15, t1: 2.9, by: 'line', lineDelay: 0.3, stagger: 0 }),
     text({ lines: ['Es un sitio respondiendo a un dedo.'], cls: 't-body', size: 50, x: 84, y: 920, t0: 1.2, t1: 2.9, by: 'word', stagger: 0.05, color: 's' }),
     ...chip(3.0, 5.4, '01', 'Superposición', 'Dos círculos en modo diferencia: el color nace donde se cruzan.'),

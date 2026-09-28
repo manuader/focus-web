@@ -1,8 +1,16 @@
+/* ============================================================
+   Casos — la galería como un lente haciendo foco
+   El caso del centro está nítido, en color y a tamaño pleno;
+   los vecinos salen de foco cuanto más lejos están. --f (foco,
+   0..1) y --d (lado, -1..1) los escribe Trabajo.tsx por tarjeta,
+   por frame; acá se traducen a blur, gris, escala y giro.
+   ============================================================ */
+
 .trabajo {
   position: relative;
-  /* One screen to pin, plus 40vh of scroll per case: 300vh at five cases, the
-     pace the gallery was tuned at. Adding cases lengthens the section instead
-     of speeding the track up. --cases is set from WORKS in Trabajo.tsx. */
+  /* One screen to pin, plus 40vh of scroll per case: adding cases lengthens
+     the section instead of speeding the track up. --cases is set from WORKS
+     (plus the closing frame) in Trabajo.tsx. */
   height: calc(100vh + var(--cases, 5) * 40vh);
   background: var(--focus-ink);
 }
@@ -10,17 +18,72 @@
   position: sticky;
   top: 0;
   height: 100vh;
+  height: 100svh;
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  isolation: isolate;
 }
+
+/* ---- La sala: luz del color del caso en foco, y su nombre enorme ---- */
+.glow {
+  position: absolute;
+  z-index: -1;
+  left: 50%;
+  top: 56%;
+  width: 90vw;
+  height: 80vh;
+  transform: translate(-50%, -50%);
+  background-color: var(--focus-magenta);
+  -webkit-mask: radial-gradient(closest-side, #000 0%, rgba(0, 0, 0, 0.35) 45%, transparent 100%);
+  mask: radial-gradient(closest-side, #000 0%, rgba(0, 0, 0, 0.35) 45%, transparent 100%);
+  opacity: 0.11;
+  transition: background-color 1.4s ease;
+  pointer-events: none;
+}
+.ghosts {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding-top: 8vh;
+  overflow: hidden;
+  pointer-events: none;
+  /* Se desvanece hacia los bordes: un nombre largo se corta como un
+     encuadre, no como un error. */
+  -webkit-mask: linear-gradient(90deg, transparent, #000 18%, #000 82%, transparent);
+  mask: linear-gradient(90deg, transparent, #000 18%, #000 82%, transparent);
+}
+.ghost {
+  grid-area: 1 / 1;
+  font-size: clamp(88px, 14vw, 240px);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.045em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(246, 246, 244, 0.1);
+  opacity: 0;
+  transform: translateY(28px);
+  transition:
+    opacity 0.9s ease,
+    transform 1.4s var(--ease-out-expo);
+}
+.ghost[data-on='1'] {
+  opacity: 1;
+  transform: none;
+}
+
+/* ---- Encabezado ---- */
 .header {
+  flex: none;
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
   gap: 40px;
-  padding: 96px 40px 44px;
+  padding: 92px 40px 8px;
   flex-wrap: wrap;
 }
 .title {
@@ -38,95 +101,184 @@
   text-transform: uppercase;
   color: var(--focus-gray-400);
 }
-.track {
+
+/* ---- El riel ---- */
+.viewport {
+  flex: 1;
+  min-height: 0;
   display: flex;
-  gap: 2px;
-  padding: 0 40px;
-  will-change: transform;
+  align-items: center;
 }
-.card {
+.track {
+  /* offsetLeft de las tarjetas se mide contra el riel. */
   position: relative;
-  display: block;
+  display: flex;
+  align-items: center;
+  gap: max(56px, 7vw);
+  will-change: transform;
+  /* The plate is the one size everything hangs off: as wide as it can be
+     while the name, tags and link still fit under it on a short screen. */
+  --plate: min(420px, 28vw, calc(100svh - 470px));
+}
+
+/* ---- La tarjeta ---- */
+.card {
+  --f: 1;
+  --d: 0;
+  position: relative;
   flex: none;
-  width: min(480px, 72vw);
-  aspect-ratio: 4 / 5;
-  max-height: 56vh;
-  overflow: hidden;
-  background: var(--focus-ink-2);
+  display: flex;
+  flex-direction: column;
+  width: calc(var(--plate) + 28px);
+  color: var(--focus-paper);
+  /* Fuera de foco: más chica, más apagada y girada hacia el centro,
+     como un fotograma que se aleja del eje del lente. */
+  transform: perspective(1600px) rotateY(calc(var(--d) * -14deg))
+    scale(calc(0.84 + 0.16 * var(--f)));
+  opacity: calc(0.3 + 0.7 * var(--f));
+  will-change: transform, opacity;
 }
-/* These are client logos, not photography: the desaturated-until-hover idea
-   stays, but far gentler than the old photo grade, which buried a mark. */
-.cardImg {
-  object-fit: cover;
-  filter: grayscale(1) brightness(0.82) contrast(1.02);
-  transition: filter 0.7s, transform 0.9s var(--ease-out-expo);
-}
-.card:hover .cardImg {
-  filter: grayscale(0) brightness(1) contrast(1) saturate(1.08);
-  transform: scale(1.04);
-}
-/* The body sits on this, so it has to be dark enough for the rubro — 11px of
-   saturated accent — and not just for the white name. The old ramp only
-   reached 0.9 at the very bottom edge, which left the rubro on the pale part
-   of a light logo at about 2.2:1. It now lands near-opaque by the time the
-   text starts, and the logos are centred, so nothing of them is lost. */
-.cardGrad {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    180deg,
-    transparent 40%,
-    rgba(10, 10, 11, 0.62) 60%,
-    rgba(10, 10, 11, 0.95) 76%,
-    rgba(10, 10, 11, 0.97)
-  );
-}
-.cardNum {
-  position: absolute;
-  right: 20px;
-  top: 18px;
-  font-size: 44px;
-  font-weight: 300;
-  color: transparent;
-  -webkit-text-stroke: 1px rgba(246, 246, 244, 0.5);
-}
-.cardBody {
-  position: absolute;
-  left: 26px;
-  right: 26px;
-  bottom: 26px;
-}
-.cardCat {
-  font-size: 11px;
+.meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 16px;
+  margin: 0 14px 10px;
+  font-size: 10.5px;
   font-weight: 700;
   letter-spacing: 0.24em;
   text-transform: uppercase;
-  line-height: 1.5;
-  margin-bottom: 12px;
+  line-height: 1.4;
 }
-.cardTitle {
+.num {
+  color: var(--focus-gray-400);
+  white-space: nowrap;
+}
+.cat {
+  text-align: right;
+  color: var(--focus-gray-300);
+}
+
+/* El paspartú: marcas de corte en las cuatro esquinas, como una
+   prueba de imprenta o una obra montada. */
+.frame {
+  --m: rgba(246, 246, 244, 0.4);
+  --l: 16px;
+  position: relative;
+  padding: 14px;
+  background:
+    linear-gradient(var(--m), var(--m)) 0 0 / var(--l) 1px,
+    linear-gradient(var(--m), var(--m)) 0 0 / 1px var(--l),
+    linear-gradient(var(--m), var(--m)) 100% 0 / var(--l) 1px,
+    linear-gradient(var(--m), var(--m)) 100% 0 / 1px var(--l),
+    linear-gradient(var(--m), var(--m)) 0 100% / var(--l) 1px,
+    linear-gradient(var(--m), var(--m)) 0 100% / 1px var(--l),
+    linear-gradient(var(--m), var(--m)) 100% 100% / var(--l) 1px,
+    linear-gradient(var(--m), var(--m)) 100% 100% / 1px var(--l);
+  background-repeat: no-repeat;
+}
+/* La pieza en foco proyecta su color sobre el piso. */
+.frame::after {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  left: 12%;
+  right: 12%;
+  bottom: -30px;
+  height: 56px;
+  background: radial-gradient(closest-side, var(--accent), transparent);
+  opacity: calc(var(--f) * 0.45);
+  filter: blur(18px);
+  pointer-events: none;
+}
+.plate {
+  position: relative;
+  width: var(--plate);
+  aspect-ratio: 1;
+  overflow: hidden;
+  background: var(--focus-ink-2);
+  transform: perspective(900px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+  transition: transform 0.6s var(--ease-out-expo);
+  box-shadow:
+    0 50px 90px -50px rgba(0, 0, 0, 0.95),
+    0 0 0 1px rgba(246, 246, 244, 0.07);
+}
+/* Logos, no fotos: fuera de foco se desenfocan y pierden el color; en
+   foco quedan como vinieron. */
+.plateImg {
+  object-fit: cover;
+  filter: grayscale(calc(1 - var(--f))) blur(calc((1 - var(--f)) * 6px))
+    brightness(calc(0.55 + 0.45 * var(--f)));
+  transform: scale(1.04);
+  transition: transform 1.4s var(--ease-out-expo);
+}
+.card:hover .plateImg {
+  transform: scale(1.09);
+}
+/* Viñeta: asienta el logo dentro del marco sea cual sea su fondo. */
+.plate::before {
+  content: '';
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  box-shadow: inset 0 0 90px rgba(0, 0, 0, 0.26);
+  pointer-events: none;
+}
+/* Vidrio: un reflejo que sigue al puntero y un barrido en diagonal. */
+.plate::after {
+  content: '';
+  position: absolute;
+  z-index: 2;
+  inset: 0;
+  background:
+    radial-gradient(circle at var(--mx, 30%) var(--my, 0%), rgba(255, 255, 255, 0.34), transparent 55%),
+    linear-gradient(115deg, transparent 38%, rgba(255, 255, 255, 0.1) 50%, transparent 62%);
+  mix-blend-mode: soft-light;
+  opacity: 0.55;
+  transition: opacity 0.5s;
+  pointer-events: none;
+}
+.card:hover .plate::after {
+  opacity: 1;
+}
+/* The global a:hover turns links green; here the accent is per client and
+   lives on the link line, not on the name. */
+.card:hover {
+  color: var(--focus-paper);
+}
+.card:focus-visible {
+  outline: 2px solid var(--focus-paper);
+  outline-offset: 6px;
+}
+
+/* ---- Pie de la tarjeta ---- */
+.body {
+  margin: 22px 14px 0;
+  /* Sube a su lugar a medida que la tarjeta entra en foco. */
+  transform: translateY(calc((1 - var(--f)) * 14px));
+}
+.name {
   margin: 0;
-  font-size: clamp(20px, 2.1vw, 30px);
+  font-size: clamp(22px, 2.1vw, 32px);
   font-weight: 800;
   letter-spacing: -0.025em;
   line-height: 1.05;
   overflow-wrap: anywhere;
 }
-/* The services, as tags rather than a sentence: they are data — the same
-   labels the Servicios section sets — and should read as data next to the
-   client's name. Always visible, unlike the blurb below them, because this is
-   the part of the card that answers "what did they actually do". */
-.cardTags {
+/* The services, as tags rather than a sentence: they are data (the same
+   labels the Servicios section sets) and should read as data next to the
+   client's name. */
+.tags {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
-  margin: 12px 0 0;
+  margin: 14px 0 0;
   padding: 0;
   list-style: none;
 }
-.cardTag {
+.tag {
   padding: 5px 9px 4px;
-  border: 1px solid rgba(246, 246, 244, 0.28);
+  border: 1px solid rgba(246, 246, 244, 0.24);
   font-size: 10px;
   font-weight: 700;
   letter-spacing: 0.13em;
@@ -135,36 +287,92 @@
   color: var(--focus-gray-100);
   transition: border-color 0.5s, color 0.5s;
 }
-.card:hover .cardTag {
-  border-color: rgba(246, 246, 244, 0.6);
+.card:hover .tag {
+  border-color: rgba(246, 246, 244, 0.55);
   color: var(--focus-paper);
 }
-.cardMeta {
-  max-height: 0;
-  overflow: hidden;
-  opacity: 0;
-  transition: max-height 0.6s var(--ease-out-expo), opacity 0.5s;
-}
-.card:hover .cardMeta {
-  max-height: 160px;
-  opacity: 1;
-}
-.cardMeta p {
-  margin: 14px 0 0;
+.desc {
+  margin: 12px 0 0;
   font-size: 13px;
-  line-height: 1.6;
+  line-height: 1.55;
   font-weight: 300;
   color: var(--focus-gray-300);
 }
-.endCard {
-  flex: none;
-  width: min(420px, 60vw);
-  display: flex;
+.visit {
+  display: inline-flex;
   align-items: center;
-  justify-content: center;
+  gap: 8px;
+  margin-top: 16px;
+  padding-bottom: 5px;
+  border-bottom: 1px solid rgba(246, 246, 244, 0.2);
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--focus-gray-300);
+  transition: color 0.4s, border-color 0.4s;
 }
+.card:hover .visit {
+  color: var(--focus-paper);
+  border-color: var(--accent);
+}
+.arrow {
+  display: inline-block;
+  transition: transform 0.5s var(--ease-out-expo);
+}
+.card:hover .arrow {
+  transform: translate(3px, -3px);
+}
+
+/* ---- El marco vacío: el próximo caso ---- */
+.plateEmpty {
+  display: grid;
+  place-items: center;
+  background: var(--focus-ink);
+}
+/* El espectro girando detrás del vidrio, lento. */
+.plateEmpty::before {
+  inset: -30%;
+  box-shadow: none;
+  background: conic-gradient(
+    from 0deg,
+    var(--focus-magenta),
+    var(--focus-blue),
+    var(--focus-green),
+    var(--focus-magenta)
+  );
+  filter: blur(70px);
+  opacity: calc(0.12 + 0.2 * var(--f));
+  animation: trabajoSpin 16s linear infinite;
+  z-index: 0;
+}
+.plateEmpty::after {
+  z-index: 1;
+}
+.nextBtn {
+  position: relative;
+  z-index: 3;
+  padding: 22px 34px;
+  font-size: 12px;
+  background: rgba(10, 10, 11, 0.45);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+.nextCard .name {
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(246, 246, 244, 0.7);
+}
+@keyframes trabajoSpin {
+  to {
+    transform: rotate(1turn);
+  }
+}
+
+/* ---- Progreso ---- */
 .footer {
-  padding: 44px 40px 0;
+  flex: none;
+  position: relative;
+  padding: 0 40px 30px;
   display: flex;
   align-items: center;
   gap: 18px;
@@ -180,58 +388,96 @@
   left: 0;
   top: -1px;
   height: 3px;
-  width: 0%;
+  width: 100%;
+  transform: scaleX(0);
+  transform-origin: left;
   background: linear-gradient(90deg, #ff00ff, #0033ff, #00ff33);
 }
 .count {
   font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.22em;
+  font-variant-numeric: tabular-nums;
   color: var(--focus-gray-400);
-}
-
-/* Touch has no hover: show the logos in full colour and their blurb outright,
-   since there is no way to trigger the reveal. */
-@media (hover: none) {
-  .cardImg {
-    filter: none;
-  }
-  .cardMeta {
-    max-height: 160px;
-    opacity: 1;
-  }
 }
 
 @media (max-width: 700px) {
   .header {
-    padding: 84px var(--edge) 28px;
+    padding: 84px var(--edge) 0;
+    gap: 14px;
   }
-  .track {
-    padding: 0 var(--edge);
+  .hint {
+    font-size: 10.5px;
+    letter-spacing: 0.16em;
   }
   .footer {
-    padding: 32px var(--edge) 0;
+    padding: 0 var(--edge) 24px;
+  }
+  /* Un poco más angosta que la pantalla, para que asome el caso
+     siguiente y se entienda que la galería sigue de costado. */
+  .track {
+    gap: 3vw;
+    --plate: min(64vw, calc(100svh - 430px));
   }
   .card {
-    width: min(360px, 78vw);
+    transform: perspective(1200px) rotateY(calc(var(--d) * -10deg))
+      scale(calc(0.86 + 0.14 * var(--f)));
   }
-  .cardBody {
-    left: 18px;
-    right: 18px;
-    bottom: 20px;
+  .meta {
+    margin: 0 12px 8px;
+    font-size: 9.5px;
+    letter-spacing: 0.18em;
   }
-  .cardTitle {
-    font-size: clamp(18px, 5.4vw, 26px);
+  .frame {
+    padding: 12px;
+    --l: 12px;
   }
-  /* A three-service card wraps to three rows here, which would climb over the
-     logo. Tighter type and padding keeps it to two. */
-  .cardTags {
+  .card {
+    width: calc(var(--plate) + 24px);
+  }
+  .body {
+    margin: 18px 12px 0;
+  }
+  .name {
+    font-size: clamp(19px, 5.4vw, 26px);
+  }
+  .tags {
     gap: 5px;
     margin-top: 10px;
   }
-  .cardTag {
+  .tag {
     padding: 4px 7px 3px;
     font-size: 9.5px;
     letter-spacing: 0.1em;
+  }
+  .visit {
+    margin-top: 12px;
+  }
+  .ghost {
+    font-size: 30vw;
+  }
+}
+
+/* Pantallas bajas de escritorio (720–780px): la tarjeta más alta, con
+   bajada y dos filas de etiquetas, pisaba la barra de progreso. */
+@media (min-width: 701px) and (max-height: 780px) {
+  .track {
+    --plate: min(420px, 28vw, calc(100svh - 490px));
+  }
+  .header {
+    padding-top: 82px;
+  }
+  .body {
+    margin-top: 16px;
+  }
+  .tags {
+    margin-top: 10px;
+  }
+  .desc {
+    margin-top: 8px;
+    font-size: 12px;
+  }
+  .visit {
+    margin-top: 10px;
   }
 }

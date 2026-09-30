@@ -26,6 +26,19 @@
   background: var(--focus-ink);
   color: var(--focus-paper);
 }
+/* Las paradas, una por servicio y una al final: puntos de imán para el
+   scroll táctil (globals.css prende el imán solo con puntero grueso). En
+   progreso de la sección: 0 cuando se fija, 1 cuando la suelta. */
+.stop {
+  position: absolute;
+  left: 0;
+  top: calc(var(--at) * (100% - 100svh));
+  width: 1px;
+  height: 1px;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  pointer-events: none;
+}
 /* svh y no vh: con la barra de Safari entrando y saliendo, 100vh
    cambiaría el alto del canvas en pleno scroll. */
 .sticky {

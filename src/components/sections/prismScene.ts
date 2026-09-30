@@ -59,6 +59,15 @@ export function activeStep(p: number, count: number): number {
   return step;
 }
 
+/**
+ * Where the scroll rests on the way through: each service with its ray
+ * fully in, and the white beam once it is out with its label.
+ */
+export const stops = (count: number) => [
+  ...Array.from({ length: count }, (_, i) => rayWindow(i)[1] + 0.004),
+  BEAM[1] + 0.03,
+];
+
 /** Scroll progress at which service `i` is fully in, for jumping to it. */
 export const stepProgress = (i: number, count: number) =>
   i >= count ? BEAM[1] : rayWindow(i)[1];

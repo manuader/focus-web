@@ -86,6 +86,13 @@ html {
      scrollbars this changes nothing. */
   scrollbar-gutter: stable;
 }
+/* Touch: the scroll snaps to the few points that ask for it (a stop on
+   each service of the prism). Proximity, so nowhere else is touched. */
+@media (pointer: coarse) {
+  html {
+    scroll-snap-type: y proximity;
+  }
+}
 
 body {
   margin: 0;

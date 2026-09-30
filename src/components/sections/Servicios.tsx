@@ -1,11 +1,14 @@
 'use client';
 
-import { useRef } from 'react';
+import { useRef, type CSSProperties } from 'react';
 import { useTranslate } from '@/hooks/useTranslate';
 import { Reveal } from '@/components/ui/Reveal';
 import { Eyebrow } from '@/components/ui/Eyebrow';
-import { COPY } from '@/lib/content';
+import { SERVICES, COPY } from '@/lib/content';
+import { useReducedMotion } from '@/hooks/useMediaQuery';
 import { Prisma } from './Prisma';
+import { stops } from './prismScene';
+import { useScrollSteps } from './useScrollSteps';
 import styles from './servicios.module.css';
 
 /**
@@ -17,11 +20,18 @@ import styles from './servicios.module.css';
  * sits on top; the scene (the prism, the rays, the caption and the names
  * flying into their rays) is Prisma, the same one on every screen size,
  * laid out for the width it gets.
+ *
+ * The scroll stops briefly on every service so they arrive one by one: the
+ * wheel steps through them (useScrollSteps), and touch snaps to the same
+ * points (the markers below).
  */
+const STOPS = stops(SERVICES.length);
+
 export function Servicios() {
   const { t } = useTranslate();
   const sectionRef = useRef<HTMLElement>(null);
   const headerRef = useRef<HTMLDivElement>(null);
+  useScrollSteps(sectionRef, STOPS, useReducedMotion());
 
   return (
     <section
@@ -30,6 +40,14 @@ export function Servicios() {
       className={styles.prisma}
       aria-label={t(COPY.a11y.servicios)}
     >
+      {STOPS.map((at) => (
+        <span
+          key={at}
+          className={styles.stop}
+          style={{ '--at': at } as CSSProperties}
+          aria-hidden="true"
+        />
+      ))}
       <div className={styles.sticky}>
         <div ref={headerRef} className={styles.header}>
           <div>

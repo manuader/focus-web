@@ -15,6 +15,7 @@ import { useReducedMotion } from '@/hooks/useMediaQuery';
 import { Eyebrow } from '@/components/ui/Eyebrow';
 import { WORKS, SERVICE_BY_ID, ACCENT_TEXT, COPY } from '@/lib/content';
 import styles from './trabajo.module.css';
+import { useScrollHold } from './useScrollHold';
 
 const clamp01 = (v: number) => Math.max(0, Math.min(1, v));
 const pad2 = (n: number) => String(n).padStart(2, '0');
@@ -37,8 +38,8 @@ type CardState = '' | 'wait' | 'play';
 /**
  * The case gallery, as a deck seen through a lens, that turns sideways. The
  * deck is a horizontal scroller: a trackpad or a finger swipes it, a mouse
- * drags it or uses the arrows, and the page's own vertical scroll goes past
- * it untouched. The case in the centre faces the reader, sharp and lit, and
+ * drags it or uses the arrows, and the page's own vertical scroll never
+ * turns it. The case in the centre faces the reader, sharp and lit, and
  * its neighbours turn away behind it, darker and out of focus. Under it, its
  * name and rubro fade in as it lands.
  *
@@ -52,7 +53,11 @@ type CardState = '' | 'wait' | 'play';
  * centre; inside its slot, every frame, each card gets the transform that fans it
  * into the deck (the offset from its place in the row, its turn and scale),
  * read from the scroller's position. The deck is dealt in as the section
- * scrolls into view, and the cards lean into the travel while it turns. All
+ * scrolls into view, and the cards lean into the travel while it turns.
+ *
+ * Scrolled past with a wheel or a trackpad, the page stops on the section
+ * for a moment (see useScrollHold), so the film of the first case gets to
+ * start even for a reader who was not going to stop. All
  * of it is written through refs, inline transforms and data attributes;
  * React never re-renders on scroll.
  */
@@ -321,6 +326,8 @@ export function Trabajo() {
       m.raf = 0;
     };
   }, [frame, position, rest, settle]);
+
+  useScrollHold(sectionRef, reduce);
 
   /** Turn the deck until case `i` sits in the centre. */
   const scrollToCase = useCallback(

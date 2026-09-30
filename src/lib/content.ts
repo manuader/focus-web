@@ -87,6 +87,13 @@ export interface WorkCard {
   desc?: Localized;
   /** Card artwork: the client's mark on its own background, 4:5. */
   img: string;
+  /**
+   * The film the card fades into once it rests in the centre: the work
+   * itself, moving. 4:5 like the artwork, and it opens and closes on that
+   * same artwork, so the fade has no seam. Built in `casos-video/`. Leave it
+   * out and the card simply stays on its logo.
+   */
+  video?: string;
   /** Where the card points: the account's reels, or the live site. */
   href: string;
   /** Brand accent tinting the rubro. */
@@ -215,8 +222,8 @@ export const SERVICE_BY_ID = Object.fromEntries(
    twice.
 
    To add a case: add one object where it belongs in that order. `services`
-   are ids from SERVICES; the ordinal on the card and the counter come from the
-   position in this list. The accents cycle magenta, blue, green down the list,
+   are ids from SERVICES; the counter comes from the position in this list.
+   `video` is the film the card fades into at rest (see casos-video/PLAN.md). The accents cycle magenta, blue, green down the list,
    so no two neighbours share one. */
 export const WORKS: WorkCard[] = [
   /* The sites. */
@@ -226,6 +233,7 @@ export const WORKS: WorkCard[] = [
     category: { es: 'Arquitectura', en: 'Architecture' },
     services: ['web'],
     img: '/assets/clients/ader-studio-card.jpg',
+    video: '/assets/cases/ader-studio.mp4',
     href: 'https://ader-studio.vercel.app',
     accent: 'magenta',
   },
@@ -235,6 +243,7 @@ export const WORKS: WorkCard[] = [
     category: { es: 'Estudio creativo', en: 'Creative studio' },
     services: ['web'],
     img: '/assets/clients/oushy-card.jpg',
+    video: '/assets/cases/oushy.mp4',
     href: 'https://oushy-web.vercel.app',
     accent: 'blue',
   },
@@ -244,6 +253,7 @@ export const WORKS: WorkCard[] = [
     category: { es: 'Imprenta', en: 'Print shop' },
     services: ['web'],
     img: '/assets/clients/toplaser-web-card.jpg',
+    video: '/assets/cases/top-laser-web.mp4',
     href: 'https://toplaserimprenta.com',
     accent: 'green',
   },
@@ -268,6 +278,7 @@ export const WORKS: WorkCard[] = [
       en: 'Editing for Reels and YouTube.',
     },
     img: '/assets/clients/santa-tuca-card.jpg',
+    video: '/assets/cases/santa-tuca.mp4',
     href: 'https://www.instagram.com/santatuca',
     accent: 'blue',
   },
@@ -277,6 +288,7 @@ export const WORKS: WorkCard[] = [
     category: { es: 'Imprenta', en: 'Print shop' },
     services: ['identidad', 'social-media', 'audiovisual'],
     img: '/assets/clients/toplaser-card.jpg',
+    video: '/assets/cases/top-laser.mp4',
     href: 'https://www.instagram.com/toplaserimprenta',
     accent: 'green',
   },
@@ -286,6 +298,7 @@ export const WORKS: WorkCard[] = [
     category: { es: 'Vinos boutique', en: 'Boutique wines' },
     services: ['social-media'],
     img: '/assets/clients/chuchones-card.jpg',
+    video: '/assets/cases/chuchones.mp4',
     href: 'https://www.instagram.com/chuchones_wines',
     accent: 'magenta',
   },
@@ -298,6 +311,7 @@ export const WORKS: WorkCard[] = [
     },
     services: ['social-media'],
     img: '/assets/clients/rsh-consultora-card.jpg',
+    video: '/assets/cases/rsh-consultora.mp4',
     href: 'https://www.instagram.com/rsh_consultora',
     accent: 'blue',
   },
@@ -307,6 +321,7 @@ export const WORKS: WorkCard[] = [
     category: { es: 'Estética y salud', en: 'Beauty and wellness' },
     services: ['social-media'],
     img: '/assets/clients/fernanda-estetica-card.jpg',
+    video: '/assets/cases/fernanda-estetica.mp4',
     href: 'https://www.instagram.com/esteticaintegralfernanda',
     accent: 'green',
   },
@@ -488,19 +503,13 @@ export const COPY = {
   trabajo: {
     eyebrow: { es: 'Trabajo seleccionado', en: 'Selected work' },
     title: { es: 'Casos', en: 'Projects' },
-    hint: {
-      es: 'El scroll vertical avanza la galería',
-      en: 'Scroll to move through the work',
-    },
-    /** Names the tag list on each card for screen readers; never drawn. */
-    services: { es: 'Servicios provistos', en: 'What we did' },
     cta: { es: 'Tu caso acá', en: "You're next" },
     /* The card's link line, by where it goes. */
     visitSite: { es: 'Ver sitio', en: 'Visit site' },
     visitIg: { es: 'Ver en Instagram', en: 'View on Instagram' },
     /* The empty frame that closes the gallery. */
-    nextCat: { es: 'Próximo caso', en: 'Next case' },
-    nextName: { es: 'Tu marca', en: 'Your brand' },
+    nextName: { es: 'Tu marca, la próxima', en: 'Your brand, next' },
+    nextCat: { es: 'Enfoquemos lo que ya es tuyo', en: "Let's bring yours into focus" },
   },
   foco: {
     eyebrow: { es: 'Foco', en: 'Focus' },

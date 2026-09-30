@@ -82,3 +82,10 @@ export const HERO_DIRECTION: HeroDirection = 'A';
 
 Imágenes, logos, motifs (`rings.svg`, `reticle.svg`) y fuentes se copiaron a
 `public/assets/` y `src/app/fonts/` desde el proyecto original.
+
+### Videos de los casos
+
+Cada tarjeta de **Casos** se funde, a los tres segundos de quedar quieta en el
+centro, a un video del trabajo (`public/assets/cases/<id>.mp4`, el campo `video`
+de `WORKS`). Esos videos se producen en [`casos-video/`](casos-video/PLAN.md):
+capturas del sitio o de la cuenta del cliente, armadas con HyperFrames.

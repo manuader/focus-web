@@ -1,138 +1,210 @@
 'use client';
 
 import Image from 'next/image';
-import { useCallback, useEffect, useRef, type CSSProperties, type PointerEvent } from 'react';
+import { useCallback, useEffect, useRef, type CSSProperties, type MouseEvent } from 'react';
 import { useTranslate } from '@/hooks/useTranslate';
 import { useWindowScroll } from '@/hooks/useWindowScroll';
 import { useReducedMotion } from '@/hooks/useMediaQuery';
 import { Eyebrow } from '@/components/ui/Eyebrow';
-import { MagneticLink } from '@/components/ui/MagneticLink';
 import { WORKS, SERVICE_BY_ID, ACCENT_HEX, ACCENT_TEXT, COPY } from '@/lib/content';
 import styles from './trabajo.module.css';
-import ui from '@/components/ui/ui.module.css';
 
 const clamp01 = (v: number) => Math.max(0, Math.min(1, v));
 const pad2 = (n: number) => String(n).padStart(2, '0');
 const easeInOut = (x: number) => (x < 0.5 ? 4 * x ** 3 : 1 - (-2 * x + 2) ** 3 / 2);
 
-/** How far from the centre (in viewport widths) a card is fully out of focus. */
-const FOCUS_REACH = 0.42;
 /**
  * Share of each case's stretch of scroll spent travelling; the rest it holds
  * still in the centre, so every case gets its moment instead of sliding past.
  */
 const TRAVEL = 0.64;
+/** Centre to first neighbour, and neighbour to neighbour, in card widths. */
+const SPREAD = 0.78;
+const SPREAD_FAR = 0.46;
+/** How far a neighbour turns away from the reader, in degrees. */
+const TURN = 40;
+/** Scroll has to rest this long before the case in the centre starts playing. */
+const DWELL = 3000;
+/** Rest before the deck settles on the nearest case and the wait begins. */
+const SETTLE = 160;
+
+type CardState = '' | 'wait' | 'play';
 
 /**
- * The case gallery, as a lens pulling focus. Vertical scroll moves a
- * horizontal track while the section is pinned; the case in the centre of
- * the frame is sharp, in colour and full size, and its neighbours fall out
- * of focus the further they are from it: blurred, grey, smaller, turned
- * away. It is the brand's own idea, applied to its clients.
+ * The case gallery, as a deck seen through a lens. Vertical scroll turns the
+ * deck while the section is pinned: the case in the centre faces the reader,
+ * sharp and lit, and its neighbours turn away behind it, darker and out of
+ * focus. Under it, its name and rubro fade in as it lands.
  *
- * Each logo is shown framed, on a mat with crop marks, rather than full
- * bleed: the marks come on every kind of background (white, cream, black,
- * blue) and the frame is what makes them read as one collection. Behind
- * the track, the name of the case in focus is set huge and a light in its
- * accent colour fills the room.
+ * Leave the scroll alone for three seconds and the logo in the centre fades
+ * into a short film of the work itself: the site running on a phone, or the
+ * account's feed and reels. Every film opens and closes on the same artwork
+ * as the card, so the fade has no seam. Scroll again and it fades back to
+ * the logo.
  *
- * Scroll sets a target; a short rAF loop eases the track toward it, so a
- * wheel's steps arrive as one glide. All of it is written through refs and
- * CSS custom properties; React never re-renders while scrolling.
+ * Scroll sets a target; a short rAF loop eases the deck toward it, so a
+ * wheel's steps arrive as one glide. All of it is written through refs,
+ * inline transforms and data attributes; React never re-renders on scroll.
  */
 export function Trabajo() {
   const { t } = useTranslate();
   const reduce = useReducedMotion();
   const sectionRef = useRef<HTMLElement>(null);
-  const trackRef = useRef<HTMLDivElement>(null);
-  const fillRef = useRef<HTMLDivElement>(null);
+  const stageRef = useRef<HTMLDivElement>(null);
   const countRef = useRef<HTMLSpanElement>(null);
-  const glowRef = useRef<HTMLDivElement>(null);
-  const itemRefs = useRef<Array<HTMLElement | null>>([]);
-  const ghostRefs = useRef<Array<HTMLSpanElement | null>>([]);
+  const cardRefs = useRef<Array<HTMLElement | null>>([]);
+  const captionRefs = useRef<Array<HTMLDivElement | null>>([]);
+  const videoRefs = useRef<Array<HTMLVideoElement | null>>([]);
   const n = WORKS.length;
   /** The cases plus the empty frame at the end. */
   const total = n + 1;
 
-  const motion = useRef({ centers: [] as number[], cur: 0, target: 0, raf: 0, active: -1, primed: false });
+  const motion = useRef({
+    cur: 0,
+    target: 0,
+    raf: 0,
+    active: 0,
+    primed: false,
+    w: 0,
+    settle: 0,
+    dwell: 0,
+    pause: 0,
+  });
 
-  const measure = useCallback(() => {
-    motion.current.centers = itemRefs.current.map((el) =>
-      el ? el.offsetLeft + el.offsetWidth / 2 : 0,
-    );
+  /** Move a card between logo, the three-second wait, and its film. */
+  const setState = useCallback((i: number, state: CardState) => {
+    const card = cardRefs.current[i];
+    if (card) card.dataset.state = state;
+    if (stageRef.current) stageRef.current.dataset.playing = state === 'play' ? '1' : '0';
   }, []);
 
-  /** Place the track at `x` and grade every card by its distance to centre. */
+  /** Turn the deck to `pos` (a case index, fractional while travelling). */
   const apply = useCallback(
-    (x: number) => {
+    (pos: number) => {
       const m = motion.current;
-      const track = trackRef.current;
-      if (!track) return;
-      track.style.transform = `translate3d(${x.toFixed(1)}px, 0, 0)`;
-
-      const vw = window.innerWidth;
-      let best = 0;
-      let bestD = Infinity;
-      itemRefs.current.forEach((el, i) => {
+      cardRefs.current.forEach((el, i) => {
         if (!el) return;
-        const d = (m.centers[i] + x - vw / 2) / vw;
-        const f = easeInOut(1 - clamp01(Math.abs(d) / FOCUS_REACH));
-        el.style.setProperty('--f', f.toFixed(3));
-        el.style.setProperty('--d', Math.max(-1, Math.min(1, d / FOCUS_REACH)).toFixed(3));
-        if (Math.abs(d) < bestD) {
-          bestD = Math.abs(d);
-          best = i;
+        const o = i - pos;
+        const a = Math.abs(o);
+        const near = Math.min(a, 1);
+        const far = Math.max(0, a - 1);
+        const x = Math.sign(o) * (near * SPREAD + far * SPREAD_FAR) * m.w;
+        const scale = 1 - 0.12 * near - 0.05 * Math.min(far, 2);
+        el.style.transform = `translate3d(${x.toFixed(1)}px, 0, 0) perspective(1100px) rotateY(${(
+          -Math.sign(o) *
+          near *
+          TURN
+        ).toFixed(2)}deg) scale(${scale.toFixed(4)})`;
+        el.style.zIndex = String(100 - Math.round(a * 10));
+        el.style.visibility = a > 3.4 ? 'hidden' : 'visible';
+        el.style.setProperty('--n', near.toFixed(3));
+        el.style.setProperty('--far', Math.min(far, 2).toFixed(3));
+        const cap = captionRefs.current[i];
+        if (cap) {
+          const f = clamp01(1 - a * 2.4);
+          cap.style.opacity = f.toFixed(3);
+          cap.style.transform = `translate3d(0, ${((1 - f) * 10).toFixed(1)}px, 0)`;
+          cap.style.visibility = f === 0 ? 'hidden' : 'visible';
         }
       });
 
+      const best = Math.max(0, Math.min(total - 1, Math.round(pos)));
       if (best !== m.active) {
         m.active = best;
-        ghostRefs.current.forEach((g, i) => {
-          if (g) g.dataset.on = i === best ? '1' : '0';
-        });
-        if (glowRef.current) {
-          glowRef.current.style.backgroundColor =
-            best < n ? ACCENT_HEX[WORKS[best].accent] : 'var(--focus-magenta)';
-        }
         if (countRef.current) {
           countRef.current.textContent = `${pad2(Math.min(best + 1, n))} / ${pad2(n)}`;
+          countRef.current.dataset.off = best >= n ? '1' : '0';
         }
       }
     },
-    [n],
+    [n, total],
   );
 
   const tick = useCallback(() => {
     const m = motion.current;
     m.raf = 0;
     const gap = m.target - m.cur;
-    m.cur = reduce || Math.abs(gap) < 0.2 ? m.target : m.cur + gap * 0.14;
+    m.cur = reduce || Math.abs(gap) < 0.0008 ? m.target : m.cur + gap * 0.14;
     apply(m.cur);
     if (m.cur !== m.target) m.raf = requestAnimationFrame(tick);
   }, [apply, reduce]);
 
+  const glideTo = useCallback(
+    (pos: number) => {
+      const m = motion.current;
+      m.target = pos;
+      if (!m.raf) m.raf = requestAnimationFrame(tick);
+    },
+    [tick],
+  );
+
+  /** Fade every film back to its logo; the video itself stops once it is gone. */
+  const rest = useCallback(() => {
+    const m = motion.current;
+    clearTimeout(m.settle);
+    clearTimeout(m.dwell);
+    cardRefs.current.forEach((card, i) => {
+      if (!card || !card.dataset.state) return;
+      const wasPlaying = card.dataset.state === 'play';
+      setState(i, '');
+      if (wasPlaying) {
+        clearTimeout(m.pause);
+        m.pause = window.setTimeout(() => videoRefs.current[i]?.pause(), 700);
+      }
+    });
+  }, [setState]);
+
   useWindowScroll(() => {
     const section = sectionRef.current;
     const m = motion.current;
-    if (!section || m.centers.length < 2) return;
+    if (!section) return;
     const r = section.getBoundingClientRect();
-    const p = clamp01(-r.top / Math.max(1, r.height - window.innerHeight));
+    const vh = window.innerHeight;
+    const p = clamp01(-r.top / Math.max(1, r.height - vh));
 
     // Stepped: travel between neighbours, then hold the one in the centre.
     const u = p * (total - 1);
     const k = Math.min(Math.floor(u), total - 2);
-    const e = easeInOut(clamp01((u - k - (1 - TRAVEL) / 2) / TRAVEL));
-    const c = m.centers[k] + (m.centers[k + 1] - m.centers[k]) * e;
-    m.target = window.innerWidth / 2 - c;
-
-    if (fillRef.current) fillRef.current.style.transform = `scaleX(${p.toFixed(4)})`;
+    const pos = k + easeInOut(clamp01((u - k - (1 - TRAVEL) / 2) / TRAVEL));
 
     // Land where the reader is on the first frame; glide after that.
     if (!m.primed) {
       m.primed = true;
-      m.cur = m.target;
+      m.cur = pos;
     }
-    if (!m.raf) m.raf = requestAnimationFrame(tick);
+    glideTo(pos);
+
+    // Any scroll sends the film away. Once it rests, the deck settles on the
+    // nearest case and the wait for its film begins.
+    rest();
+    const onStage = r.top < vh * 0.35 && r.bottom > vh * 0.65;
+    if (!onStage) return;
+    m.settle = window.setTimeout(() => {
+      const i = Math.max(0, Math.min(total - 1, Math.round(m.target)));
+      glideTo(i);
+      const video = videoRefs.current[i];
+      const saveData = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection
+        ?.saveData;
+      if (!video || reduce || saveData) return;
+      // Start fetching now, so three seconds later there is something to show.
+      if (!video.getAttribute('src')) {
+        video.src = video.dataset.src ?? '';
+        video.load();
+      }
+      setState(i, 'wait');
+      m.dwell = window.setTimeout(() => {
+        clearTimeout(m.pause);
+        video.currentTime = 0;
+        video
+          .play()
+          .then(() => {
+            // Scroll may have moved on while the video was getting ready.
+            if (cardRefs.current[i]?.dataset.state === 'wait') setState(i, 'play');
+            else video.pause();
+          })
+          .catch(() => setState(i, ''));
+      }, DWELL - SETTLE);
+    }, SETTLE);
   });
 
   useEffect(() => {
@@ -140,37 +212,51 @@ export function Trabajo() {
     if (!section) return;
     const m = motion.current;
     const remeasure = () => {
-      measure();
+      m.w = cardRefs.current[0]?.offsetWidth ?? 0;
       m.primed = false;
       window.dispatchEvent(new Event('scroll'));
     };
     remeasure();
-    document.fonts?.ready.then(remeasure).catch(() => {});
     const ro = new ResizeObserver(remeasure);
     ro.observe(section);
+    // A tab in the background has no reader: stop the film. Back in view,
+    // the wait starts over as if the scroll had just come to rest.
+    const hidden = () => {
+      if (document.hidden) rest();
+      else window.dispatchEvent(new Event('scroll'));
+    };
+    document.addEventListener('visibilitychange', hidden);
     return () => {
       ro.disconnect();
+      document.removeEventListener('visibilitychange', hidden);
       cancelAnimationFrame(m.raf);
+      clearTimeout(m.settle);
+      clearTimeout(m.dwell);
+      clearTimeout(m.pause);
       m.raf = 0;
     };
-  }, [measure]);
+  }, [rest]);
 
-  /** The framed plate leans toward the pointer, with a sheen that follows it. */
-  const tilt = (e: PointerEvent<HTMLElement>) => {
-    if (reduce || e.pointerType !== 'mouse') return;
-    const el = e.currentTarget;
-    const r = el.getBoundingClientRect();
-    const x = (e.clientX - r.left) / r.width;
-    const y = (e.clientY - r.top) / r.height;
-    el.style.setProperty('--rx', `${((0.5 - y) * 9).toFixed(2)}deg`);
-    el.style.setProperty('--ry', `${((x - 0.5) * 11).toFixed(2)}deg`);
-    el.style.setProperty('--mx', `${(x * 100).toFixed(1)}%`);
-    el.style.setProperty('--my', `${(y * 100).toFixed(1)}%`);
-  };
-  const untilt = (e: PointerEvent<HTMLElement>) => {
-    const el = e.currentTarget;
-    el.style.setProperty('--rx', '0deg');
-    el.style.setProperty('--ry', '0deg');
+  /** Scroll the page to the point where case `i` sits in the centre. */
+  const scrollToCase = useCallback(
+    (i: number) => {
+      const section = sectionRef.current;
+      if (!section) return;
+      const top = section.getBoundingClientRect().top + window.scrollY;
+      const span = section.offsetHeight - window.innerHeight;
+      window.scrollTo({
+        top: top + (i / (total - 1)) * span,
+        behavior: reduce ? 'auto' : 'smooth',
+      });
+    },
+    [reduce, total],
+  );
+
+  /** A card off to the side is a way to get to it, not a link out yet. */
+  const bringForward = (i: number) => (e: MouseEvent<HTMLElement>) => {
+    if (i === motion.current.active) return;
+    e.preventDefault();
+    scrollToCase(i);
   };
 
   return (
@@ -181,144 +267,132 @@ export function Trabajo() {
       style={{ '--cases': total } as CSSProperties}
       aria-label={t(COPY.a11y.trabajo)}
     >
-      <div className={styles.sticky}>
-        {/* The room: a light in the accent of the case in focus, and its
-            name set huge behind the track. */}
-        <div ref={glowRef} className={styles.glow} aria-hidden="true" />
-        <div className={styles.ghosts} aria-hidden="true">
-          {[...WORKS.map((w) => w.client.replace(/^@/, '')), t(COPY.trabajo.nextName)].map(
-            (name, i) => (
-              <span
-                key={i}
-                ref={(el) => {
-                  ghostRefs.current[i] = el;
-                }}
-                className={styles.ghost}
-                data-on={i === 0 ? '1' : '0'}
-              >
-                {name}
-              </span>
-            ),
-          )}
-        </div>
+      <div ref={stageRef} className={styles.sticky} data-playing="0">
+        <span className={`${styles.mark} ${styles.markTl}`} aria-hidden="true" />
+        <span className={`${styles.mark} ${styles.markTr}`} aria-hidden="true" />
+        <span className={`${styles.mark} ${styles.markBl}`} aria-hidden="true" />
+        <span className={`${styles.mark} ${styles.markBr}`} aria-hidden="true" />
 
         <div className={styles.header}>
           <div>
             <Eyebrow
               section
-              line="var(--focus-green)"
+              line="var(--focus-gray-400)"
               color="var(--focus-gray-300)"
-              style={{ marginBottom: 20 }}
+              className={styles.eyebrow}
             >
               {t(COPY.trabajo.eyebrow)}
             </Eyebrow>
             <h2 className={styles.title}>{t(COPY.trabajo.title)}</h2>
           </div>
-          <span className={styles.hint}>{t(COPY.trabajo.hint)} →</span>
+          <span ref={countRef} className={styles.count} data-off="0">
+            01 / {pad2(n)}
+          </span>
         </div>
 
-        <div className={styles.viewport}>
-          <div ref={trackRef} className={styles.track}>
+        <div className={styles.body}>
+          <div className={styles.deck}>
             {WORKS.map((w, i) => {
               const ig = w.href.includes('instagram.com');
               return (
                 <a
                   key={w.id}
                   ref={(el) => {
-                    itemRefs.current[i] = el;
+                    cardRefs.current[i] = el;
                   }}
                   href={w.href}
                   target="_blank"
                   rel="noopener noreferrer"
                   className={styles.card}
                   style={{ '--accent': ACCENT_HEX[w.accent] } as CSSProperties}
-                  onPointerMove={tilt}
-                  onPointerLeave={untilt}
+                  aria-label={`${w.client}, ${t(w.category)}. ${w.services
+                    .map((id) => t(SERVICE_BY_ID[id].title))
+                    .join(', ')}. ${t(ig ? COPY.trabajo.visitIg : COPY.trabajo.visitSite)}`}
+                  onClick={bringForward(i)}
+                  onFocus={() => i !== motion.current.active && scrollToCase(i)}
                 >
-                  {/* The ordinal is the position in WORKS, so adding a case
-                      never means renumbering the ones already there. */}
-                  <div className={styles.meta}>
-                    <span className={styles.num} aria-hidden="true">
-                      N° {pad2(i + 1)}
-                    </span>
-                    <span className={styles.cat} style={{ color: ACCENT_TEXT[w.accent] }}>
-                      {t(w.category)}
-                    </span>
-                  </div>
-
-                  <div className={styles.frame}>
-                    <div className={styles.plate}>
-                      <Image
-                        src={w.img}
-                        alt={`${t(w.category)}, ${w.client}`}
-                        fill
-                        sizes="(max-width: 700px) 72vw, 440px"
-                        className={styles.plateImg}
+                  <span className={styles.face}>
+                    <Image
+                      src={w.img}
+                      alt=""
+                      fill
+                      sizes="(max-width: 700px) 62vw, 420px"
+                      className={styles.art}
+                    />
+                    {w.video && (
+                      <video
+                        ref={(el) => {
+                          videoRefs.current[i] = el;
+                        }}
+                        className={styles.film}
+                        data-src={w.video}
+                        muted
+                        loop
+                        playsInline
+                        preload="none"
+                        disablePictureInPicture
+                        aria-hidden="true"
+                        tabIndex={-1}
                       />
-                    </div>
-                  </div>
-
-                  <div className={styles.body}>
-                    <h3 className={styles.name}>{w.client}</h3>
-                    <ul className={styles.tags} aria-label={t(COPY.trabajo.services)}>
-                      {w.services.map((id) => (
-                        <li key={id} className={styles.tag}>
-                          {t(SERVICE_BY_ID[id].title)}
-                        </li>
-                      ))}
-                    </ul>
-                    {w.desc && <p className={styles.desc}>{t(w.desc)}</p>}
-                    <span className={styles.visit}>
-                      {t(ig ? COPY.trabajo.visitIg : COPY.trabajo.visitSite)}
-                      <span className={styles.arrow} aria-hidden="true">
-                        ↗
-                      </span>
-                    </span>
-                  </div>
+                    )}
+                    <span className={styles.sheen} />
+                    {w.video && <span className={styles.wait} />}
+                  </span>
                 </a>
               );
             })}
 
             {/* The empty frame: the next case in the collection. */}
+            <a
+              ref={(el) => {
+                cardRefs.current[n] = el;
+              }}
+              href="#contacto"
+              className={`${styles.card} ${styles.next}`}
+              style={{ '--accent': 'var(--focus-magenta)' } as CSSProperties}
+              onClick={bringForward(n)}
+              onFocus={() => n !== motion.current.active && scrollToCase(n)}
+            >
+              <span className={`${styles.face} ${styles.faceEmpty}`}>
+                <span className={styles.plus} aria-hidden="true" />
+                <span className={styles.nextLabel}>{t(COPY.trabajo.cta)}</span>
+              </span>
+            </a>
+          </div>
+
+          {/* One caption at a time, under the case in the centre. */}
+          <div className={styles.captions}>
+            {WORKS.map((w, i) => (
+              <div
+                key={w.id}
+                ref={(el) => {
+                  captionRefs.current[i] = el;
+                }}
+                className={styles.caption}
+                aria-hidden="true"
+              >
+                <h3 className={styles.name}>{w.client}</h3>
+                <p className={styles.cat} style={{ color: ACCENT_TEXT[w.accent] }}>
+                  {t(w.category)}
+                </p>
+                <p className={styles.services}>
+                  {w.services.map((id) => t(SERVICE_BY_ID[id].title)).join(' · ')}
+                </p>
+              </div>
+            ))}
             <div
               ref={(el) => {
-                itemRefs.current[n] = el;
+                captionRefs.current[n] = el;
               }}
-              className={`${styles.card} ${styles.nextCard}`}
-              style={{ '--accent': 'var(--focus-magenta)' } as CSSProperties}
+              className={styles.caption}
+              aria-hidden="true"
             >
-              <div className={styles.meta}>
-                <span className={styles.num} aria-hidden="true">
-                  N° {pad2(n + 1)}
-                </span>
-                <span className={styles.cat}>{t(COPY.trabajo.nextCat)}</span>
-              </div>
-              <div className={styles.frame}>
-                <div className={`${styles.plate} ${styles.plateEmpty}`}>
-                  <MagneticLink
-                    href="#contacto"
-                    accent="var(--focus-magenta)"
-                    className={`${ui.btn} ${ui.btnGhost} ${styles.nextBtn}`}
-                  >
-                    {t(COPY.trabajo.cta)}
-                    <span className={ui.btnLine} />
-                  </MagneticLink>
-                </div>
-              </div>
-              <div className={styles.body}>
-                <p className={styles.name}>{t(COPY.trabajo.nextName)}</p>
-              </div>
+              <p className={styles.name}>{t(COPY.trabajo.nextName)}</p>
+              <p className={styles.cat} style={{ color: 'var(--focus-magenta)' }}>
+                {t(COPY.trabajo.nextCat)}
+              </p>
             </div>
           </div>
-        </div>
-
-        <div className={styles.footer}>
-          <div className={styles.progressTrack}>
-            <div ref={fillRef} className={styles.progressFill} />
-          </div>
-          <span ref={countRef} className={styles.count}>
-            01 / {pad2(n)}
-          </span>
         </div>
       </div>
     </section>

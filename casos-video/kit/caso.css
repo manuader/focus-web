@@ -1,0 +1,532 @@
+/* Kit de los videos de casos · 720 × 900 (4:5, la proporción de la tarjeta).
+   Todo cuadro arranca y termina en la tarjeta del sitio (card.jpg a sangre),
+   así el fundido desde el logo no se nota. */
+
+@font-face {
+  font-family: "Rotis";
+  src: url("kit/fonts/RotisSemiSansStd-Light.otf") format("opentype");
+  font-weight: 300;
+}
+@font-face {
+  font-family: "Rotis";
+  src: url("kit/fonts/RotisSemiSansStd-Bold.otf") format("opentype");
+  font-weight: 700;
+}
+@font-face {
+  font-family: "Rotis";
+  src: url("kit/fonts/RotisSemiSansStd-ExtraBold.otf") format("opentype");
+  font-weight: 800;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+html,
+body {
+  width: 720px;
+  height: 900px;
+  overflow: hidden;
+  background: #0a0a0b;
+}
+#root {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: var(--fondo);
+  font-family: system-ui, sans-serif;
+}
+.capa {
+  position: absolute;
+  inset: 0;
+}
+
+/* ---- La tarjeta: el logo del cliente, que se va de foco y vuelve ---- */
+#tapa-img {
+  display: block;
+  width: 720px;
+  height: 900px;
+  object-fit: cover;
+}
+#velo {
+  background: var(--velo);
+  opacity: 0;
+}
+
+/* ---- El teléfono ---- */
+#camara {
+  position: absolute;
+  left: 110px;
+  top: 84px;
+  width: 500px;
+  height: 1054px;
+}
+#telefono {
+  position: absolute;
+  inset: 0;
+  border-radius: 66px;
+  background: #0b0b0d;
+  box-shadow:
+    inset 0 0 0 1.5px rgba(255, 255, 255, 0.2),
+    inset 0 0 0 5px #1c1c20,
+    0 0 0 1px rgba(0, 0, 0, 0.55),
+    0 70px 120px -40px rgba(0, 0, 0, 0.6),
+    0 30px 60px -24px rgba(0, 0, 0, 0.45);
+}
+.pantalla {
+  position: absolute;
+  inset: 12px;
+  border-radius: 54px;
+  overflow: hidden;
+  background: var(--pantalla);
+}
+/* La interfaz se arma en puntos de iPhone (390 × 844) y se escala a la
+   pantalla del teléfono (476 px de ancho). */
+.pt {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 390px;
+  height: 844px;
+  transform: scale(1.2205);
+  transform-origin: 0 0;
+  color: var(--tinta);
+  font-size: 14px;
+  line-height: 1.3;
+}
+.isla {
+  position: absolute;
+  z-index: 9;
+  left: 133px;
+  top: 11px;
+  width: 124px;
+  height: 36px;
+  border-radius: 20px;
+  background: #000;
+}
+.estado {
+  position: absolute;
+  z-index: 8;
+  left: 0;
+  top: 0;
+  width: 390px;
+  height: 47px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 30px 0 40px;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+.estado svg {
+  display: block;
+  width: 70px;
+  height: 14px;
+}
+
+/* ---- Web ---- */
+.url {
+  position: absolute;
+  left: 0;
+  top: 47px;
+  width: 390px;
+  height: 44px;
+  padding: 4px 12px 6px;
+}
+.url-pill {
+  height: 34px;
+  border-radius: 11px;
+  background: rgba(118, 118, 128, 0.14);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  font-size: 14.5px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+.url-pill svg {
+  display: block;
+  width: 10px;
+  height: 13px;
+  opacity: 0.55;
+}
+.visor {
+  position: absolute;
+  left: 0;
+  top: 91px;
+  width: 390px;
+  height: 753px;
+  overflow: hidden;
+}
+.visor video {
+  display: block;
+  width: 390px;
+  height: 742px;
+  object-fit: cover;
+}
+
+/* ---- Instagram ---- */
+.ig-nav {
+  position: absolute;
+  z-index: 6;
+  left: 0;
+  top: 0;
+  width: 390px;
+  height: 91px;
+  padding: 47px 16px 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--pantalla);
+}
+.ig-handle {
+  font-size: 21px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+.ig-nav svg {
+  display: block;
+  width: 60px;
+  height: 24px;
+}
+#perfil {
+  position: absolute;
+  left: 0;
+  top: 91px;
+  width: 390px;
+}
+.ig-cab {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  padding: 10px 16px 0;
+}
+.ig-avatar {
+  flex: none;
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
+  padding: 3px;
+  background: linear-gradient(45deg, #f9ce34, #ee2a7b 55%, #6228d7);
+}
+.ig-avatar div {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 3px solid var(--pantalla);
+  background-size: cover;
+  background-position: center;
+}
+.ig-quien {
+  flex: 1;
+  min-width: 0;
+}
+.ig-quien b {
+  display: block;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+}
+.ig-quien span {
+  display: block;
+  margin-top: 4px;
+  font-size: 14px;
+  opacity: 0.6;
+}
+.ig-bio {
+  padding: 10px 16px 0;
+}
+.ig-bio p {
+  font-size: 14px;
+  line-height: 1.32;
+}
+.ig-bio .link {
+  color: var(--link);
+  font-weight: 500;
+}
+.ig-botones {
+  display: flex;
+  gap: 6px;
+  padding: 12px 16px 0;
+}
+.ig-boton {
+  flex: 1;
+  height: 33px;
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 600;
+  background: var(--boton);
+}
+.ig-boton.seguir {
+  background: #0095f6;
+  color: #fff;
+}
+.ig-dest {
+  display: flex;
+  gap: 15px;
+  padding: 14px 14px 0;
+  overflow: hidden;
+}
+.ig-dest-item {
+  flex: none;
+  width: 68px;
+  text-align: center;
+  font-size: 11.5px;
+}
+.ig-dest-item div {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 5px;
+  border-radius: 50%;
+  border: 1px solid var(--linea);
+  padding: 3px;
+}
+.ig-dest-item div span {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background-size: cover;
+  background-position: center;
+}
+.ig-dest-item p {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.ig-tabs {
+  display: flex;
+  margin-top: 12px;
+  height: 44px;
+  border-bottom: 1px solid var(--linea);
+}
+.ig-tab {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.4;
+}
+.ig-tab.on {
+  opacity: 1;
+  border-bottom: 1.5px solid var(--tinta);
+}
+.ig-tab svg {
+  display: block;
+  width: 24px;
+  height: 24px;
+}
+.ig-grilla {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5px;
+  padding-top: 1.5px;
+}
+.ig-celda {
+  position: relative;
+  width: 129px;
+  height: 172px;
+  background-size: cover;
+  background-position: center;
+  background-color: var(--boton);
+}
+.ig-celda svg {
+  position: absolute;
+  right: 7px;
+  top: 7px;
+  display: block;
+  width: 17px;
+  height: 17px;
+  filter: drop-shadow(0 0 3px rgba(0, 0, 0, 0.5));
+}
+
+/* ---- Reels ---- */
+#reels {
+  position: absolute;
+  z-index: 7;
+  left: 0;
+  top: 0;
+  width: 390px;
+  height: 844px;
+  overflow: hidden;
+  background: #000;
+  color: #fff;
+}
+#reels-pista {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 390px;
+  height: 1688px;
+}
+.reel {
+  position: relative;
+  width: 390px;
+  height: 844px;
+  overflow: hidden;
+}
+.reel video {
+  display: block;
+  width: 390px;
+  height: 844px;
+  object-fit: cover;
+}
+.reel-sombra {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, rgba(0, 0, 0, 0.42), transparent 16%),
+    linear-gradient(0deg, rgba(0, 0, 0, 0.62), transparent 30%);
+}
+.reel-titulo {
+  position: absolute;
+  left: 16px;
+  top: 54px;
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+.reel-acciones {
+  position: absolute;
+  right: 12px;
+  bottom: 128px;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+.reel-acciones svg {
+  display: block;
+  width: 28px;
+  height: 28px;
+}
+.reel-pie {
+  position: absolute;
+  left: 14px;
+  right: 64px;
+  bottom: 46px;
+}
+.reel-autor {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 14px;
+  font-weight: 600;
+}
+.reel-autor i {
+  display: block;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-size: cover;
+  background-position: center;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+}
+.reel-autor em {
+  font-style: normal;
+  font-size: 12.5px;
+  padding: 3px 9px;
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  border-radius: 7px;
+}
+.reel-texto {
+  margin-top: 9px;
+  font-size: 14px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ---- Audiovisual: vertical y, con el teléfono girado, horizontal ---- */
+#vertical video {
+  display: block;
+  width: 390px;
+  height: 844px;
+  object-fit: cover;
+}
+#vertical .reel-pie {
+  bottom: 120px;
+}
+/* Una caja apaisada (844 × 390) girada 90° para ocupar la pantalla vertical:
+   cuando el teléfono gira -90°, queda derecha. */
+#horizontal {
+  position: absolute;
+  z-index: 7;
+  left: -227px;
+  top: 227px;
+  width: 844px;
+  height: 390px;
+  transform: rotate(90deg);
+  background: #000;
+  color: #fff;
+  overflow: hidden;
+}
+#horizontal video {
+  display: block;
+  width: 844px;
+  height: 390px;
+  object-fit: cover;
+}
+.yt-barra {
+  position: absolute;
+  left: 58px;
+  right: 58px;
+  bottom: 30px;
+  height: 4px;
+  border-radius: 2px;
+  background: rgba(255, 255, 255, 0.3);
+}
+#yt-avance {
+  display: block;
+  width: 100%;
+  height: 4px;
+  border-radius: 2px;
+  background: #ff0033;
+  transform-origin: 0 50%;
+}
+.yt-sombra {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(0deg, rgba(0, 0, 0, 0.5), transparent 28%);
+}
+#ficha {
+  position: absolute;
+  left: 40px;
+  top: 578px;
+  width: 640px;
+  color: var(--rotulo);
+  font-family: "Rotis", sans-serif;
+}
+.ficha-marca {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+.ficha-marca svg {
+  display: block;
+  width: 34px;
+  height: 24px;
+}
+.ficha-titulo {
+  margin-top: 14px;
+  font-size: 44px;
+  font-weight: 800;
+  line-height: 1.02;
+  letter-spacing: -0.025em;
+}
+.ficha-canal {
+  margin-top: 12px;
+  font-size: 24px;
+  font-weight: 300;
+}

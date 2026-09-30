@@ -1,0 +1,12 @@
+# material descargado, cuadros y renders intermedios: se regeneran
+/work/
+/snapshots/
+/renders/
+/node_modules/
+.hf-tmp/
+# index.html es el caso que se está por renderizar; lo escribe scripts/build.mjs
+/index.html
+# material de los clientes (capturas de su sitio, publicaciones y reels): no se
+# versiona, lo bajan los scripts de captura. La tarjeta sí: ya está en el sitio.
+/casos/*/media/*
+!/casos/*/media/card.jpg

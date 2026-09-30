@@ -1,15 +1,17 @@
 /* ============================================================
-   Casos — la galería como un lente haciendo foco
-   El caso del centro está nítido, en color y a tamaño pleno;
-   los vecinos salen de foco cuanto más lejos están. --f (foco,
-   0..1) y --d (lado, -1..1) los escribe Trabajo.tsx por tarjeta,
-   por frame; acá se traducen a blur, gris, escala y giro.
+   Casos — el mazo visto por un lente
+   El caso del centro mira al lector, nítido y a tamaño pleno;
+   los vecinos giran hacia atrás, más oscuros y fuera de foco.
+   Trabajo.tsx escribe por tarjeta, por frame, la transformación
+   y dos variables: --n (0 en el centro, 1 en el primer vecino)
+   y --far (cuánto más allá del primer vecino). Acá se traducen
+   a sombra y desenfoque.
    ============================================================ */
 
 .trabajo {
   position: relative;
   /* One screen to pin, plus 40vh of scroll per case: adding cases lengthens
-     the section instead of speeding the track up. --cases is set from WORKS
+     the section instead of speeding the deck up. --cases is set from WORKS
      (plus the closing frame) in Trabajo.tsx. */
   height: calc(100vh + var(--cases, 5) * 40vh);
   background: var(--focus-ink);
@@ -23,461 +25,364 @@
   display: flex;
   flex-direction: column;
   isolation: isolate;
+  /* Una sala apenas iluminada en el centro, sin color: el color lo traen
+     los casos. */
+  background: radial-gradient(ellipse 90% 60% at 50% 58%, #141416 0%, var(--focus-ink) 70%);
+  /* The card is the one size everything hangs off: as wide as it can be
+     while the header above and the caption below still fit. */
+  --w: min(30vw, 440px, calc((100svh - 468px) * 0.8));
 }
 
-/* ---- La sala: luz del color del caso en foco, y su nombre enorme ---- */
-.glow {
+/* ---- Marcas de encuadre en las cuatro esquinas de la sala ---- */
+.mark {
   position: absolute;
-  z-index: -1;
-  left: 50%;
-  top: 56%;
-  width: 90vw;
-  height: 80vh;
-  transform: translate(-50%, -50%);
-  background-color: var(--focus-magenta);
-  -webkit-mask: radial-gradient(closest-side, #000 0%, rgba(0, 0, 0, 0.35) 45%, transparent 100%);
-  mask: radial-gradient(closest-side, #000 0%, rgba(0, 0, 0, 0.35) 45%, transparent 100%);
-  opacity: 0.11;
-  transition: background-color 1.4s ease;
+  z-index: 2;
+  width: 18px;
+  height: 18px;
+  border: 0 solid rgba(246, 246, 244, 0.26);
   pointer-events: none;
 }
-.ghosts {
-  position: absolute;
-  z-index: -1;
-  inset: 0;
-  display: grid;
-  place-items: center;
-  padding-top: 8vh;
-  overflow: hidden;
-  pointer-events: none;
-  /* Se desvanece hacia los bordes: un nombre largo se corta como un
-     encuadre, no como un error. */
-  -webkit-mask: linear-gradient(90deg, transparent, #000 18%, #000 82%, transparent);
-  mask: linear-gradient(90deg, transparent, #000 18%, #000 82%, transparent);
+.markTl {
+  left: 20px;
+  top: 80px;
+  border-width: 1px 0 0 1px;
 }
-.ghost {
-  grid-area: 1 / 1;
-  font-size: clamp(88px, 14vw, 240px);
-  font-weight: 800;
-  line-height: 1;
-  letter-spacing: -0.045em;
-  text-transform: uppercase;
-  white-space: nowrap;
-  color: transparent;
-  -webkit-text-stroke: 1px rgba(246, 246, 244, 0.1);
-  opacity: 0;
-  transform: translateY(28px);
-  transition:
-    opacity 0.9s ease,
-    transform 1.4s var(--ease-out-expo);
+.markTr {
+  right: 20px;
+  top: 80px;
+  border-width: 1px 1px 0 0;
 }
-.ghost[data-on='1'] {
-  opacity: 1;
-  transform: none;
+.markBl {
+  left: 20px;
+  bottom: 20px;
+  border-width: 0 0 1px 1px;
+}
+.markBr {
+  right: 20px;
+  bottom: 20px;
+  border-width: 0 1px 1px 0;
 }
 
 /* ---- Encabezado ---- */
 .header {
   flex: none;
+  position: relative;
+  z-index: 3;
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
-  gap: 40px;
-  padding: 92px 40px 8px;
-  flex-wrap: wrap;
+  gap: 24px;
+  padding: 108px 56px 0;
+}
+.eyebrow {
+  margin-bottom: 6px;
 }
 .title {
   margin: 0;
-  font-size: clamp(34px, 4.6vw, 72px);
-  line-height: 0.95;
+  font-size: clamp(52px, min(6.4vw, 11.5vh), 108px);
+  line-height: 0.86;
   font-weight: 800;
   letter-spacing: -0.035em;
   text-transform: uppercase;
 }
-.hint {
-  font-size: 12px;
+.count {
+  padding-bottom: 0.5em;
+  font-size: 13px;
   font-weight: 700;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--focus-gray-400);
+  letter-spacing: 0.26em;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  color: var(--focus-gray-300);
+  transition: opacity 0.6s ease;
+}
+/* El marco vacío no es un caso más: no lleva número. */
+.count[data-off='1'] {
+  opacity: 0;
 }
 
-/* ---- El riel ---- */
-.viewport {
+/* ---- El mazo ---- */
+/* El mazo y su pie van juntos, centrados en lo que queda de pantalla: el
+   nombre del caso queda pegado a su tarjeta, no al borde de abajo. */
+.body {
   flex: 1;
   min-height: 0;
   display: flex;
-  align-items: center;
-}
-.track {
-  /* offsetLeft de las tarjetas se mide contra el riel. */
-  position: relative;
-  display: flex;
-  align-items: center;
-  gap: max(56px, 7vw);
-  will-change: transform;
-  /* The plate is the one size everything hangs off: as wide as it can be
-     while the name, tags and link still fit under it on a short screen. */
-  --plate: min(420px, 28vw, calc(100svh - 470px));
-}
-
-/* ---- La tarjeta ---- */
-.card {
-  --f: 1;
-  --d: 0;
-  position: relative;
-  flex: none;
-  display: flex;
   flex-direction: column;
-  width: calc(var(--plate) + 28px);
-  color: var(--focus-paper);
-  /* Fuera de foco: más chica, más apagada y girada hacia el centro,
-     como un fotograma que se aleja del eje del lente. */
-  transform: perspective(1600px) rotateY(calc(var(--d) * -14deg))
-    scale(calc(0.84 + 0.16 * var(--f)));
-  opacity: calc(0.3 + 0.7 * var(--f));
-  will-change: transform, opacity;
+  justify-content: center;
+  padding-bottom: 4vh;
 }
-.meta {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  gap: 16px;
-  margin: 0 14px 10px;
-  font-size: 10.5px;
-  font-weight: 700;
-  letter-spacing: 0.24em;
-  text-transform: uppercase;
-  line-height: 1.4;
-}
-.num {
-  color: var(--focus-gray-400);
-  white-space: nowrap;
-}
-.cat {
-  text-align: right;
-  color: var(--focus-gray-300);
-}
-
-/* El paspartú: marcas de corte en las cuatro esquinas, como una
-   prueba de imprenta o una obra montada. */
-.frame {
-  --m: rgba(246, 246, 244, 0.4);
-  --l: 16px;
+.deck {
+  flex: none;
+  height: calc(var(--w) * 1.25);
   position: relative;
-  padding: 14px;
-  background:
-    linear-gradient(var(--m), var(--m)) 0 0 / var(--l) 1px,
-    linear-gradient(var(--m), var(--m)) 0 0 / 1px var(--l),
-    linear-gradient(var(--m), var(--m)) 100% 0 / var(--l) 1px,
-    linear-gradient(var(--m), var(--m)) 100% 0 / 1px var(--l),
-    linear-gradient(var(--m), var(--m)) 0 100% / var(--l) 1px,
-    linear-gradient(var(--m), var(--m)) 0 100% / 1px var(--l),
-    linear-gradient(var(--m), var(--m)) 100% 100% / var(--l) 1px,
-    linear-gradient(var(--m), var(--m)) 100% 100% / 1px var(--l);
-  background-repeat: no-repeat;
 }
-/* La pieza en foco proyecta su color sobre el piso. */
-.frame::after {
-  content: '';
+.card {
+  --n: 0;
+  --far: 0;
   position: absolute;
-  z-index: -1;
-  left: 12%;
-  right: 12%;
-  bottom: -30px;
-  height: 56px;
-  background: radial-gradient(closest-side, var(--accent), transparent);
-  opacity: calc(var(--f) * 0.45);
-  filter: blur(18px);
-  pointer-events: none;
-}
-.plate {
-  position: relative;
-  width: var(--plate);
-  aspect-ratio: 1;
-  overflow: hidden;
-  background: var(--focus-ink-2);
-  transform: perspective(900px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
-  transition: transform 0.6s var(--ease-out-expo);
-  box-shadow:
-    0 50px 90px -50px rgba(0, 0, 0, 0.95),
-    0 0 0 1px rgba(246, 246, 244, 0.07);
-}
-/* Logos, no fotos: fuera de foco se desenfocan y pierden el color; en
-   foco quedan como vinieron. */
-.plateImg {
-  object-fit: cover;
-  filter: grayscale(calc(1 - var(--f))) blur(calc((1 - var(--f)) * 6px))
-    brightness(calc(0.55 + 0.45 * var(--f)));
-  transform: scale(1.04);
-  transition: transform 1.4s var(--ease-out-expo);
-}
-.card:hover .plateImg {
-  transform: scale(1.09);
-}
-/* Viñeta: asienta el logo dentro del marco sea cual sea su fondo. */
-.plate::before {
-  content: '';
-  position: absolute;
-  z-index: 1;
-  inset: 0;
-  box-shadow: inset 0 0 90px rgba(0, 0, 0, 0.26);
-  pointer-events: none;
-}
-/* Vidrio: un reflejo que sigue al puntero y un barrido en diagonal. */
-.plate::after {
-  content: '';
-  position: absolute;
-  z-index: 2;
-  inset: 0;
-  background:
-    radial-gradient(circle at var(--mx, 30%) var(--my, 0%), rgba(255, 255, 255, 0.34), transparent 55%),
-    linear-gradient(115deg, transparent 38%, rgba(255, 255, 255, 0.1) 50%, transparent 62%);
-  mix-blend-mode: soft-light;
-  opacity: 0.55;
-  transition: opacity 0.5s;
-  pointer-events: none;
-}
-.card:hover .plate::after {
-  opacity: 1;
-}
-/* The global a:hover turns links green; here the accent is per client and
-   lives on the link line, not on the name. */
-.card:hover {
+  left: 50%;
+  top: 50%;
+  width: var(--w);
+  aspect-ratio: 4 / 5;
+  margin: calc(var(--w) * -0.625) 0 0 calc(var(--w) * -0.5);
+  display: block;
   color: var(--focus-paper);
+  will-change: transform;
+  -webkit-tap-highlight-color: transparent;
 }
 .card:focus-visible {
   outline: 2px solid var(--focus-paper);
   outline-offset: 6px;
 }
-
-/* ---- Pie de la tarjeta ---- */
-.body {
-  margin: 22px 14px 0;
-  /* Sube a su lugar a medida que la tarjeta entra en foco. */
-  transform: translateY(calc((1 - var(--f)) * 14px));
+.face {
+  position: absolute;
+  inset: 0;
+  display: block;
+  overflow: hidden;
+  border-radius: calc(var(--w) * 0.034);
+  background: var(--focus-ink-2);
+  /* El caso en foco proyecta sombra sobre la sala; los vecinos, casi nada. */
+  box-shadow: 0 calc(var(--w) * 0.1) calc(var(--w) * 0.22) calc(var(--w) * -0.1)
+    rgba(0, 0, 0, calc(0.9 - 0.5 * var(--n)));
+  /* Safari recorta mal un hijo con filtro dentro de un radio sin esto. */
+  transform: translateZ(0);
 }
-.name {
-  margin: 0;
-  font-size: clamp(22px, 2.1vw, 32px);
-  font-weight: 800;
-  letter-spacing: -0.025em;
-  line-height: 1.05;
-  overflow-wrap: anywhere;
+/* Un filo de luz en el borde: sin él, los logos sobre negro se pierden
+   contra la sala. */
+.face::before {
+  content: '';
+  position: absolute;
+  z-index: 2;
+  inset: 0;
+  border-radius: inherit;
+  box-shadow: inset 0 0 0 1px rgba(246, 246, 244, 0.09);
+  pointer-events: none;
 }
-/* The services, as tags rather than a sentence: they are data (the same
-   labels the Servicios section sets) and should read as data next to the
-   client's name. */
-.tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin: 14px 0 0;
-  padding: 0;
-  list-style: none;
+/* Logos, no fotos: fuera de foco se desenfocan; en foco quedan como vinieron. */
+.art {
+  object-fit: cover;
+  filter: blur(calc(var(--n) * 2.4px + var(--far) * 1.6px));
 }
-.tag {
-  padding: 5px 9px 4px;
-  border: 1px solid rgba(246, 246, 244, 0.24);
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.13em;
-  line-height: 1.35;
-  text-transform: uppercase;
-  color: var(--focus-gray-100);
-  transition: border-color 0.5s, color 0.5s;
+/* La película del caso: mismo encuadre que el logo, y arranca y termina en
+   él, así el fundido no tiene costura. Se va más rápido de lo que llega. */
+.film {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 0.55s cubic-bezier(0.4, 0, 0.6, 1);
+  pointer-events: none;
 }
-.card:hover .tag {
-  border-color: rgba(246, 246, 244, 0.55);
-  color: var(--focus-paper);
+.card[data-state='play'] .film {
+  opacity: 1;
+  transition: opacity 0.8s cubic-bezier(0.33, 0, 0.15, 1);
 }
-.desc {
-  margin: 12px 0 0;
-  font-size: 13px;
-  line-height: 1.55;
-  font-weight: 300;
-  color: var(--focus-gray-300);
-}
-.visit {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  margin-top: 16px;
-  padding-bottom: 5px;
-  border-bottom: 1px solid rgba(246, 246, 244, 0.2);
-  font-size: 10.5px;
-  font-weight: 700;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  color: var(--focus-gray-300);
-  transition: color 0.4s, border-color 0.4s;
-}
-.card:hover .visit {
-  color: var(--focus-paper);
-  border-color: var(--accent);
-}
-.arrow {
-  display: inline-block;
-  transition: transform 0.5s var(--ease-out-expo);
-}
-.card:hover .arrow {
-  transform: translate(3px, -3px);
-}
-
-/* ---- El marco vacío: el próximo caso ---- */
-.plateEmpty {
-  display: grid;
-  place-items: center;
+/* Sombra de los vecinos: tinta sobre la tarjeta, no un filtro, para que
+   valga igual sobre el logo y sobre la película. */
+.face::after {
+  content: '';
+  position: absolute;
+  inset: 0;
   background: var(--focus-ink);
+  opacity: calc(var(--n) * 0.52 + var(--far) * 0.16);
+  pointer-events: none;
 }
-/* El espectro girando detrás del vidrio, lento. */
-.plateEmpty::before {
-  inset: -30%;
-  box-shadow: none;
-  background: conic-gradient(
-    from 0deg,
-    var(--focus-magenta),
-    var(--focus-blue),
-    var(--focus-green),
-    var(--focus-magenta)
-  );
-  filter: blur(70px);
-  opacity: calc(0.12 + 0.2 * var(--f));
-  animation: trabajoSpin 16s linear infinite;
-  z-index: 0;
+/* Vidrio: un reflejo en diagonal, solo sobre el caso en foco. */
+.sheen {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(118deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0) 38%);
+  mix-blend-mode: soft-light;
+  opacity: calc(1 - var(--n));
+  pointer-events: none;
 }
-.plateEmpty::after {
+/* La espera: una línea que se llena en los tres segundos previos a la
+   película, para que se entienda que algo está por pasar. */
+.wait {
+  position: absolute;
   z-index: 1;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 2px;
+  background: var(--accent);
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+  opacity: 0;
+  pointer-events: none;
 }
-.nextBtn {
-  position: relative;
-  z-index: 3;
-  padding: 22px 34px;
-  font-size: 12px;
-  background: rgba(10, 10, 11, 0.45);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
+.card[data-state='wait'] .wait {
+  opacity: 0.9;
+  animation: trabajoWait 2.84s linear forwards;
 }
-.nextCard .name {
-  color: transparent;
-  -webkit-text-stroke: 1px rgba(246, 246, 244, 0.7);
+.card[data-state='play'] .wait {
+  transform: scaleX(1);
+  opacity: 0;
+  transition: opacity 0.8s ease;
 }
-@keyframes trabajoSpin {
+@keyframes trabajoWait {
   to {
-    transform: rotate(1turn);
+    transform: scaleX(1);
   }
 }
 
-/* ---- Progreso ---- */
-.footer {
+/* ---- El marco vacío: el próximo caso ---- */
+.faceEmpty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: calc(var(--w) * 0.075);
+  background: #0c0c0e;
+  border: 1.5px dashed var(--focus-magenta);
+  box-shadow:
+    0 0 calc(var(--w) * 0.08) rgba(255, 0, 255, calc(0.42 * (1 - var(--n)))),
+    inset 0 0 calc(var(--w) * 0.12) rgba(255, 0, 255, 0.07);
+  transition: background 0.5s;
+}
+.plus {
+  position: relative;
+  width: calc(var(--w) * 0.18);
+  height: calc(var(--w) * 0.18);
+  border: 1px solid var(--focus-paper);
+  border-radius: 50%;
+  transition: transform 0.7s var(--ease-out-expo), border-color 0.4s;
+}
+.plus::before,
+.plus::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 38%;
+  height: 1px;
+  background: var(--focus-paper);
+  transform: translate(-50%, -50%);
+}
+.plus::after {
+  transform: translate(-50%, -50%) rotate(90deg);
+}
+.nextLabel {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 400;
+  font-size: calc(var(--w) * 0.125);
+  line-height: 1;
+  letter-spacing: -0.01em;
+}
+.next:hover {
+  color: var(--focus-paper);
+}
+.next:hover .faceEmpty {
+  background: #120c13;
+}
+.next:hover .plus {
+  transform: rotate(90deg);
+  border-color: var(--focus-magenta);
+}
+
+/* ---- Pie: el nombre y el rubro del caso en foco ---- */
+.captions {
   flex: none;
   position: relative;
-  padding: 0 40px 30px;
-  display: flex;
-  align-items: center;
-  gap: 18px;
+  z-index: 3;
+  display: grid;
+  justify-items: center;
+  padding: 28px var(--edge) 0;
+  pointer-events: none;
 }
-.progressTrack {
-  flex: 1;
-  height: 1px;
-  background: rgba(246, 246, 244, 0.14);
-  position: relative;
+.caption {
+  grid-area: 1 / 1;
+  text-align: center;
+  opacity: 0;
+  will-change: opacity, transform;
 }
-.progressFill {
-  position: absolute;
-  left: 0;
-  top: -1px;
-  height: 3px;
-  width: 100%;
-  transform: scaleX(0);
-  transform-origin: left;
-  background: linear-gradient(90deg, #ff00ff, #0033ff, #00ff33);
+.name {
+  margin: 0;
+  font-size: clamp(20px, 2vw, 30px);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  line-height: 1.1;
 }
-.count {
-  font-size: 12px;
+.cat {
+  margin: 8px 0 0;
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 400;
+  font-size: clamp(15px, 1.35vw, 20px);
+  line-height: 1.25;
+}
+.services {
+  margin: 14px 0 0;
+  font-size: 10.5px;
   font-weight: 700;
   letter-spacing: 0.22em;
-  font-variant-numeric: tabular-nums;
+  line-height: 1.5;
+  text-transform: uppercase;
   color: var(--focus-gray-400);
 }
 
 @media (max-width: 700px) {
+  .sticky {
+    --w: min(60vw, calc((100svh - 410px) * 0.8));
+  }
   .header {
-    padding: 84px var(--edge) 0;
-    gap: 14px;
+    padding: 92px var(--edge) 0;
+    padding-left: calc(var(--edge) + 8px);
+    padding-right: calc(var(--edge) + 8px);
   }
-  .hint {
+  .eyebrow {
+    margin-bottom: 4px;
+  }
+  .title {
+    font-size: clamp(44px, 14vw, 64px);
+  }
+  .count {
     font-size: 10.5px;
-    letter-spacing: 0.16em;
+    letter-spacing: 0.24em;
   }
-  .footer {
-    padding: 0 var(--edge) 24px;
+  .mark {
+    width: 14px;
+    height: 14px;
   }
-  /* Un poco más angosta que la pantalla, para que asome el caso
-     siguiente y se entienda que la galería sigue de costado. */
-  .track {
-    gap: 3vw;
-    --plate: min(64vw, calc(100svh - 430px));
+  .markTl,
+  .markBl {
+    left: 10px;
   }
-  .card {
-    transform: perspective(1200px) rotateY(calc(var(--d) * -10deg))
-      scale(calc(0.86 + 0.14 * var(--f)));
+  .markTr,
+  .markBr {
+    right: 10px;
   }
-  .meta {
-    margin: 0 12px 8px;
+  .markTl,
+  .markTr {
+    top: 76px;
+  }
+  .markBl,
+  .markBr {
+    bottom: 12px;
+  }
+  .captions {
+    padding: 20px var(--edge) 0;
+  }
+  .name {
+    font-size: 19px;
+  }
+  .cat {
+    margin-top: 6px;
+    font-size: 15px;
+  }
+  .services {
+    margin-top: 10px;
     font-size: 9.5px;
     letter-spacing: 0.18em;
   }
-  .frame {
-    padding: 12px;
-    --l: 12px;
-  }
-  .card {
-    width: calc(var(--plate) + 24px);
-  }
-  .body {
-    margin: 18px 12px 0;
-  }
-  .name {
-    font-size: clamp(19px, 5.4vw, 26px);
-  }
-  .tags {
-    gap: 5px;
-    margin-top: 10px;
-  }
-  .tag {
-    padding: 4px 7px 3px;
-    font-size: 9.5px;
-    letter-spacing: 0.1em;
-  }
-  .visit {
-    margin-top: 12px;
-  }
-  .ghost {
-    font-size: 30vw;
-  }
 }
 
-/* Pantallas bajas de escritorio (720–780px): la tarjeta más alta, con
-   bajada y dos filas de etiquetas, pisaba la barra de progreso. */
-@media (min-width: 701px) and (max-height: 780px) {
-  .track {
-    --plate: min(420px, 28vw, calc(100svh - 490px));
-  }
-  .header {
-    padding-top: 82px;
-  }
-  .body {
-    margin-top: 16px;
-  }
-  .tags {
-    margin-top: 10px;
-  }
-  .desc {
-    margin-top: 8px;
-    font-size: 12px;
-  }
-  .visit {
-    margin-top: 10px;
+@media (prefers-reduced-motion: reduce) {
+  .film,
+  .wait {
+    display: none;
   }
 }

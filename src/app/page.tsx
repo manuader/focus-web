@@ -22,8 +22,8 @@ export default function Home() {
         <Trabajo />
         <Valores />
         <Superposicion />
-        <Refraccion />
         <Umbral />
+        <Refraccion />
         <Foco />
         <Contacto />
       </main>

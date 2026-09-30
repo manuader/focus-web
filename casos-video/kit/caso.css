@@ -127,45 +127,19 @@ body {
   height: 14px;
 }
 
-/* ---- Web ---- */
-.url {
+/* ---- Web: el video del sitio, a pantalla completa ---- */
+.visor-brag {
   position: absolute;
   left: 0;
-  top: 47px;
+  top: 0;
   width: 390px;
-  height: 44px;
-  padding: 4px 12px 6px;
-}
-.url-pill {
-  height: 34px;
-  border-radius: 11px;
-  background: rgba(118, 118, 128, 0.14);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 5px;
-  font-size: 14.5px;
-  font-weight: 500;
-  letter-spacing: -0.01em;
-}
-.url-pill svg {
-  display: block;
-  width: 10px;
-  height: 13px;
-  opacity: 0.55;
-}
-.visor {
-  position: absolute;
-  left: 0;
-  top: 91px;
-  width: 390px;
-  height: 753px;
+  height: 844px;
   overflow: hidden;
 }
-.visor video {
+.visor-brag video {
   display: block;
   width: 390px;
-  height: 742px;
+  height: 844px;
   object-fit: cover;
 }
 
@@ -244,6 +218,9 @@ body {
 .ig-bio p {
   font-size: 14px;
   line-height: 1.32;
+}
+.ig-bio .rubro {
+  opacity: 0.6;
 }
 .ig-bio .link {
   color: var(--link);

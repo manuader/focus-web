@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=780, height=1688" />
+    <title>Brag · Ader Studio</title>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      /* Identidad tomada del sitio: fondo #fafaf7, tinta #1a1917, Barlow
+         Condensed 800 en mayúsculas con la segunda voz en itálica liviana. */
+      @font-face { font-family: "Barlow Condensed"; src: url("kit/fonts/barlow-condensed-800-normal.woff2") format("woff2"); font-weight: 800; font-style: normal; }
+      @font-face { font-family: "Barlow Condensed"; src: url("kit/fonts/barlow-condensed-500-normal.woff2") format("woff2"); font-weight: 500; font-style: normal; }
+      @font-face { font-family: "Barlow Condensed"; src: url("kit/fonts/barlow-condensed-300-italic.woff2") format("woff2"); font-weight: 300; font-style: italic; }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 780px; height: 1688px; overflow: hidden; background: #fafaf7; }
+      #root { position: relative; width: 100%; height: 100%; overflow: hidden; background: #fafaf7; color: #1a1917; font-family: "Barlow Condensed", sans-serif; }
+      .s { position: absolute; inset: 0; opacity: 0; }
+      .lab { position: absolute; left: 60px; font-weight: 500; font-size: 25px; letter-spacing: 0.3em; text-transform: uppercase; color: #8a857d; white-space: nowrap; }
+      .lab i { display: inline-block; width: 56px; height: 1px; margin-right: 18px; background: #8a857d; vertical-align: middle; }
+      .h { position: absolute; left: 60px; font-weight: 800; text-transform: uppercase; letter-spacing: -0.012em; line-height: 0.93; }
+      .ln { display: block; overflow: hidden; padding-right: 0.12em; }
+      .ln span { display: block; }
+      .it { font-weight: 300; font-style: italic; letter-spacing: 0; }
+
+      /* 1 · El norte */
+      #a-mark { position: absolute; left: 110px; top: 300px; width: 560px; height: 396px; }
+      #a-mark img, #a-full img { display: block; width: 100%; height: 100%; }
+      #a-h1 { top: 800px; font-size: 136px; }
+      #a-btn { position: absolute; left: 60px; top: 1400px; height: 92px; padding: 0 40px; border: 1.5px solid #1a1917; display: flex; align-items: center; font-weight: 500; font-size: 27px; letter-spacing: 0.28em; }
+
+      /* 2 · Proceso */
+      #a-h2 { top: 250px; font-size: 108px; }
+      #a-plano { position: absolute; left: 60px; top: 650px; width: 660px; height: 560px; background: #fff; border: 1px solid #e2ded6; }
+      #a-plano img { position: absolute; left: 20px; top: 20px; width: 620px; height: 520px; object-fit: contain; opacity: 0; }
+      .paso { position: absolute; left: 60px; top: 1272px; display: flex; align-items: baseline; gap: 20px; font-weight: 800; font-size: 52px; text-transform: uppercase; white-space: nowrap; opacity: 0; }
+      .paso b { font-weight: 300; font-style: italic; color: #8a857d; }
+      #a-ticks { position: absolute; left: 60px; top: 1378px; width: 660px; display: flex; gap: 12px; }
+      #a-ticks span { flex: 1; height: 5px; background: #e2ded6; position: relative; overflow: hidden; }
+      #a-ticks span i { position: absolute; inset: 0; background: #1a1917; transform-origin: 0 50%; }
+
+      /* 3 · BIM */
+      #a-bim { position: absolute; left: 60px; top: 250px; font-weight: 800; font-size: 330px; line-height: 0.8; letter-spacing: -0.02em; }
+      #a-int { position: absolute; left: 66px; top: 520px; font-weight: 300; font-style: italic; font-size: 112px; line-height: 1; text-transform: uppercase; }
+      #a-modelo { position: absolute; left: 60px; top: 690px; width: 660px; height: 480px; background: #fff; border: 1px solid #e2ded6; overflow: hidden; }
+      #a-modelo img { position: absolute; left: 10px; top: 10px; width: 640px; height: 460px; object-fit: contain; opacity: 0; }
+      #a-capas { position: absolute; left: 60px; top: 1240px; width: 660px; display: grid; grid-template-columns: 1fr 1fr; gap: 0 28px; }
+      .capa-bim { border-top: 1px solid #c8c3bb; padding: 20px 0 30px; font-weight: 800; font-size: 40px; text-transform: uppercase; white-space: nowrap; }
+      .capa-bim b { display: block; font-weight: 500; font-size: 22px; letter-spacing: 0.3em; color: #8a857d; margin-bottom: 6px; }
+
+      /* 4 · Renders */
+      #s4 { background: #1a1917; color: #fafaf7; }
+      #a-h4 { top: 170px; font-size: 136px; }
+      #a-cols { position: absolute; left: 0; top: 480px; width: 780px; height: 1208px; overflow: hidden; }
+      .col { position: absolute; top: 0; width: 336px; display: flex; flex-direction: column; gap: 18px; }
+      .col img { display: block; width: 336px; }
+      #col-a { left: 45px; }
+      #col-b { left: 399px; }
+
+      /* 5 · Cierre */
+      #s5 { background: #fafaf7; }
+      #a-full { position: absolute; left: 130px; top: 330px; width: 520px; height: 368px; }
+      #a-h5 { top: 850px; font-size: 118px; }
+      #a-cta { position: absolute; left: 60px; top: 1236px; width: 660px; height: 112px; background: #1a1917; color: #fafaf7; display: flex; align-items: center; justify-content: center; gap: 18px; font-weight: 500; font-size: 31px; letter-spacing: 0.3em; }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="brag" data-start="0" data-width="780" data-height="1688" data-duration="10.6">
+      <div class="lab" id="a-lab" style="top: 150px">Ader Studio — Buenos Aires, Argentina</div>
+
+      <div id="s1" class="s">
+        <div id="a-mark"><img src="casos/ader-studio/media/brag/logo-mark.png" alt="" /></div>
+        <div class="h" id="a-h1">
+          <span class="ln"><span>Todos los</span></span>
+          <span class="ln"><span>proyectos</span></span>
+          <span class="ln"><span>tienen</span></span>
+          <span class="ln"><span class="it">un norte.</span></span>
+        </div>
+        <div id="a-btn">VER PROYECTOS &nbsp;→</div>
+      </div>
+
+      <div id="s2" class="s">
+        <div class="h" id="a-h2">
+          <span class="ln"><span>Arquitectura</span></span>
+          <span class="ln"><span class="it">que emerge</span></span>
+          <span class="ln"><span class="it">del lugar.</span></span>
+        </div>
+        <div id="a-plano">
+          <img class="plano" src="casos/ader-studio/media/brag/proceso-1.jpg" alt="" />
+          <img class="plano" src="casos/ader-studio/media/brag/proceso-2.jpg" alt="" />
+          <img class="plano" src="casos/ader-studio/media/brag/proceso-3.jpg" alt="" />
+          <img class="plano" src="casos/ader-studio/media/brag/proceso-4.jpg" alt="" />
+          <img class="plano" src="casos/ader-studio/media/brag/proceso-5.jpg" alt="" />
+          <img class="plano" src="casos/ader-studio/media/brag/proceso-6.jpg" alt="" />
+        </div>
+        <div class="paso"><b>01 —</b>Terreno base</div>
+        <div class="paso"><b>02 —</b>Grilla y trazado</div>
+        <div class="paso"><b>03 —</b>Análisis con IA</div>
+        <div class="paso"><b>04 —</b>Composición de la forma</div>
+        <div class="paso"><b>05 —</b>Morfología</div>
+        <div class="paso"><b>06 —</b>Planta baja</div>
+        <div id="a-ticks"><span><i></i></span><span><i></i></span><span><i></i></span><span><i></i></span><span><i></i></span><span><i></i></span></div>
+      </div>
+
+      <div id="s3" class="s">
+        <div id="a-bim">BIM</div>
+        <div id="a-int">Integration</div>
+        <div id="a-modelo">
+          <img class="bim" src="casos/ader-studio/media/brag/bim-1.png" alt="" />
+          <img class="bim" src="casos/ader-studio/media/brag/bim-2.png" alt="" />
+          <img class="bim" src="casos/ader-studio/media/brag/bim-3.png" alt="" />
+          <img class="bim" src="casos/ader-studio/media/brag/bim-4.png" alt="" />
+        </div>
+        <div id="a-capas">
+          <div class="capa-bim"><b>01</b>Estructura</div>
+          <div class="capa-bim"><b>02</b>Cerramientos</div>
+          <div class="capa-bim"><b>03</b>Arquitectura</div>
+          <div class="capa-bim"><b>04</b>Instalaciones</div>
+        </div>
+      </div>
+
+      <div id="s4" class="s">
+        <div class="h" id="a-h4">
+          <span class="ln"><span class="it">Nuestros</span></span>
+          <span class="ln"><span>renders</span></span>
+        </div>
+        <div id="a-cols">
+          <div class="col" id="col-a">
+            <img src="casos/ader-studio/media/brag/render-1.jpg" alt="" />
+            <img src="casos/ader-studio/media/brag/render-7.jpg" alt="" />
+            <img src="casos/ader-studio/media/brag/render-2.jpg" alt="" />
+            <img src="casos/ader-studio/media/brag/render-9.jpg" alt="" />
+          </div>
+          <div class="col" id="col-b">
+            <img src="casos/ader-studio/media/brag/render-6.jpg" alt="" />
+            <img src="casos/ader-studio/media/brag/render-4.jpg" alt="" />
+            <img src="casos/ader-studio/media/brag/render-8.jpg" alt="" />
+            <img src="casos/ader-studio/media/brag/render-3.jpg" alt="" />
+          </div>
+        </div>
+      </div>
+
+      <div id="s5" class="s">
+        <div class="lab" style="top: 150px">Ader Studio — Buenos Aires, Argentina</div>
+        <div id="a-full"><img src="casos/ader-studio/media/brag/logo-full.png" alt="" /></div>
+        <div class="h" id="a-h5">
+          <span class="ln"><span>Construyamos</span></span>
+          <span class="ln"><span class="it">algo juntos.</span></span>
+        </div>
+        <div id="a-cta">AGENDAR REUNIÓN <span>→</span></div>
+      </div>
+    </div>
+    <script>
+      const tl = gsap.timeline({ paused: true });
+      const lines = (sel) => document.querySelectorAll(sel + " .ln > span");
+      const entra = (sel, t, step = 0.09) => tl.fromTo(lines(sel), { yPercent: 108 }, { yPercent: 0, duration: 0.7, ease: "power4.out", stagger: step }, t);
+      const sale = (sel, t) => tl.to(lines(sel), { yPercent: -108, duration: 0.42, ease: "power3.in", stagger: 0.04 }, t);
+
+      /* 1 · El gancho: la brújula del sitio gira y se asienta; todo proyecto tiene un norte. */
+      tl.set("#s1", { opacity: 1 }, 0);
+      tl.fromTo("#a-lab", { opacity: 0, x: -24 }, { opacity: 1, x: 0, duration: 0.6, ease: "power3.out" }, 0.15);
+      tl.fromTo("#a-mark", { rotation: -250, scale: 0.72, opacity: 0 }, { rotation: 8, scale: 1, opacity: 1, duration: 1.15, ease: "power3.out" }, 0.05);
+      tl.to("#a-mark", { rotation: -3, duration: 0.34, ease: "sine.inOut" }, 1.2);
+      tl.to("#a-mark", { rotation: 0, duration: 0.4, ease: "sine.out" }, 1.54);
+      entra("#a-h1", 0.4, 0.1);
+      tl.fromTo("#a-btn", { opacity: 0, y: 26 }, { opacity: 1, y: 0, duration: 0.55, ease: "power3.out" }, 1.15);
+      sale("#a-h1", 2.72);
+      tl.to("#a-btn", { opacity: 0, duration: 0.25 }, 2.72);
+      tl.to("#a-mark", { scale: 0.86, opacity: 0, duration: 0.4, ease: "power2.in" }, 2.76);
+      tl.set("#s1", { opacity: 0 }, 3.2);
+
+      /* 2 · Proceso: del terreno a la planta baja, seis pasos en el mismo plano. */
+      tl.set("#s2", { opacity: 1 }, 3.0);
+      entra("#a-h2", 3.02);
+      tl.fromTo("#a-plano", { opacity: 0, y: 60 }, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" }, 3.2);
+      const planos = document.querySelectorAll(".plano"), pasos = document.querySelectorAll(".paso"), ticks = document.querySelectorAll("#a-ticks i");
+      tl.fromTo("#a-ticks", { opacity: 0 }, { opacity: 1, duration: 0.3 }, 3.4);
+      tl.set(ticks, { scaleX: 0 }, 0);
+      planos.forEach((img, i) => {
+        const t = 3.45 + i * 0.37;
+        tl.fromTo(img, { opacity: 0, scale: 1.05 }, { opacity: 1, scale: 1, duration: 0.3, ease: "power2.out" }, t);
+        tl.fromTo(pasos[i], { opacity: 0, y: 22 }, { opacity: 1, y: 0, duration: 0.24, ease: "power3.out" }, t);
+        tl.to(ticks[i], { scaleX: 1, duration: 0.34, ease: "none" }, t);
+        if (i < planos.length - 1) tl.to(pasos[i], { opacity: 0, y: -18, duration: 0.12, ease: "power2.in" }, t + 0.25);
+      });
+      sale("#a-h2", 5.78);
+      tl.to(["#a-plano", ".paso", "#a-ticks"], { opacity: 0, y: -30, duration: 0.3, ease: "power2.in" }, 5.8);
+      tl.set("#s2", { opacity: 0 }, 6.2);
+
+      /* 3 · BIM: un modelo único que suma estructura, cerramientos, arquitectura e instalaciones. */
+      tl.set("#s3", { opacity: 1 }, 6.05);
+      tl.fromTo("#a-bim", { opacity: 0, y: 70 }, { opacity: 1, y: 0, duration: 0.6, ease: "power4.out" }, 6.08);
+      tl.fromTo("#a-int", { opacity: 0, x: -50 }, { opacity: 1, x: 0, duration: 0.6, ease: "power4.out" }, 6.2);
+      const bims = document.querySelectorAll(".bim"), capas = document.querySelectorAll(".capa-bim");
+      tl.set(capas, { opacity: 0.22 }, 0);
+      bims.forEach((img, i) => {
+        const t = 6.3 + i * 0.36;
+        tl.fromTo(img, { opacity: 0 }, { opacity: 1, duration: 0.3, ease: "power2.out" }, t);
+        tl.to(capas[i], { opacity: 1, duration: 0.2 }, t + 0.06);
+      });
+      tl.fromTo("#a-modelo", { opacity: 0, y: 50 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 6.18);
+      tl.fromTo(".bim", { scale: 1 }, { scale: 1.12, duration: 1.9, ease: "sine.inOut" }, 6.3);
+
+      /* 4 · Renders: la sala se apaga y corren dos columnas del portfolio. */
+      tl.set("#s4", { opacity: 1 }, 8.0);
+      tl.fromTo("#s4", { yPercent: 100 }, { yPercent: 0, duration: 0.55, ease: "power3.inOut" }, 8.0);
+      tl.set("#s3", { opacity: 0 }, 8.56);
+      entra("#a-h4", 8.3);
+      tl.fromTo("#col-a", { y: 260 }, { y: -330, duration: 2.2, ease: "power1.out" }, 8.05);
+      tl.fromTo("#col-b", { y: -560 }, { y: -150, duration: 2.2, ease: "power1.out" }, 8.05);
+
+      /* 5 · Cierre: el logo completo y la invitación del sitio. */
+      tl.set("#s5", { opacity: 1 }, 9.35);
+      tl.fromTo("#s5", { yPercent: 100 }, { yPercent: 0, duration: 0.5, ease: "power3.inOut" }, 9.35);
+      tl.to("#a-lab", { opacity: 0, duration: 0.2 }, 8.0);
+      tl.fromTo("#a-full", { scale: 0.8, opacity: 0, rotation: -24 }, { scale: 1, opacity: 1, rotation: 0, duration: 0.7, ease: "power3.out" }, 9.55);
+      entra("#a-h5", 9.6);
+      tl.fromTo("#a-cta", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" }, 9.85);
+      tl.fromTo("#a-cta span", { x: 0 }, { x: 14, duration: 0.5, ease: "sine.inOut" }, 10.1);
+
+      window.__timelines["brag"] = tl;
+    </script>
+  </body>
+</html>

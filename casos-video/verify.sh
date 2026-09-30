@@ -13,14 +13,16 @@ for id in $ids; do
   wh=$(ffprobe -v error -select_streams v:0 -show_entries stream=width,height -of csv=p=0 "$f")
   [ "$wh" = "720,900" ] || bad "tamaño $wh, tiene que ser 720,900"
   dur=$(ffprobe -v error -show_entries format=duration -of csv=p=0 "$f")
-  awk "BEGIN{exit !($dur > 11.9 && $dur < 12.1)}" || bad "dura $dur s, tiene que durar 12"
+  # 12 s, salvo que el caso declare otra duración (los web duran lo que su video).
+  want=$(sed -n 's/.*"dur": *\([0-9.]*\).*/\1/p' "casos-video/casos/$id/caso.json"); want=${want:-12}
+  awk "BEGIN{exit !($dur > $want - 0.1 && $dur < $want + 0.1)}" || bad "dura $dur s, tiene que durar $want"
   [ -z "$(ffprobe -v error -select_streams a -show_entries stream=index -of csv=p=0 "$f")" ] || bad "tiene pista de audio"
   kb=$(($(wc -c < "$f") / 1024))
   [ "$kb" -lt 2560 ] || bad "pesa $kb KB, el tope es 2560"
   # El primer y el último cuadro tienen que ser la tarjeta: sin eso el fundido
   # desde el logo y el loop se notan.
   card="casos-video/casos/$id/media/card.jpg"
-  for at in 0 11.9; do
+  for at in 0 $(awk "BEGIN{print $want - 0.1}"); do
     psnr=$(ffmpeg -v error -ss "$at" -i "$f" -i "$card" -frames:v 1 \
       -filter_complex "[1:v]scale=720:900[c];[0:v][c]psnr=stats_file=-" -f null - 2>/dev/null | sed -n 's/.*psnr_avg:\([0-9.inf]*\).*/\1/p' | head -1)
     awk "BEGIN{exit !(\"$psnr\" == \"inf\" || $psnr + 0 > 30)}" || bad "el cuadro en ${at}s no coincide con la tarjeta (PSNR $psnr)"

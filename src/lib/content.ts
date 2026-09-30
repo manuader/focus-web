@@ -264,6 +264,7 @@ export const WORKS: WorkCard[] = [
     category: { es: 'Bar', en: 'Bar' },
     services: ['social-media'],
     img: '/assets/clients/chillin-card.jpg',
+    video: '/assets/cases/chillin.mp4',
     href: 'https://www.instagram.com/chillin1390bar',
     accent: 'magenta',
   },

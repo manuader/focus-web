@@ -5,8 +5,17 @@
    Trabajo.tsx escribe por tarjeta, por frame, la transformación
    y dos variables: --n (0 en el centro, 1 en el primer vecino)
    y --far (cuánto más allá del primer vecino). Acá se traducen
-   a sombra y desenfoque.
+   a sombra y desenfoque. En la sala escribe --enter (cuánto del
+   mazo ya se repartió al entrar) y --glow (el color del caso en
+   foco).
    ============================================================ */
+
+/* Registrado como color para que la sala cambie de tono con una transición. */
+@property --glow {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #ff00ff;
+}
 
 .trabajo {
   position: relative;
@@ -30,7 +39,10 @@
   background: radial-gradient(ellipse 90% 60% at 50% 58%, #141416 0%, var(--focus-ink) 70%);
   /* The card is the one size everything hangs off: as wide as it can be
      while the header above and the caption below still fit. */
-  --w: min(30vw, 440px, calc((100svh - 468px) * 0.8));
+  --w: min(36vw, 600px, calc((100svh - 318px) * 0.8));
+  --enter: 1;
+  --glow: var(--focus-magenta);
+  transition: --glow 0.7s ease;
 }
 
 /* ---- Marcas de encuadre en las cuatro esquinas de la sala ---- */
@@ -72,14 +84,23 @@
   align-items: flex-end;
   justify-content: space-between;
   gap: 24px;
-  padding: 108px 56px 0;
+  padding: 96px 56px 0;
+  /* Llega con el mazo, y se corre a un costado cuando corre la película. */
+  opacity: var(--enter);
+  transform: translate3d(0, calc((1 - var(--enter)) * 36px), 0);
+}
+.header > * {
+  transition: opacity 0.7s ease;
+}
+.sticky[data-playing='1'] .header > * {
+  opacity: 0.42;
 }
 .eyebrow {
   margin-bottom: 6px;
 }
 .title {
   margin: 0;
-  font-size: clamp(52px, min(6.4vw, 11.5vh), 108px);
+  font-size: clamp(40px, min(4.8vw, 8.4vh), 76px);
   line-height: 0.86;
   font-weight: 800;
   letter-spacing: -0.035em;
@@ -109,12 +130,34 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding-bottom: 4vh;
+  padding-bottom: 2vh;
 }
 .deck {
   flex: none;
   height: calc(var(--w) * 1.25);
   position: relative;
+  /* El scroll vertical es del navegador; el arrastre de costado, del mazo. */
+  touch-action: pan-y;
+}
+/* La luz de la sala: el color del caso en foco, detrás de su tarjeta. Sube
+   cuando corre la película. */
+.deck::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: calc(var(--w) * 2.1);
+  height: calc(var(--w) * 1.9);
+  margin: calc(var(--w) * -0.95) 0 0 calc(var(--w) * -1.05);
+  border-radius: 50%;
+  background: radial-gradient(closest-side, var(--glow), transparent);
+  opacity: calc(var(--enter) * 0.13);
+  filter: blur(40px);
+  transition: opacity 0.9s ease;
+  pointer-events: none;
+}
+.sticky[data-playing='1'] .deck::before {
+  opacity: 0.3;
 }
 .card {
   --n: 0;
@@ -144,8 +187,40 @@
   /* El caso en foco proyecta sombra sobre la sala; los vecinos, casi nada. */
   box-shadow: 0 calc(var(--w) * 0.1) calc(var(--w) * 0.22) calc(var(--w) * -0.1)
     rgba(0, 0, 0, calc(0.9 - 0.5 * var(--n)));
-  /* Safari recorta mal un hijo con filtro dentro de un radio sin esto. */
-  transform: translateZ(0);
+  /* Safari recorta mal un hijo con filtro dentro de un radio sin esto. El
+     caso en foco, además, se inclina hacia el puntero (--px y --py van de
+     -0.5 a 0.5 y los escribe Trabajo.tsx); los vecinos no. */
+  transform: perspective(900px) rotateX(calc(var(--py, 0) * (1 - var(--n)) * -7deg))
+    rotateY(calc(var(--px, 0) * (1 - var(--n)) * 9deg)) translateZ(0);
+  /* Con la película corriendo, la tarjeta se adelanta un paso. */
+  transition:
+    scale 0.9s var(--ease-out-expo),
+    transform 0.5s var(--ease-out-expo);
+}
+.card[data-state='play'] .face {
+  scale: 1.045;
+}
+/* Un aro del color del caso, solo en la tarjeta en foco: la despega de la
+   sala y la señala como la que está por correr. */
+.card::after {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: calc(var(--w) * 0.036);
+  border: 1px solid var(--accent);
+  box-shadow:
+    0 0 calc(var(--w) * 0.11) calc(var(--w) * -0.02) var(--accent),
+    inset 0 0 calc(var(--w) * 0.05) calc(var(--w) * -0.03) var(--accent);
+  opacity: calc((1 - var(--n)) * (1 - var(--n)) * 0.6);
+  transform: perspective(900px) rotateX(calc(var(--py, 0) * (1 - var(--n)) * -7deg))
+    rotateY(calc(var(--px, 0) * (1 - var(--n)) * 9deg));
+  transition:
+    scale 0.9s var(--ease-out-expo),
+    transform 0.5s var(--ease-out-expo);
+  pointer-events: none;
+}
+.card[data-state='play']::after {
+  scale: 1.045;
 }
 /* Un filo de luz en el borde: sin él, los logos sobre negro se pierden
    contra la sala. */
@@ -172,12 +247,12 @@
   height: 100%;
   object-fit: cover;
   opacity: 0;
-  transition: opacity 0.55s cubic-bezier(0.4, 0, 0.6, 1);
+  transition: opacity 0.5s cubic-bezier(0.4, 0, 0.6, 1);
   pointer-events: none;
 }
 .card[data-state='play'] .film {
   opacity: 1;
-  transition: opacity 0.8s cubic-bezier(0.33, 0, 0.15, 1);
+  transition: opacity 0.6s cubic-bezier(0.33, 0, 0.15, 1);
 }
 /* Sombra de los vecinos: tinta sobre la tarjeta, no un filtro, para que
    valga igual sobre el logo y sobre la película. */
@@ -196,10 +271,32 @@
   background: linear-gradient(118deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0) 38%);
   mix-blend-mode: soft-light;
   opacity: calc(1 - var(--n));
+  overflow: hidden;
   pointer-events: none;
 }
-/* La espera: una línea que se llena en los tres segundos previos a la
-   película, para que se entienda que algo está por pasar. */
+/* Al asentarse, un destello cruza el vidrio: el aviso de que está por correr. */
+.sheen::after {
+  content: '';
+  position: absolute;
+  top: -20%;
+  bottom: -20%;
+  left: 0;
+  width: 46%;
+  background: linear-gradient(100deg, transparent, rgba(255, 255, 255, 0.85), transparent);
+  transform: translate3d(-130%, 0, 0) skewX(-14deg);
+  opacity: 0;
+}
+.card[data-state='wait'] .sheen::after {
+  opacity: 1;
+  animation: trabajoSweep var(--dwell, 0.7s) cubic-bezier(0.3, 0, 0.2, 1) forwards;
+}
+@keyframes trabajoSweep {
+  to {
+    transform: translate3d(330%, 0, 0) skewX(-14deg);
+  }
+}
+/* La espera: una línea que se llena en el instante previo a la película,
+   para que se entienda que algo está por pasar. */
 .wait {
   position: absolute;
   z-index: 1;
@@ -215,7 +312,7 @@
 }
 .card[data-state='wait'] .wait {
   opacity: 0.9;
-  animation: trabajoWait 2.84s linear forwards;
+  animation: trabajoWait var(--dwell, 0.7s) linear forwards;
 }
 .card[data-state='play'] .wait {
   transform: scaleX(1);
@@ -290,7 +387,7 @@
   z-index: 3;
   display: grid;
   justify-items: center;
-  padding: 28px var(--edge) 0;
+  padding: 24px var(--edge) 0;
   pointer-events: none;
 }
 .caption {
@@ -324,20 +421,55 @@
   color: var(--focus-gray-400);
 }
 
-@media (max-width: 700px) {
+/* Pantallas bajas (una laptop): el encabezado se achica para que la tarjeta
+   no pague la diferencia. */
+@media (min-width: 701px) and (max-height: 800px) {
   .sticky {
-    --w: min(60vw, calc((100svh - 410px) * 0.8));
+    --w: min(36vw, 600px, calc((100svh - 262px) * 0.8));
   }
   .header {
-    padding: 92px var(--edge) 0;
+    padding-top: 84px;
+  }
+  .title {
+    font-size: clamp(36px, 7vh, 52px);
+  }
+  .captions {
+    padding-top: 16px;
+  }
+  .cat {
+    margin-top: 5px;
+  }
+  .services {
+    margin-top: 9px;
+  }
+}
+
+@media (max-width: 700px) {
+  /* En el teléfono la tarjeta es casi todo el ancho: los vecinos asoman por
+     los bordes y la película se ve a un tamaño que vale la pena. */
+  .sticky {
+    --w: min(80vw, calc((100svh - 266px) * 0.8));
+  }
+  .header {
+    padding: 80px var(--edge) 0;
     padding-left: calc(var(--edge) + 8px);
     padding-right: calc(var(--edge) + 8px);
   }
   .eyebrow {
-    margin-bottom: 4px;
+    margin-bottom: 2px;
   }
   .title {
-    font-size: clamp(44px, 14vw, 64px);
+    font-size: clamp(34px, 10.5vw, 44px);
+  }
+  .body {
+    padding-bottom: 0;
+  }
+  .deck::before {
+    filter: blur(28px);
+  }
+  .card[data-state='play'] .face,
+  .card[data-state='play']::after {
+    scale: 1.035;
   }
   .count {
     font-size: 10.5px;
@@ -364,7 +496,7 @@
     bottom: 12px;
   }
   .captions {
-    padding: 20px var(--edge) 0;
+    padding: 16px var(--edge) 0;
   }
   .name {
     font-size: 19px;
@@ -382,7 +514,8 @@
 
 @media (prefers-reduced-motion: reduce) {
   .film,
-  .wait {
+  .wait,
+  .sheen::after {
     display: none;
   }
 }

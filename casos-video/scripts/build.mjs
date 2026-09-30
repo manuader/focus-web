@@ -14,7 +14,7 @@ const id = process.argv[2];
 const dir = path.join(ROOT, 'casos', id);
 const caso = JSON.parse(fs.readFileSync(path.join(dir, 'caso.json'), 'utf8'));
 const M = `casos/${id}/media`;
-const DUR = 12;
+const DUR = caso.dur ?? 12;
 
 /** Duración real de un medio, recortada a cuadros enteros. */
 const secs = (file) => {
@@ -62,35 +62,40 @@ const I = {
 /* ---- Piezas comunes ---- */
 const estado = `<div class="estado"><span>9:41</span>${I.estado}</div><div class="isla"></div>`;
 
-const timelineBase = (exit) => `
+/* La película arranca casi en el acto: el sitio la muestra a menos de un
+   segundo de que la tarjeta se asienta, y lo primero que tiene que verse es
+   movimiento. `entrada` es de dónde viene el teléfono y a dónde llega. */
+const ENTRADA = { de: '{ y: 900, scale: 0.94, rotationX: 24 }', a: '{ y: 0, scale: 1, rotationX: 0 }' };
+const timelineBase = (exit, entrada = ENTRADA) => `
       const tl = gsap.timeline({ paused: true });
       /* La tarjeta se va de foco y el teléfono sube desde abajo. */
-      tl.fromTo("#tapa-img", { scale: 1, filter: "blur(0px)", opacity: 1 }, { scale: 1.24, filter: "blur(26px)", opacity: ${fondoOscuro ? 0.55 : 0.3}, duration: 1.15, ease: "power2.inOut" }, 0.55);
-      tl.fromTo("#velo", { opacity: 0 }, { opacity: 1, duration: 1.0, ease: "power1.inOut" }, 0.6);
-      tl.fromTo("#camara", { y: 900, scale: 0.94, rotationX: 24, transformPerspective: 1500, transformOrigin: ORIGEN },
-        { y: 0, scale: 1, rotationX: 0, duration: 1.2, ease: "power3.out" }, 0.6);
+      tl.fromTo("#tapa-img", { scale: 1, filter: "blur(0px)", opacity: 1 }, { scale: 1.24, filter: "blur(26px)", opacity: ${caso.tipo === 'web' ? 0.16 : fondoOscuro ? 0.55 : 0.3}, duration: 1.05, ease: "power2.inOut" }, 0.16);
+      tl.fromTo("#velo", { opacity: 0 }, { opacity: 1, duration: 0.95, ease: "power1.inOut" }, 0.2);
+      tl.fromTo("#camara", Object.assign({ transformPerspective: 1500, transformOrigin: ORIGEN }, ${entrada.de}),
+        Object.assign({ duration: 1.15, ease: "power3.out" }, ${entrada.a}), 0.2);
       /* Salida: el teléfono baja y el logo vuelve a foco, igual que al empezar. */
       tl.to("#velo", { opacity: 0, duration: 0.9, ease: "power1.inOut" }, ${exit + 0.25});
       tl.to("#tapa-img", { scale: 1, filter: "blur(0px)", opacity: 1, duration: 1.2, ease: "power2.inOut" }, ${exit + 0.3});`;
 
-/* ---- Web: el sitio real, recorrido en un teléfono ---- */
+/* ---- Web: el video del sitio (brag/<id>.html), corriendo en un teléfono ---- */
 function web() {
-  const d = secs(`${M}/sitio.mp4`);
-  const start = 0.7, exit = +(start + d - 0.85).toFixed(2);
+  const d = secs(`${M}/brag.mp4`);
+  const start = 0.8, exit = +(start + d - 0.55).toFixed(2);
   const html = `
           <div class="pt">
-            ${estado}
-            <div class="url"><div class="url-pill">${I.candado}<span>${esc(caso.dominio)}</span></div></div>
-            <div class="visor">
-              <video id="sitio" src="${M}/sitio.mp4" data-start="${start}" data-duration="${d}" data-track-index="1" muted playsinline></video>
+            <div class="visor-brag">
+              <video id="brag" src="${M}/brag.mp4" data-start="${start}" data-duration="${d}" data-track-index="1" muted playsinline></video>
             </div>
+            ${estado}
           </div>`;
+  /* El teléfono entero en cuadro, apenas de perfil, y girando despacio
+     mientras corre el video: es la pieza, no una captura. */
   const js = `
-      const ORIGEN = "50% 0%";
-      ${timelineBase(exit)}
-      /* La cámara se acerca a la pantalla mientras el sitio corre. */
-      tl.to("#camara", { scale: 1.17, duration: 4.6, ease: "sine.inOut" }, 1.9);
-      tl.to("#camara", { y: 960, scale: 1.02, rotationX: 16, duration: 0.85, ease: "power3.in" }, ${exit});`;
+      const ORIGEN = "50% 50%";
+      ${timelineBase(exit, { de: '{ y: 900, scale: 0.7, rotationX: 20, rotationY: -26 }', a: '{ y: -159, scale: 0.8, rotationX: 0, rotationY: -10 }' })}
+      tl.to("#camara", { rotationY: 8, scale: 0.835, duration: ${(exit - 1.35).toFixed(2)}, ease: "sine.inOut" }, 1.35);
+      ${(caso.estado || []).map(([t, color]) => `tl.to(".estado", { color: "${color}", duration: 0.3 }, ${(start + t).toFixed(2)});`).join('\n      ')}
+      tl.to("#camara", { y: 940, scale: 0.72, rotationX: 16, rotationY: 18, duration: 0.85, ease: "power3.in" }, ${exit});`;
   return { html, js, extra: '' };
 }
 
@@ -104,14 +109,18 @@ function redes() {
   const i0 = p.header.findIndex((l) => /seguidos$/.test(l)) + 1;
   const lineas = [];
   for (const l of p.header.slice(i0)) { if (nombres.has(l)) break; if (l !== caso.handle && l !== 'más' && l !== 'Página web') lineas.push(l.replace(/\.\.\.$/, '…')); }
-  const [nombre, ...bio] = lineas;
+  /* Con sesión iniciada Instagram pone el nombre antes de las cifras, y lo
+     primero que sigue es el rubro de la cuenta. */
+  const antes = p.header.slice(0, Math.max(0, i0 - 1)).filter((l) => l !== caso.handle);
+  const rubro = antes.length ? lineas.shift() : null;
+  const [nombre, ...bio] = antes.length ? [antes[0], ...lineas] : lineas;
   // Instagram corta la bio con "…": una línea que quedó en dos palabras no se muestra.
-  if (bio.length && /…$/.test(bio[bio.length - 1]) && bio[bio.length - 1].length < 25) bio.pop();
   const link = bio.length && /\.[a-z]{2,}/.test(bio[bio.length - 1]) ? bio.pop() : null;
+  if (bio.length && /…$/.test(bio[bio.length - 1]) && bio[bio.length - 1].length < 25) bio.pop();
 
   const d1 = secs(`${M}/reel_1.mp4`), d2 = secs(`${M}/reel_2.mp4`);
-  const t1 = 3.45, swipe = 6.5, t2 = swipe - 0.1, exit = 8.85;
-  const celda = (post) => `<div class="ig-celda" data-code="${post.href.split('/').filter(Boolean).pop()}" style="background-image:url('${M}/ig/${post.file}')">${post.reel ? I.clip : ''}</div>`;
+  const t1 = 3.1, swipe = 6.25, t2 = swipe - 0.1, exit = 8.85;
+  const celda = (post) => `<div class="ig-celda" data-code="${post.href.split('?')[0].split('/').filter(Boolean).pop()}" style="background-image:url('${M}/ig/${post.file}')">${post.reel ? I.clip : ''}</div>`;
   const reel = (n, r, start, dur) => `
                 <div class="reel">
                   <video id="reel${n}" src="${M}/reel_${n}.mp4" data-start="${start}" data-duration="${dur}" data-track-index="${n}" muted playsinline></video>
@@ -132,7 +141,7 @@ function redes() {
                 <div class="ig-avatar"><div style="background-image:url('${M}/card.jpg')"></div></div>
                 <div class="ig-quien"><b>${esc(nombre)}</b><span>@${esc(caso.handle)}</span></div>
               </div>
-              <div class="ig-bio">${bio.map((l) => `<p>${esc(l)}</p>`).join('')}${link ? `<p class="link">${esc(link)}</p>` : ''}</div>
+              <div class="ig-bio">${rubro ? `<p class="rubro">${esc(rubro)}</p>` : ''}${bio.map((l) => `<p>${esc(l)}</p>`).join('')}${link ? `<p class="link">${esc(link)}</p>` : ''}</div>
               <div class="ig-botones"><div class="ig-boton seguir">Seguir</div><div class="ig-boton">Mensaje</div></div>
               <div class="ig-dest">${p.destacadas.map((x) => `<div class="ig-dest-item"><div><span style="background-image:url('${M}/ig/${x.file}')"></span></div><p>${esc(x.nombre)}</p></div>`).join('')}</div>
               <div class="ig-tabs"><div class="ig-tab on">${I.grilla}</div><div class="ig-tab">${I.reelTab}</div><div class="ig-tab">${I.etiqueta}</div></div>
@@ -153,8 +162,8 @@ function redes() {
       const ox = celda.offsetLeft + celda.offsetWidth / 2;
       const oy = 91 + grilla.offsetTop + celda.offsetTop - sube + celda.offsetHeight / 2;
       ${timelineBase(exit)}
-      tl.to("#camara", { scale: 1.13, duration: 2.6, ease: "sine.inOut" }, 1.9);
-      tl.to("#perfil", { y: -sube, duration: 1.5, ease: "power2.inOut" }, 1.95);
+      tl.to("#camara", { scale: 1.13, duration: 2.6, ease: "sine.inOut" }, 1.5);
+      tl.to("#perfil", { y: -sube, duration: 1.5, ease: "power2.inOut" }, 1.6);
       /* Con el reel abierto la cámara baja hasta el pie del teléfono, donde
          están el autor y el texto de la publicación. */
       tl.to("#camara", { y: -415, duration: 1.3, ease: "power2.inOut" }, ${t1 + 0.2});
@@ -174,7 +183,7 @@ function audiovisual() {
           <div class="pt">
             ${estado}
             <div id="vertical" class="capa" style="color:#fff">
-              <video id="clip-v" src="${M}/vertical.mp4" data-start="0.6" data-duration="${Math.min(dv, 4.5)}" data-track-index="1" muted playsinline></video>
+              <video id="clip-v" src="${M}/vertical.mp4" data-start="0.3" data-duration="${Math.min(dv, 4.5)}" data-track-index="1" muted playsinline></video>
               <div class="reel-sombra"></div>
               <div class="reel-pie"><div class="reel-autor"><i style="background-image:url('${M}/card.jpg')"></i><span>${esc(caso.handle)}</span></div></div>
             </div>

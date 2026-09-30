@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=780, height=1688" />
+    <title>Brag · Top Láser</title>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      /* Identidad tomada del sitio: blanco, tinta #1d1d1f, acento #e85d04,
+         Inter, y el degradé de marca (oro, naranja, carmín, celeste). */
+      @font-face { font-family: "Inter"; src: url("kit/fonts/inter-400-normal.woff2") format("woff2"); font-weight: 400; }
+      @font-face { font-family: "Inter"; src: url("kit/fonts/inter-600-normal.woff2") format("woff2"); font-weight: 600; }
+      @font-face { font-family: "Inter"; src: url("kit/fonts/inter-700-normal.woff2") format("woff2"); font-weight: 700; }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 780px; height: 1688px; overflow: hidden; background: #fff; }
+      #root { position: relative; width: 100%; height: 100%; overflow: hidden; background: #fff; color: #1d1d1f; font-family: "Inter", sans-serif; }
+      .s { position: absolute; inset: 0; opacity: 0; background: #fff; }
+      .k { position: absolute; left: 56px; font-weight: 600; font-size: 25px; letter-spacing: 0.12em; text-transform: uppercase; color: #e85d04; white-space: nowrap; }
+      .h { position: absolute; left: 56px; font-weight: 700; letter-spacing: -0.035em; line-height: 1.05; white-space: nowrap; }
+      .h em { font-style: normal; color: #e85d04; }
+      .ln { display: block; overflow: hidden; padding-bottom: 0.12em; }
+      .ln span { display: block; }
+      .cta { position: absolute; left: 56px; width: 668px; height: 108px; border-radius: 54px; background: #e85d04; color: #fff; display: flex; align-items: center; justify-content: center; gap: 16px; font-weight: 600; font-size: 34px; letter-spacing: -0.01em; }
+      .barra { position: absolute; left: 0; bottom: 0; width: 780px; height: 16px; background: linear-gradient(90deg, gold 0%, #ff8c00 33%, #dc143c 66%, #5dade2 100%); transform-origin: 0 50%; }
+
+      /* 1 · La promesa */
+      #t-logo { position: absolute; left: 40px; top: 170px; width: 330px; height: 330px; }
+      #t-logo img, #t-logo5 img { display: block; width: 100%; height: 100%; }
+      #t-pill { position: absolute; left: 56px; top: 540px; height: 62px; padding: 0 28px 0 24px; border-radius: 31px; background: #fef3e2; color: #e85d04; display: flex; align-items: center; gap: 14px; font-weight: 600; font-size: 25px; }
+      #t-pill i { display: block; width: 12px; height: 12px; border-radius: 50%; background: #e85d04; }
+      #t-h1 { top: 640px; font-size: 100px; }
+      .dato { position: absolute; top: 1320px; width: 210px; }
+      .dato b { display: block; font-weight: 700; font-size: 62px; letter-spacing: -0.03em; line-height: 1; }
+      .dato span { display: block; margin-top: 10px; font-size: 22px; line-height: 1.25; color: #6e6e73; }
+
+      /* 2 · Servicios */
+      #t-h2 { top: 236px; font-size: 92px; }
+      .fila { position: absolute; left: 56px; width: 668px; height: 164px; border-radius: 34px; background: #f5f5f7; display: flex; align-items: center; gap: 30px; padding: 0 34px; font-weight: 700; font-size: 50px; letter-spacing: -0.03em; }
+      .fila i { flex: none; width: 96px; height: 96px; border-radius: 26px; background: #fff; display: flex; align-items: center; justify-content: center; }
+      .fila svg { display: block; width: 52px; height: 52px; }
+      .fila u { margin-left: auto; text-decoration: none; font-weight: 400; color: #e85d04; }
+
+      /* 3 · Galería */
+      #t-h3 { top: 236px; font-size: 80px; }
+      .chip { position: absolute; top: 452px; height: 62px; padding: 0 28px; border-radius: 31px; border: 2px solid #d2d2d7; display: flex; align-items: center; font-weight: 600; font-size: 25px; color: #515154; }
+      .chip.on { background: #e85d04; border-color: #e85d04; color: #fff; }
+      .pega { position: absolute; border: 12px solid #fff; border-radius: 22px; box-shadow: 0 22px 46px -18px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(0, 0, 0, 0.06); overflow: hidden; background: #fff; }
+      .pega img { display: block; width: 100%; height: 100%; object-fit: cover; }
+
+      /* 4 · Proceso */
+      #s4 { background: #1d1d1f; color: #fff; }
+      #t-h4 { top: 236px; font-size: 92px; }
+      #t-hilo { position: absolute; left: 97px; top: 680px; width: 4px; height: 640px; background: #3a3a3c; }
+      #t-hilo i { position: absolute; inset: 0; background: #e85d04; transform-origin: 50% 0; }
+      .etapa { position: absolute; left: 56px; display: flex; align-items: center; gap: 34px; font-weight: 700; font-size: 58px; letter-spacing: -0.03em; white-space: nowrap; }
+      .etapa b { flex: none; width: 86px; height: 86px; border-radius: 50%; background: #1d1d1f; border: 3px solid #e85d04; color: #e85d04; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 28px; letter-spacing: 0; }
+
+      /* 5 · Cierre */
+      #t-logo5 { position: absolute; left: 270px; top: 250px; width: 240px; height: 240px; }
+      #t-h5 { left: 56px; width: 668px; top: 580px; font-size: 88px; text-align: center; white-space: normal; }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="brag" data-start="0" data-width="780" data-height="1688" data-duration="10.6">
+      <div id="s1" class="s">
+        <div id="t-logo"><img src="casos/top-laser-web/media/brag/logo-card.jpg" alt="" /></div>
+        <div id="t-pill"><i></i>Servicios de Impresión Profesional</div>
+        <div class="h" id="t-h1">
+          <span class="ln"><span>Impresión</span></span>
+          <span class="ln"><span>Profesional.</span></span>
+          <span class="ln"><span>Resultados</span></span>
+          <span class="ln"><span><em>Premium.</em></span></span>
+        </div>
+        <div class="cta" id="t-cta1" style="top: 1140px">Solicitar Cotización <span>→</span></div>
+        <div class="dato" style="left: 56px"><b>+30</b><span>Años de Experiencia</span></div>
+        <div class="dato" style="left: 290px"><b>+5mil</b><span>Proyectos Entregados</span></div>
+        <div class="dato" style="left: 530px"><b>+500</b><span>Clientes Satisfechos</span></div>
+      </div>
+
+      <div id="s2" class="s">
+        <div class="k" style="top: 176px">Nuestros servicios</div>
+        <div class="h" id="t-h2">
+          <span class="ln"><span>Soluciones</span></span>
+          <span class="ln"><span><em>Integrales</em></span></span>
+        </div>
+        <div class="fila" style="top: 500px"><i><svg viewBox="0 0 24 24" fill="none" stroke="#e85d04" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-9-9c0 5 4 9 9 9z" /><path d="M21 12c-5 0-9-4-9-9" /></svg></i>Stickers<u>→</u></div>
+        <div class="fila" style="top: 686px"><i><svg viewBox="0 0 24 24" fill="none" stroke="#e85d04" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12.5V4a1 1 0 0 1 1-1h8.500l8.500 8.500-9.500 9.500z" /><circle cx="8" cy="8" r="1.600" /></svg></i>Etiquetas<u>→</u></div>
+        <div class="fila" style="top: 872px"><i><svg viewBox="0 0 24 24" fill="none" stroke="#e85d04" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19l7-7 3 3-7 7z" /><path d="M18 13l-1.500-7.500L2 2l3.500 14.500L13 18z" /><path d="M2 2l7.600 7.600" /><circle cx="11" cy="11" r="2" /></svg></i>Diseño Gráfico<u>→</u></div>
+        <div class="fila" style="top: 1058px"><i><svg viewBox="0 0 24 24" fill="none" stroke="#e85d04" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M7 8l5-5 5 5v12a1 1 0 0 1-1 1H8a1 1 0 0 1-1-1z" /><circle cx="12" cy="9" r="1.400" /><path d="M10 14h4M10 17h4" /></svg></i>Hang Tags<u>→</u></div>
+        <div class="fila" style="top: 1244px"><i><svg viewBox="0 0 24 24" fill="none" stroke="#e85d04" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8l-9-5-9 5v8l9 5 9-5z" /><path d="M3 8l9 5 9-5M12 13v8M7.500 5.500l9 5" /></svg></i>Packaging<u>→</u></div>
+      </div>
+
+      <div id="s3" class="s">
+        <div class="k" style="top: 176px">Galería</div>
+        <div class="h" id="t-h3">
+          <span class="ln"><span>Proyectos que</span></span>
+          <span class="ln"><span>hablan <em>por sí solos</em></span></span>
+        </div>
+        <div class="chip on" style="left: 56px">Todos</div>
+        <div class="chip" style="left: 188px">Stickers</div>
+        <div class="chip" style="left: 344px">Etiquetas</div>
+        <div class="chip" style="left: 518px">Packaging</div>
+        <div class="pega" style="left: 38px; top: 560px; width: 350px; height: 316px"><img src="casos/top-laser-web/media/brag/sticker-1.jpg" alt="" /></div>
+        <div class="pega" style="left: 404px; top: 590px; width: 340px; height: 334px"><img src="casos/top-laser-web/media/brag/sticker-6.jpg" alt="" /></div>
+        <div class="pega" style="left: 70px; top: 900px; width: 280px; height: 342px"><img src="casos/top-laser-web/media/brag/sticker-3.jpg" alt="" /></div>
+        <div class="pega" style="left: 360px; top: 960px; width: 384px; height: 304px"><img src="casos/top-laser-web/media/brag/sticker-2.jpg" alt="" /></div>
+        <div class="pega" style="left: 40px; top: 1270px; width: 372px; height: 280px"><img src="casos/top-laser-web/media/brag/sticker-4.jpg" alt="" /></div>
+        <div class="pega" style="left: 424px; top: 1296px; width: 318px; height: 280px"><img src="casos/top-laser-web/media/brag/sticker-5.jpg" alt="" /></div>
+      </div>
+
+      <div id="s4" class="s">
+        <div class="k" style="top: 176px">Cómo trabajamos</div>
+        <div class="h" id="t-h4">
+          <span class="ln"><span>Del concepto</span></span>
+          <span class="ln"><span>a la <em>realización</em></span></span>
+        </div>
+        <div id="t-hilo"><i></i></div>
+        <div class="etapa" style="top: 620px"><b>01</b>Consulta</div>
+        <div class="etapa" style="top: 830px"><b>02</b>Revisión de Diseño</div>
+        <div class="etapa" style="top: 1040px"><b>03</b>Producción</div>
+        <div class="etapa" style="top: 1250px"><b>04</b>Entrega</div>
+        <div class="barra" id="t-barra4"></div>
+      </div>
+
+      <div id="s5" class="s">
+        <div id="t-logo5"><img src="casos/top-laser-web/media/brag/logo-card.jpg" alt="" /></div>
+        <div class="h" id="t-h5">¿Listo para dar vida a tu <em>visión</em>?</div>
+        <div class="cta" id="t-cta5" style="top: 990px">Solicitar Cotización <span>→</span></div>
+        <div class="barra" id="t-barra5"></div>
+      </div>
+    </div>
+    <script>
+      const tl = gsap.timeline({ paused: true });
+      const entra = (sel, t, step = 0.1) => tl.fromTo(document.querySelectorAll(sel + " .ln > span"), { yPercent: 112 }, { yPercent: 0, duration: 0.65, ease: "power4.out", stagger: step }, t);
+
+      /* 1 · El gancho: el logo cae como un sticker y la promesa del sitio, con "Premium" en naranja. */
+      tl.set("#s1", { opacity: 1 }, 0);
+      tl.fromTo("#t-logo", { scale: 1.9, opacity: 0, rotation: -26 }, { scale: 1, opacity: 1, rotation: -6, duration: 0.5, ease: "back.out(1.5)" }, 0.12);
+      tl.to("#t-logo", { rotation: 0, duration: 0.5, ease: "power2.out" }, 0.62);
+      tl.fromTo("#t-pill", { opacity: 0, x: -30 }, { opacity: 1, x: 0, duration: 0.45, ease: "power3.out" }, 0.45);
+      entra("#t-h1", 0.55);
+      tl.fromTo("#t-cta1", { opacity: 0, scale: 0.88 }, { opacity: 1, scale: 1, duration: 0.5, ease: "back.out(1.7)" }, 1.2);
+      tl.fromTo(".dato", { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.45, ease: "power3.out", stagger: 0.1 }, 1.4);
+      tl.to("#t-cta1", { scale: 0.95, duration: 0.12, ease: "power2.in" }, 2.4);
+      tl.to("#t-cta1", { scale: 1, duration: 0.22, ease: "back.out(3)" }, 2.52);
+
+      /* 2 · Servicios: las cinco líneas del sitio, una detrás de otra. */
+      tl.set("#s2", { opacity: 1 }, 2.72);
+      tl.fromTo("#s2", { xPercent: 100 }, { xPercent: 0, duration: 0.5, ease: "power3.inOut" }, 2.72);
+      tl.set("#s1", { opacity: 0 }, 3.24);
+      tl.fromTo("#s2 .k", { opacity: 0 }, { opacity: 1, duration: 0.3 }, 3.0);
+      entra("#t-h2", 3.0);
+      tl.fromTo(".fila", { opacity: 0, x: 130 }, { opacity: 1, x: 0, duration: 0.5, ease: "power3.out", stagger: 0.13 }, 3.2);
+      tl.fromTo(".fila u", { x: -14, opacity: 0 }, { x: 0, opacity: 1, duration: 0.3, ease: "power2.out", stagger: 0.13 }, 3.5);
+
+      /* 3 · Galería: los trabajos se pegan en pantalla, como stickers. */
+      tl.set("#s3", { opacity: 1 }, 5.0);
+      tl.fromTo("#s3", { xPercent: 100 }, { xPercent: 0, duration: 0.5, ease: "power3.inOut" }, 5.0);
+      tl.set("#s2", { opacity: 0 }, 5.52);
+      tl.fromTo("#s3 .k", { opacity: 0 }, { opacity: 1, duration: 0.3 }, 5.26);
+      entra("#t-h3", 5.26);
+      tl.fromTo(".chip", { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 0.3, ease: "power3.out", stagger: 0.06 }, 5.5);
+      const giros = [-5, 4, 3, -3, -4, 5];
+      tl.fromTo(".pega", { opacity: 0, scale: 1.7, rotation: (i) => giros[i] * 4 }, { opacity: 1, scale: 1, rotation: (i) => giros[i], duration: 0.34, ease: "back.out(1.3)", stagger: 0.2 }, 5.62);
+
+      /* 4 · Proceso: del concepto a la entrega, cuatro pasos sobre negro. */
+      tl.set("#s4", { opacity: 1 }, 7.5);
+      tl.fromTo("#s4", { yPercent: 100 }, { yPercent: 0, duration: 0.5, ease: "power3.inOut" }, 7.5);
+      tl.set("#s3", { opacity: 0 }, 8.02);
+      tl.fromTo("#s4 .k", { opacity: 0 }, { opacity: 1, duration: 0.3 }, 7.76);
+      entra("#t-h4", 7.76);
+      tl.fromTo("#t-hilo i", { scaleY: 0 }, { scaleY: 1, duration: 1.0, ease: "power1.inOut" }, 7.95);
+      tl.fromTo(".etapa", { opacity: 0, x: -36 }, { opacity: 1, x: 0, duration: 0.4, ease: "power3.out", stagger: 0.2 }, 7.95);
+      tl.fromTo("#t-barra4", { scaleX: 0 }, { scaleX: 1, duration: 1.0, ease: "power2.inOut" }, 7.9);
+
+      /* 5 · Cierre: la pregunta del sitio y su botón. */
+      tl.set("#s5", { opacity: 1 }, 9.1);
+      tl.fromTo("#s5", { yPercent: 100 }, { yPercent: 0, duration: 0.5, ease: "power3.inOut" }, 9.1);
+      tl.fromTo("#t-logo5", { scale: 1.8, opacity: 0, rotation: 20 }, { scale: 1, opacity: 1, rotation: 0, duration: 0.45, ease: "back.out(1.5)" }, 9.32);
+      tl.fromTo("#t-h5", { opacity: 0, y: 50 }, { opacity: 1, y: 0, duration: 0.55, ease: "power4.out" }, 9.38);
+      tl.fromTo("#t-cta5", { opacity: 0, scale: 0.88 }, { opacity: 1, scale: 1, duration: 0.5, ease: "back.out(1.7)" }, 9.62);
+      tl.fromTo("#t-cta5 span", { x: 0 }, { x: 12, duration: 0.5, ease: "sine.inOut" }, 10.0);
+      tl.fromTo("#t-barra5", { scaleX: 0 }, { scaleX: 1, duration: 0.7, ease: "power2.inOut" }, 9.5);
+
+      window.__timelines["brag"] = tl;
+    </script>
+  </body>
+</html>

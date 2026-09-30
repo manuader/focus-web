@@ -1,4 +1,19 @@
 {
-  "id": "oushy", "tipo": "web", "cliente": "OUSHY Studio",
-  "dominio": "oushy-web.vercel.app", "fondoSitio": "#f6efe9", "tema": "claro"
+  "id": "oushy",
+  "tipo": "web",
+  "cliente": "OUSHY Studio",
+  "dominio": "oushy-web.vercel.app",
+  "fondoSitio": "#f6efe9",
+  "tema": "claro",
+  "dur": 12.6,
+  "estado": [
+    [
+      5.2,
+      "#f6efe9"
+    ],
+    [
+      7.8,
+      "#54574f"
+    ]
+  ]
 }

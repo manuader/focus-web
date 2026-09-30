@@ -1,4 +1,19 @@
 {
-  "id": "top-laser-web", "tipo": "web", "cliente": "Top Láser",
-  "dominio": "toplaserimprenta.com", "fondoSitio": "#ffffff", "tema": "claro"
+  "id": "top-laser-web",
+  "tipo": "web",
+  "cliente": "Top Láser",
+  "dominio": "toplaserimprenta.com",
+  "fondoSitio": "#ffffff",
+  "tema": "claro",
+  "dur": 12.6,
+  "estado": [
+    [
+      7.6,
+      "#ffffff"
+    ],
+    [
+      9.2,
+      "#1d1d1f"
+    ]
+  ]
 }

@@ -85,7 +85,9 @@ Imágenes, logos, motifs (`rings.svg`, `reticle.svg`) y fuentes se copiaron a
 
 ### Videos de los casos
 
-Cada tarjeta de **Casos** se funde, a los tres segundos de quedar quieta en el
-centro, a un video del trabajo (`public/assets/cases/<id>.mp4`, el campo `video`
-de `WORKS`). Esos videos se producen en [`casos-video/`](casos-video/PLAN.md):
-capturas del sitio o de la cuenta del cliente, armadas con HyperFrames.
+Cada tarjeta de **Casos** se funde, a menos de un segundo de quedar quieta en
+el centro, a un video del trabajo (`public/assets/cases/<id>.mp4`, el campo
+`video` de `WORKS`). Esos videos se producen en
+[`casos-video/`](casos-video/PLAN.md) con HyperFrames: para los sitios, una
+pieza de motion graphics hecha con el propio sitio, corriendo dentro de un
+iPhone; para las cuentas, su perfil de Instagram y dos reels.

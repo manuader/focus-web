@@ -1,5 +1,7 @@
 {
   "id": "chillin", "tipo": "redes", "cliente": "@chillin1390bar", "handle": "chillin1390bar", "tema": "oscuro",
-  "pendiente": true,
-  "reels": []
+  "reels": [
+    { "code": "DcmAZIqOYQ4", "desde": 8.6 },
+    { "code": "DcwRhYOyOmu", "desde": 7.0 }
+  ]
 }

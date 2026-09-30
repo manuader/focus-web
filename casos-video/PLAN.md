@@ -1,6 +1,6 @@
 # Casos en movimiento: plan y estado
 
-La sección **Casos** del sitio muestra cada cliente como una tarjeta con su logo. Cuando el caso del centro queda quieto menos de un segundo, el logo se funde a un video corto que muestra el trabajo hecho. Al seguir scrolleando, el video se va y vuelve el logo.
+La sección **Casos** del sitio muestra cada cliente como una tarjeta con su logo, todas iguales: lo único que cambia es la imagen y el video. El scroll frena en cada caso (un caso por gesto de rueda, trackpad o dedo), y cuando el caso del centro queda quieto menos de un segundo, el logo se funde a un video corto que muestra el trabajo hecho. Al seguir scrolleando, el video se va y vuelve el logo.
 
 Esta carpeta produce esos videos. Es un proyecto HyperFrames (el renderer de la skill brag): `index.html` es siempre la composición que se está por renderizar y la escriben los scripts.
 
@@ -104,6 +104,7 @@ node casos-video/scripts/capturar-instagram.mjs --cdp http://127.0.0.1:9223 chil
 | Entrega | `casos-video/verify.sh` | `VERIFY_EXIT 0`: cada caso de `WORKS` con `video` tiene su mp4 de 720 × 900, de la duración que declara, sin audio, de menos de 2,5 MB, y el primer y el último cuadro coinciden con la tarjeta |
 | Sitio | `npx tsc --noEmit`, `npm run lint` y `npm run build` | Sin errores |
 | Sitio en pantalla | `scripts/qa-sitio.mjs` | Capturas en escritorio, laptop y dos teléfonos; la película arranca a menos de un segundo |
+| Paradas | `scripts/qa-paradas.mjs` | La rueda, el trackpad y el dedo frenan en cada caso (un caso por gesto), y por los extremos se sale de la sección |
 
 ## 7. Decisiones abiertas (son del estudio)
 

@@ -13,8 +13,9 @@ import { useTranslate } from '@/hooks/useTranslate';
 import { useWindowScroll } from '@/hooks/useWindowScroll';
 import { useReducedMotion } from '@/hooks/useMediaQuery';
 import { Eyebrow } from '@/components/ui/Eyebrow';
-import { WORKS, SERVICE_BY_ID, ACCENT_HEX, ACCENT_TEXT, COPY } from '@/lib/content';
+import { WORKS, SERVICE_BY_ID, ACCENT_TEXT, COPY } from '@/lib/content';
 import styles from './trabajo.module.css';
+import { useCaseStops } from './useCaseStops';
 
 const clamp01 = (v: number) => Math.max(0, Math.min(1, v));
 const pad2 = (n: number) => String(n).padStart(2, '0');
@@ -54,7 +55,9 @@ type CardState = '' | 'wait' | 'play';
  *
  * The deck is dealt in as the section scrolls into view: the cards rise from
  * below, the centre one first, and fan out into place. While it turns, the
- * cards lean into the travel. On touch, a sideways swipe turns it by one.
+ * cards lean into the travel. The scroll stops at every case (see
+ * useCaseStops), so each film gets its moment; on touch, a sideways swipe
+ * also turns the deck by one.
  *
  * Scroll sets a target; a short rAF loop eases the deck toward it, so a
  * wheel's steps arrive as one glide. All of it is written through refs,
@@ -143,11 +146,6 @@ export function Trabajo() {
       const best = Math.max(0, Math.min(total - 1, Math.round(pos)));
       if (best !== m.active) {
         m.active = best;
-        // The room takes the colour of the case in the centre.
-        stageRef.current?.style.setProperty(
-          '--glow',
-          best < n ? ACCENT_HEX[WORKS[best].accent] : 'var(--focus-magenta)',
-        );
         if (countRef.current) {
           countRef.current.textContent = `${pad2(Math.min(best + 1, n))} / ${pad2(n)}`;
           countRef.current.dataset.off = best >= n ? '1' : '0';
@@ -294,20 +292,8 @@ export function Trabajo() {
     };
   }, [rest]);
 
-  /** Scroll the page to the point where case `i` sits in the centre. */
-  const scrollToCase = useCallback(
-    (i: number) => {
-      const section = sectionRef.current;
-      if (!section) return;
-      const top = section.getBoundingClientRect().top + window.scrollY;
-      const span = section.offsetHeight - window.innerHeight;
-      window.scrollTo({
-        top: top + (i / (total - 1)) * span,
-        behavior: reduce ? 'auto' : 'smooth',
-      });
-    },
-    [reduce, total],
-  );
+  /** Glide the page to the point where case `i` sits in the centre. */
+  const scrollToCase = useCaseStops(sectionRef, total, reduce);
 
   /** A card off to the side is a way to get to it, not a link out yet. */
   const bringForward = (i: number) => (e: MouseEvent<HTMLElement>) => {
@@ -411,7 +397,6 @@ export function Trabajo() {
                   target="_blank"
                   rel="noopener noreferrer"
                   className={styles.card}
-                  style={{ '--accent': ACCENT_HEX[w.accent] } as CSSProperties}
                   aria-label={`${w.client}, ${t(w.category)}. ${w.services
                     .map((id) => t(SERVICE_BY_ID[id].title))
                     .join(', ')}. ${t(ig ? COPY.trabajo.visitIg : COPY.trabajo.visitSite)}`}
@@ -456,7 +441,6 @@ export function Trabajo() {
               }}
               href="#contacto"
               className={`${styles.card} ${styles.next}`}
-              style={{ '--accent': 'var(--focus-magenta)' } as CSSProperties}
               onClick={bringForward(n)}
               onFocus={() => n !== motion.current.active && scrollToCase(n)}
             >

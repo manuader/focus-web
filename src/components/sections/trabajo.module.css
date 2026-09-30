@@ -6,16 +6,9 @@
    y dos variables: --n (0 en el centro, 1 en el primer vecino)
    y --far (cuánto más allá del primer vecino). Acá se traducen
    a sombra y desenfoque. En la sala escribe --enter (cuánto del
-   mazo ya se repartió al entrar) y --glow (el color del caso en
-   foco).
+   mazo ya se repartió al entrar). Todas las tarjetas son iguales:
+   lo único que cambia de una a otra es su imagen y su película.
    ============================================================ */
-
-/* Registrado como color para que la sala cambie de tono con una transición. */
-@property --glow {
-  syntax: '<color>';
-  inherits: true;
-  initial-value: #ff00ff;
-}
 
 .trabajo {
   position: relative;
@@ -41,8 +34,6 @@
      while the header above and the caption below still fit. */
   --w: min(36vw, 600px, calc((100svh - 318px) * 0.8));
   --enter: 1;
-  --glow: var(--focus-magenta);
-  transition: --glow 0.7s ease;
 }
 
 /* ---- Marcas de encuadre en las cuatro esquinas de la sala ---- */
@@ -139,26 +130,6 @@
   /* El scroll vertical es del navegador; el arrastre de costado, del mazo. */
   touch-action: pan-y;
 }
-/* La luz de la sala: el color del caso en foco, detrás de su tarjeta. Sube
-   cuando corre la película. */
-.deck::before {
-  content: '';
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: calc(var(--w) * 2.1);
-  height: calc(var(--w) * 1.9);
-  margin: calc(var(--w) * -0.95) 0 0 calc(var(--w) * -1.05);
-  border-radius: 50%;
-  background: radial-gradient(closest-side, var(--glow), transparent);
-  opacity: calc(var(--enter) * 0.13);
-  filter: blur(40px);
-  transition: opacity 0.9s ease;
-  pointer-events: none;
-}
-.sticky[data-playing='1'] .deck::before {
-  opacity: 0.3;
-}
 .card {
   --n: 0;
   --far: 0;
@@ -199,39 +170,6 @@
 }
 .card[data-state='play'] .face {
   scale: 1.045;
-}
-/* Un aro del color del caso, solo en la tarjeta en foco: la despega de la
-   sala y la señala como la que está por correr. */
-.card::after {
-  content: '';
-  position: absolute;
-  inset: -1px;
-  border-radius: calc(var(--w) * 0.036);
-  border: 1px solid var(--accent);
-  box-shadow:
-    0 0 calc(var(--w) * 0.11) calc(var(--w) * -0.02) var(--accent),
-    inset 0 0 calc(var(--w) * 0.05) calc(var(--w) * -0.03) var(--accent);
-  opacity: calc((1 - var(--n)) * (1 - var(--n)) * 0.6);
-  transform: perspective(900px) rotateX(calc(var(--py, 0) * (1 - var(--n)) * -7deg))
-    rotateY(calc(var(--px, 0) * (1 - var(--n)) * 9deg));
-  transition:
-    scale 0.9s var(--ease-out-expo),
-    transform 0.5s var(--ease-out-expo);
-  pointer-events: none;
-}
-.card[data-state='play']::after {
-  scale: 1.045;
-}
-/* Un filo de luz en el borde: sin él, los logos sobre negro se pierden
-   contra la sala. */
-.face::before {
-  content: '';
-  position: absolute;
-  z-index: 2;
-  inset: 0;
-  border-radius: inherit;
-  box-shadow: inset 0 0 0 1px rgba(246, 246, 244, 0.09);
-  pointer-events: none;
 }
 /* Logos, no fotos: fuera de foco se desenfocan; en foco quedan como vinieron. */
 .art {
@@ -304,7 +242,7 @@
   right: 0;
   bottom: 0;
   height: 2px;
-  background: var(--accent);
+  background: var(--focus-paper);
   transform: scaleX(0);
   transform-origin: 0 50%;
   opacity: 0;
@@ -333,10 +271,7 @@
   justify-content: center;
   gap: calc(var(--w) * 0.075);
   background: #0c0c0e;
-  border: 1.5px dashed var(--focus-magenta);
-  box-shadow:
-    0 0 calc(var(--w) * 0.08) rgba(255, 0, 255, calc(0.42 * (1 - var(--n)))),
-    inset 0 0 calc(var(--w) * 0.12) rgba(255, 0, 255, 0.07);
+  border: 1.5px dashed rgba(246, 246, 244, 0.32);
   transition: background 0.5s;
 }
 .plus {
@@ -464,11 +399,7 @@
   .body {
     padding-bottom: 0;
   }
-  .deck::before {
-    filter: blur(28px);
-  }
-  .card[data-state='play'] .face,
-  .card[data-state='play']::after {
+  .card[data-state='play'] .face {
     scale: 1.035;
   }
   .count {

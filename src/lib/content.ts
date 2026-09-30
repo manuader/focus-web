@@ -492,14 +492,6 @@ export const COPY = {
        convergen en un solo haz blanco, que es la marca del cliente. */
     beam: { es: 'TU MARCA', en: 'YOUR BRAND' },
     beamCta: { es: 'Tu marca: hablemos', en: "Your brand: let's talk" },
-    footIn: {
-      es: 'El espectro entra · un solo haz sale',
-      en: 'Full spectrum in · one beam out',
-    },
-    footScroll: {
-      es: 'El scroll acerca la luz al prisma',
-      en: 'Scroll to bring the light into the prism',
-    },
   },
   trabajo: {
     eyebrow: { es: 'Trabajo seleccionado', en: 'Selected work' },

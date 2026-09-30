@@ -4,7 +4,7 @@ import { useEffect, useRef, type CSSProperties, type RefObject } from 'react';
 import { useTranslate } from '@/hooks/useTranslate';
 import { useReducedMotion } from '@/hooks/useMediaQuery';
 import { SERVICES, COPY } from '@/lib/content';
-import { SPECTRUM, NARROW_AT } from './spectrum';
+import { SPECTRUM } from './spectrum';
 import {
   createPrismScene,
   activeStep,
@@ -26,11 +26,12 @@ interface Props {
 }
 
 /**
- * The services prism for phones. The horizontal bench needs width a phone
- * does not have, so here the story is told in sequence instead: the prism
- * builds, then each service arrives as one ray of the spectrum, and when
- * all seven are in, a single white beam leaves the glass. The closing
- * caption lists them all at once.
+ * The services prism, the same scene on every screen: the prism builds,
+ * then each service arrives as one ray of the spectrum, and when all seven
+ * are in, a single white beam leaves the glass. The closing caption lists
+ * them all at once. Only the layout changes with the width: on a phone the
+ * scene hangs under a narrow caption, on a wide screen it spreads out and
+ * the beam gets the room to the right.
  *
  * The caption sits above the prism, under the heading: number, name and
  * colour of the service whose ray is coming in. As the ray sets out, a
@@ -40,13 +41,13 @@ interface Props {
  * are the white beam (your brand).
  *
  * The scene is a canvas (see prismScene.ts). A rAF loop runs only while the
- * section is on screen at phone width; it eases toward the scroll position
+ * section is on screen; it eases toward the scroll position
  * so the sequence glides instead of stepping, and keeps the idle motion
  * (dust, glints, the beam breathing) alive. Captions, the flying names and
  * the spectrum bar are written through refs, so React never re-renders
  * while scrolling.
  */
-export function PrismaMovil({ sectionRef, headerRef }: Props) {
+export function Prisma({ sectionRef, headerRef }: Props) {
   const { t } = useTranslate();
   const reduce = useReducedMotion();
 
@@ -66,7 +67,6 @@ export function PrismaMovil({ sectionRef, headerRef }: Props) {
     const scene: PrismScene | null = createPrismScene(canvas, SPECTRUM);
     if (!scene) return;
 
-    const mql = window.matchMedia(`(max-width: ${NARROW_AT}px)`);
     const count = SERVICES.length;
     const t0 = performance.now();
     let raf = 0;
@@ -85,7 +85,6 @@ export function PrismaMovil({ sectionRef, headerRef }: Props) {
     };
 
     const measure = () => {
-      if (!mql.matches) return;
       const W = canvas.clientWidth;
       const H = canvas.clientHeight;
       if (W < 10 || H < 10) return;
@@ -101,7 +100,9 @@ export function PrismaMovil({ sectionRef, headerRef }: Props) {
           top: top !== undefined ? top - box.top + 10 : H * 0.36,
           bottom: H - 22,
         },
-        Math.min(window.devicePixelRatio || 1, 2),
+        // Sharp on a phone; on a big screen, capped at about 4.5 million
+        // pixels so the bloom passes stay cheap.
+        Math.min(window.devicePixelRatio || 1, 2, Math.sqrt(4.5e6 / (W * H))),
       );
       // The captions share one grid cell; the inactive ones are nudged down
       // by their transition, so their place is read off the cell.
@@ -119,7 +120,7 @@ export function PrismaMovil({ sectionRef, headerRef }: Props) {
 
     const frame = (now: number) => {
       raf = 0;
-      if (!visible || !mql.matches) return;
+      if (!visible) return;
       const target = progress();
       // Land where the reader is on the first frame; ease after that.
       if (!primed || reduce) {
@@ -232,7 +233,6 @@ export function PrismaMovil({ sectionRef, headerRef }: Props) {
       measure();
       kick();
     };
-    mql.addEventListener('change', onChange);
     window.addEventListener('scroll', kick, { passive: true });
     // Rotis loads async and moves the heading, which moves the free band.
     document.fonts?.ready.then(onChange).catch(() => {});
@@ -241,7 +241,6 @@ export function PrismaMovil({ sectionRef, headerRef }: Props) {
       cancelAnimationFrame(raf);
       io.disconnect();
       ro.disconnect();
-      mql.removeEventListener('change', onChange);
       window.removeEventListener('scroll', kick);
     };
   }, [sectionRef, headerRef, reduce]);
@@ -257,8 +256,8 @@ export function PrismaMovil({ sectionRef, headerRef }: Props) {
   };
 
   return (
-    <div className={styles.movil}>
-      <canvas ref={canvasRef} className={styles.canvasM} aria-hidden="true" />
+    <div className={styles.scene}>
+      <canvas ref={canvasRef} className={styles.canvas} aria-hidden="true" />
 
       {SERVICES.map((s, i) => (
         <span
@@ -266,7 +265,7 @@ export function PrismaMovil({ sectionRef, headerRef }: Props) {
           ref={(el) => {
             chipRefs.current[i] = el;
           }}
-          className={styles.chipM}
+          className={styles.chip}
           style={{ '--c': SPECTRUM[i] } as CSSProperties}
           aria-hidden="true"
         >
@@ -277,7 +276,7 @@ export function PrismaMovil({ sectionRef, headerRef }: Props) {
       <a
         ref={tagRef}
         href="#contacto"
-        className={styles.tagM}
+        className={styles.tag}
         aria-label={t(COPY.servicios.beamCta)}
         tabIndex={-1}
       >

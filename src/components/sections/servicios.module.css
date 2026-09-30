@@ -1,32 +1,49 @@
 /* ============================================================
    Servicios — el prisma invertido
-   El espectro entra, un solo haz blanco sale. Es la refracción
-   al revés, y se apoya justo antes de la sección Refracción
-   para que esa pantalla llegue ya legible.
+   El espectro entra, un solo haz blanco sale. Cada servicio es
+   un rayo de color, y los siete juntos son el haz blanco: la
+   marca del cliente.
 
-   Scroll-scrubbed: 260vh de recorrido, etapa sticky de 100vh.
-   Todo lo que anima por frame lo escribe el componente sobre
-   `style`; acá viven el layout y los estados de reposo.
+   La misma escena en todas las pantallas (ver Prisma.tsx y
+   prismScene.ts): un prisma de verdad en un canvas, el espectro
+   que sube desde abajo a la izquierda, un servicio por rayo con
+   su leyenda arriba, y al final el haz blanco. El nombre de cada
+   servicio baja de la leyenda a su rayo y se funde en él. Solo
+   cambia el armado: en el teléfono todo va en una columna; en
+   pantalla ancha la introducción vuelve al costado del título y
+   la escena se abre a lo ancho.
+
+   Scroll-scrubbed: siete pasos, y cada uno necesita su tramo de
+   scroll para leerse. Todo lo que anima por frame lo escribe el
+   componente sobre `style`; acá viven el layout y los estados de
+   reposo.
    ============================================================ */
 
 .prisma {
   position: relative;
-  height: 260vh;
+  height: 460vh;
+  height: 460svh;
   background: var(--focus-ink);
   color: var(--focus-paper);
 }
+/* svh y no vh: con la barra de Safari entrando y saliendo, 100vh
+   cambiaría el alto del canvas en pleno scroll. */
 .sticky {
   position: sticky;
   top: 0;
   height: 100vh;
+  height: 100svh;
   overflow: hidden;
   display: flex;
   flex-direction: column;
   padding: 0 40px;
+  --pad: 40px;
 }
 
 /* ---- Encabezado ---- */
 .header {
+  position: relative;
+  z-index: 1;
   max-width: 1320px;
   margin: 0 auto;
   width: 100%;
@@ -42,7 +59,7 @@
   margin-bottom: 16px;
 }
 /* Más chico que en el resto del sitio: acá el título comparte una
-   ventana de 100vh con el banco óptico completo. */
+   ventana de 100vh con la escena completa. */
 .title {
   margin: 0;
   font-size: clamp(28px, 3.4vw, 54px);
@@ -60,196 +77,255 @@
   color: var(--focus-gray-300);
 }
 
-/* ---- Banco óptico ---- */
-.stage {
-  position: relative;
-  max-width: 1320px;
-  margin: 0 auto;
-  width: 100%;
-  flex: 1;
-  min-height: 0;
-  display: flex;
-  align-items: stretch;
-  padding: 22px 0 14px;
-}
-.bands {
-  flex: 0 0 min(42%, 520px);
+/* ---- Escena ---- */
+.scene {
+  /* El tamaño del nombre de un servicio: el del título de la leyenda y
+     el del nombre en vuelo, que despega de él. */
+  --name: clamp(20px, 1.9vw, 28px);
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  gap: 7px;
-  position: relative;
-  z-index: 2;
+  justify-content: flex-start;
+  flex: 1;
+  min-height: 0;
 }
-
-/* ---- Las bandas ---- */
-.band {
-  position: relative;
-  display: block;
-  height: 60px;
-  color: var(--focus-paper);
-  /* Arranca fuera de cuadro: el scrub lo trae. */
-  opacity: 0;
-  transform: translateX(-44px);
-}
-.bandFill {
+/* A sangre, detrás del título y de la leyenda: el haz y los rayos
+   pueden correr hasta los bordes de la pantalla. */
+.canvas {
   position: absolute;
   inset: 0;
-  transition:
-    transform 0.35s var(--ease-out-expo),
-    filter 0.35s var(--ease-out-expo);
-}
-.bandRow {
-  position: relative;
-  z-index: 1;
+  width: 100%;
   height: 100%;
-  display: grid;
-  grid-template-columns: auto 1fr auto;
-  align-items: center;
-  gap: 16px;
-  padding: 0 20px;
+  display: block;
+  z-index: 0;
+  pointer-events: none;
 }
-/* Contorneado, como el resto de los números del sitio. El relleno se vacía
-   con text-fill-color y no con `color`, porque el trazo es currentColor y
-   con `color: transparent` se volvía transparente él también. */
-.bandNum {
-  font-size: clamp(16px, 1.4vw, 23px);
-  font-weight: 300;
-  -webkit-text-fill-color: transparent;
-  -webkit-text-stroke: 1.1px currentColor;
-}
-.bandTitle {
-  margin: 0;
-  font-size: clamp(15px, 1.55vw, 23px);
+
+/* La etiqueta del haz. La posición y el giro los escribe el loop. */
+.tag {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 1;
+  padding: 6px 4px;
+  font-size: clamp(10.5px, 0.95vw, 14px);
   font-weight: 800;
+  letter-spacing: 0.2em;
+  white-space: nowrap;
+  color: var(--focus-ink);
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* El nombre de un servicio en vuelo, de la leyenda a su rayo. Sale
+   con la misma letra que el título, en su color, y al fundirse (--m)
+   se vuelve luz. La posición, el giro y la escala los escribe el loop. */
+.chip {
+  --m: 0;
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 2;
+  font-size: var(--name);
+  font-weight: 800;
+  line-height: 1.05;
   letter-spacing: 0.02em;
   text-transform: uppercase;
-  line-height: 1;
-}
-.bandDetail {
-  font-size: clamp(11.5px, 1.05vw, 13px);
-  font-weight: 400;
-  line-height: 1.45;
-  max-width: 240px;
-  text-align: right;
+  white-space: nowrap;
+  color: color-mix(in srgb, var(--c) calc(55% + var(--m) * 45%), #fff);
+  text-shadow:
+    0 0 calc(8px + var(--m) * 16px) var(--c),
+    0 0 2px color-mix(in srgb, var(--c) 50%, #fff);
   opacity: 0;
-  transform: translateX(10px);
-  transition: opacity 0.35s, transform 0.35s;
+  pointer-events: none;
+  will-change: transform, opacity;
 }
-/* El teclado tiene que encender la banda igual que el mouse. */
-.band:focus-visible {
+
+/* ---- Leyenda: arriba, bajo el título, para leerla antes que el rayo ---- */
+.legend {
+  position: relative;
+  z-index: 1;
+  max-width: 1320px;
+  width: 100%;
+  margin: 0 auto;
+  padding-top: 22px;
+}
+/* Un velo de tinta: si un rayo sube hasta la leyenda, se apaga antes
+   de llegar al texto. */
+.legend::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  left: calc(-1 * var(--pad) - 50vw);
+  right: calc(-1 * var(--pad) - 50vw);
+  top: 0;
+  bottom: -40px;
+  background: linear-gradient(
+    to bottom,
+    var(--focus-ink) 0%,
+    var(--focus-ink) calc(100% - 40px),
+    color-mix(in srgb, var(--focus-ink) 0%, transparent) 100%
+  );
+  pointer-events: none;
+}
+.segs {
+  display: flex;
+  gap: 5px;
+  max-width: 620px;
+  margin-bottom: 18px;
+}
+.seg {
+  position: relative;
+  flex: 1;
+  height: 3px;
+  overflow: hidden;
+  background: rgba(246, 246, 244, 0.12);
+}
+.seg::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--c);
+  transform: scaleX(var(--lit, 0));
+  transform-origin: left;
+  box-shadow: 0 0 10px var(--c);
+}
+
+/* Todas las leyendas ocupan la misma celda: la leyenda mide lo que
+   la más alta y no salta de alto al cambiar de servicio. */
+.slides {
+  display: grid;
+  max-width: 620px;
+}
+.slide {
+  grid-area: 1 / 1;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: start;
+  gap: 0 20px;
+  color: var(--focus-paper);
+  opacity: 0;
+  transform: translateY(12px);
+  transition:
+    opacity 0.4s ease,
+    transform 0.7s var(--ease-out-expo);
+  pointer-events: none;
+}
+.slide[data-on='1'] {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+}
+.slide:focus-visible {
+  outline: 2px solid var(--focus-paper);
+  outline-offset: 4px;
+}
+.slideNum {
+  font-size: clamp(46px, 4.4vw, 66px);
+  font-weight: 300;
+  line-height: 0.82;
+  letter-spacing: -0.02em;
+  -webkit-text-fill-color: transparent;
+  /* Aclarado con blanco: el azul de marca puro casi no se ve sobre tinta. */
+  -webkit-text-stroke: 1.2px color-mix(in srgb, var(--c) 70%, #fff);
+  filter: drop-shadow(0 0 12px color-mix(in srgb, var(--c) 55%, transparent));
+}
+.slideText {
+  display: block;
+  min-width: 0;
+}
+/* Cuando el nombre sale hacia su rayo, un barrido de su color cruza
+   el título (--sw va de 0 a 1 mientras despega; lo escribe el loop). */
+.slideTitle {
+  --sw: 0;
+  margin: 0 0 8px;
+  font-size: var(--name);
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  background: linear-gradient(
+    100deg,
+    var(--focus-paper) calc(var(--sw) * 150% - 50%),
+    color-mix(in srgb, var(--c) 60%, #fff) calc(var(--sw) * 150% - 25%),
+    var(--focus-paper) calc(var(--sw) * 150%)
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.slideDetail {
+  display: block;
+  font-size: clamp(14px, 1.1vw, 16px);
+  font-weight: 300;
+  line-height: 1.45;
+  color: var(--focus-gray-300);
+}
+
+/* El cierre: los siete nombres en su color, uno detrás del otro,
+   y el llamado. Los colores se aclaran con blanco para que el azul
+   de marca pase contraste como texto chico. */
+.slideEnd {
+  display: block;
+}
+.endList {
+  margin: 0 0 16px;
+  font-size: clamp(12.5px, 1vw, 14.5px);
+  font-weight: 800;
+  line-height: 1.6;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.endList span {
+  color: color-mix(in srgb, var(--c) 62%, #fff);
+}
+.endList span:not(:last-child)::after {
+  content: ' · ';
+  color: var(--focus-gray-500);
+}
+.endCta {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 12px 18px;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--focus-ink);
+  background: var(--focus-paper);
+}
+.endCta:focus-visible {
   outline: 2px solid var(--focus-paper);
   outline-offset: 3px;
 }
 
-/* ---- Prisma y haces ---- */
-.bench {
-  flex: 1 1 420px;
-  position: relative;
-  min-width: 320px;
-}
-.svg {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  display: block;
-  overflow: visible;
-  pointer-events: none;
-}
-.ray {
-  mix-blend-mode: screen;
-  opacity: 0.92;
-  clip-path: inset(0 100% 0 0);
-  transition: opacity 0.3s, filter 0.3s;
-}
-.screen {
-  mix-blend-mode: screen;
-}
-/* El barrido lo escribe el scrub; acá solo el estado inicial. */
-.wipe {
-  clip-path: inset(0 100% 0 0);
-}
-.flash {
-  opacity: 0;
-  mix-blend-mode: screen;
-}
-.glass {
-  opacity: 0;
-}
-.outline {
-  stroke-dasharray: 100;
-  stroke-dashoffset: 100;
-}
-.beamLabel {
-  font: 800 19px var(--font-body);
-  letter-spacing: 0.32em;
-  fill: var(--focus-ink);
-}
-/* Zona sensible sobre el haz: enciende las siete bandas a la vez. */
-.beamHit {
-  position: absolute;
-  right: 0;
-  top: 36%;
-  width: 36%;
-  height: 22%;
-  display: block;
-}
-.beamHit:focus-visible {
-  outline: 2px solid var(--focus-paper);
-  outline-offset: 2px;
-}
-
-/* ---- Pie ---- */
-.foot {
-  max-width: 1320px;
-  margin: 0 auto;
-  width: 100%;
-  flex: none;
-  display: flex;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 14px;
-  padding-bottom: 28px;
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.26em;
-  text-transform: uppercase;
-  color: var(--focus-gray-400);
-}
-
-/* ---- Escena móvil: oculta en desktop ---- */
-.movil {
-  display: none;
+/* Pantallas bajas (una laptop): el encabezado se aprieta para que el
+   prisma no pague la diferencia. */
+@media (min-width: 761px) and (max-height: 800px) {
+  .header {
+    padding-top: 80px;
+  }
+  .eyebrow {
+    margin-bottom: 10px;
+  }
+  .legend {
+    padding-top: 16px;
+  }
+  .segs {
+    margin-bottom: 14px;
+  }
 }
 
 /* ============================================================
-   Angosto: el banco horizontal no entra en el ancho de un
-   teléfono, así que la historia se cuenta en secuencia. Un
-   prisma de verdad (canvas, en perspectiva), el espectro que
-   sube desde abajo a la izquierda, un servicio por rayo con su
-   leyenda arriba, y al final el haz blanco. El nombre de cada
-   servicio baja de la leyenda a su rayo y se funde en él: el
-   servicio es ese color de luz. Ver PrismaMovil.tsx.
-
-   Más recorrido que en desktop: son siete pasos, y cada uno
-   necesita su tramo de scroll para leerse.
+   Angosto: todo en una columna. Sin introducción, la leyenda
+   pegada al título y la escena debajo.
    ============================================================ */
 @media (max-width: 760px) {
-  .prisma {
-    height: 460vh;
-    height: 460svh;
-  }
-  /* svh y no vh: con la barra de Safari entrando y saliendo, 100vh
-     cambiaría el alto del canvas en pleno scroll. */
   .sticky {
-    height: 100vh;
-    height: 100svh;
     padding: 0 var(--edge);
+    --pad: var(--edge);
   }
   .header {
-    position: relative;
-    z-index: 1;
     padding-top: 84px;
     display: block;
   }
@@ -259,239 +335,45 @@
   .intro {
     display: none;
   }
-  .stage,
-  .foot {
-    display: none;
+  .scene {
+    --name: 19px;
   }
-
-  .movil {
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    flex: 1;
-    min-height: 0;
-  }
-  /* A sangre, detrás del título y de la leyenda: el haz y los rayos
-     pueden correr hasta los bordes de la pantalla. */
-  .canvasM {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    display: block;
-    z-index: 0;
-    pointer-events: none;
-  }
-
-  /* La etiqueta del haz. La posición y el giro los escribe el loop. */
-  .tagM {
-    position: absolute;
-    left: 0;
-    top: 0;
-    z-index: 1;
-    padding: 6px 4px;
+  .tag {
     font-size: 10.5px;
-    font-weight: 800;
-    letter-spacing: 0.2em;
-    white-space: nowrap;
-    color: var(--focus-ink);
-    opacity: 0;
-    pointer-events: none;
   }
-
-  /* El nombre de un servicio en vuelo, de la leyenda a su rayo. Sale
-     con la misma letra que el título, en su color, y al fundirse (--m)
-     se vuelve luz. La posición, el giro y la escala los escribe el loop. */
-  .chipM {
-    --m: 0;
-    position: absolute;
-    left: 0;
-    top: 0;
-    z-index: 2;
-    font-size: 19px;
-    font-weight: 800;
-    line-height: 1.05;
-    letter-spacing: 0.02em;
-    text-transform: uppercase;
-    white-space: nowrap;
-    color: color-mix(in srgb, var(--c) calc(55% + var(--m) * 45%), #fff);
-    text-shadow:
-      0 0 calc(8px + var(--m) * 16px) var(--c),
-      0 0 2px color-mix(in srgb, var(--c) 50%, #fff);
-    opacity: 0;
-    pointer-events: none;
-    will-change: transform, opacity;
-  }
-
-  /* ---- Leyenda: arriba, bajo el título, para leerla antes que el rayo ---- */
   .legend {
-    position: relative;
-    z-index: 1;
     padding-top: 18px;
   }
-  /* Un velo de tinta: si un rayo sube hasta la leyenda, se apaga antes
-     de llegar al texto. */
   .legend::before {
-    content: '';
-    position: absolute;
-    z-index: -1;
     left: calc(-1 * var(--edge));
     right: calc(-1 * var(--edge));
-    top: 0;
-    bottom: -40px;
-    background: linear-gradient(
-      to bottom,
-      var(--focus-ink) 0%,
-      var(--focus-ink) calc(100% - 40px),
-      color-mix(in srgb, var(--focus-ink) 0%, transparent) 100%
-    );
-    pointer-events: none;
   }
   .segs {
-    display: flex;
     gap: 4px;
     margin-bottom: 16px;
   }
-  .seg {
-    position: relative;
-    flex: 1;
-    height: 3px;
-    overflow: hidden;
-    background: rgba(246, 246, 244, 0.12);
-  }
-  .seg::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: var(--c);
-    transform: scaleX(var(--lit, 0));
-    transform-origin: left;
-    box-shadow: 0 0 10px var(--c);
-  }
-
-  /* Todas las leyendas ocupan la misma celda: la leyenda mide lo que
-     la más alta y no salta de alto al cambiar de servicio. */
-  .slides {
-    display: grid;
-  }
   .slide {
-    grid-area: 1 / 1;
-    display: grid;
-    grid-template-columns: auto 1fr;
-    align-items: start;
     gap: 0 16px;
-    color: var(--focus-paper);
-    opacity: 0;
-    transform: translateY(12px);
-    transition:
-      opacity 0.4s ease,
-      transform 0.7s var(--ease-out-expo);
-    pointer-events: none;
-  }
-  .slide[data-on='1'] {
-    opacity: 1;
-    transform: none;
-    pointer-events: auto;
-  }
-  .slide:focus-visible {
-    outline: 2px solid var(--focus-paper);
-    outline-offset: 4px;
   }
   .slideNum {
     font-size: 46px;
-    font-weight: 300;
-    line-height: 0.82;
-    letter-spacing: -0.02em;
-    -webkit-text-fill-color: transparent;
-    /* Aclarado con blanco: el azul de marca puro casi no se ve sobre tinta. */
-    -webkit-text-stroke: 1.2px color-mix(in srgb, var(--c) 70%, #fff);
-    filter: drop-shadow(0 0 12px color-mix(in srgb, var(--c) 55%, transparent));
   }
-  .slideText {
-    display: block;
-    min-width: 0;
-  }
-  /* Cuando el nombre sale hacia su rayo, un barrido de su color cruza
-     el título (--sw va de 0 a 1 mientras despega; lo escribe el loop). */
   .slideTitle {
-    --sw: 0;
-    margin: 0 0 6px;
-    font-size: 19px;
-    font-weight: 800;
-    line-height: 1.05;
-    letter-spacing: 0.02em;
-    text-transform: uppercase;
-    background: linear-gradient(
-      100deg,
-      var(--focus-paper) calc(var(--sw) * 150% - 50%),
-      color-mix(in srgb, var(--c) 60%, #fff) calc(var(--sw) * 150% - 25%),
-      var(--focus-paper) calc(var(--sw) * 150%)
-    );
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
+    margin-bottom: 6px;
   }
   .slideDetail {
-    display: block;
     font-size: 14px;
-    font-weight: 300;
-    line-height: 1.45;
-    color: var(--focus-gray-300);
-  }
-
-  /* El cierre: los siete nombres en su color, uno detrás del otro,
-     y el llamado. Los colores se aclaran con blanco para que el azul
-     de marca pase contraste como texto chico. */
-  .slideEnd {
-    display: block;
   }
   .endList {
-    margin: 0 0 14px;
+    margin-bottom: 14px;
     font-size: 12.5px;
-    font-weight: 800;
-    line-height: 1.6;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-  }
-  .endList span {
-    color: color-mix(in srgb, var(--c) 62%, #fff);
-  }
-  .endList span:not(:last-child)::after {
-    content: ' · ';
-    color: var(--focus-gray-500);
-  }
-  .endCta {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 12px 18px;
-    font-size: 12px;
-    font-weight: 800;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--focus-ink);
-    background: var(--focus-paper);
-  }
-  .endCta:focus-visible {
-    outline: 2px solid var(--focus-paper);
-    outline-offset: 3px;
   }
 }
 
-/* ============================================================
-   Sin movimiento: nada de secuencia ni de respiración. El estado
-   final, quieto y completo. El componente ya salta el bucle del
-   haz; esto cubre el resto.
-   ============================================================ */
+/* Sin movimiento: el nombre no vuela; el resto del aparato se arma
+   igual con el scroll, sin respiración (la corta el componente). */
 @media (prefers-reduced-motion: reduce) {
-  .chipM {
+  .chip {
     display: none;
   }
-  .band,
-  .bandDetail {
-    opacity: 1;
-    transform: none;
-  }
-  /* El scrub sigue corriendo con el scroll, así que el aparato se arma
-     igual; lo que no hay es respiración del haz (la corta el componente). */
 }

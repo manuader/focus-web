@@ -228,7 +228,9 @@
    teléfono, así que la historia se cuenta en secuencia. Un
    prisma de verdad (canvas, en perspectiva), el espectro que
    sube desde abajo a la izquierda, un servicio por rayo con su
-   leyenda abajo, y al final el haz blanco. Ver PrismaMovil.tsx.
+   leyenda arriba, y al final el haz blanco. El nombre de cada
+   servicio baja de la leyenda a su rayo y se funde en él: el
+   servicio es ese color de luz. Ver PrismaMovil.tsx.
 
    Más recorrido que en desktop: son siete pasos, y cada uno
    necesita su tramo de scroll para leerse.
@@ -265,7 +267,7 @@
   .movil {
     display: flex;
     flex-direction: column;
-    justify-content: flex-end;
+    justify-content: flex-start;
     flex: 1;
     min-height: 0;
   }
@@ -297,26 +299,50 @@
     pointer-events: none;
   }
 
-  /* ---- Leyenda ---- */
+  /* El nombre de un servicio en vuelo, de la leyenda a su rayo. Sale
+     con la misma letra que el título, en su color, y al fundirse (--m)
+     se vuelve luz. La posición, el giro y la escala los escribe el loop. */
+  .chipM {
+    --m: 0;
+    position: absolute;
+    left: 0;
+    top: 0;
+    z-index: 2;
+    font-size: 19px;
+    font-weight: 800;
+    line-height: 1.05;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    color: color-mix(in srgb, var(--c) calc(55% + var(--m) * 45%), #fff);
+    text-shadow:
+      0 0 calc(8px + var(--m) * 16px) var(--c),
+      0 0 2px color-mix(in srgb, var(--c) 50%, #fff);
+    opacity: 0;
+    pointer-events: none;
+    will-change: transform, opacity;
+  }
+
+  /* ---- Leyenda: arriba, bajo el título, para leerla antes que el rayo ---- */
   .legend {
     position: relative;
     z-index: 1;
-    padding-bottom: max(26px, env(safe-area-inset-bottom));
+    padding-top: 18px;
   }
-  /* Un velo de tinta: los rayos nacen debajo de la leyenda y se
-     apagan antes de llegar al texto. */
+  /* Un velo de tinta: si un rayo sube hasta la leyenda, se apaga antes
+     de llegar al texto. */
   .legend::before {
     content: '';
     position: absolute;
     z-index: -1;
     left: calc(-1 * var(--edge));
     right: calc(-1 * var(--edge));
-    top: -64px;
-    bottom: 0;
+    top: 0;
+    bottom: -40px;
     background: linear-gradient(
-      to top,
+      to bottom,
       var(--focus-ink) 0%,
-      var(--focus-ink) calc(100% - 64px),
+      var(--focus-ink) calc(100% - 40px),
       color-mix(in srgb, var(--focus-ink) 0%, transparent) 100%
     );
     pointer-events: none;
@@ -324,7 +350,7 @@
   .segs {
     display: flex;
     gap: 4px;
-    margin-bottom: 18px;
+    margin-bottom: 16px;
   }
   .seg {
     position: relative;
@@ -385,13 +411,25 @@
     display: block;
     min-width: 0;
   }
+  /* Cuando el nombre sale hacia su rayo, un barrido de su color cruza
+     el título (--sw va de 0 a 1 mientras despega; lo escribe el loop). */
   .slideTitle {
+    --sw: 0;
     margin: 0 0 6px;
     font-size: 19px;
     font-weight: 800;
     line-height: 1.05;
     letter-spacing: 0.02em;
     text-transform: uppercase;
+    background: linear-gradient(
+      100deg,
+      var(--focus-paper) calc(var(--sw) * 150% - 50%),
+      color-mix(in srgb, var(--c) 60%, #fff) calc(var(--sw) * 150% - 25%),
+      var(--focus-paper) calc(var(--sw) * 150%)
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
   }
   .slideDetail {
     display: block;
@@ -446,6 +484,9 @@
    haz; esto cubre el resto.
    ============================================================ */
 @media (prefers-reduced-motion: reduce) {
+  .chipM {
+    display: none;
+  }
   .band,
   .bandDetail {
     opacity: 1;

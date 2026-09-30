@@ -19,7 +19,7 @@ export interface SceneBox {
   /** Canvas size in CSS px. */
   W: number;
   H: number;
-  /** The free band between the heading and the caption, in CSS px. */
+  /** The free band left for the prism, below the heading and caption, in CSS px. */
   top: number;
   bottom: number;
 }
@@ -30,6 +30,10 @@ export interface SceneFrame {
   tag: { x: number; y: number; angle: number; room: number; opacity: number };
   /** How far each ray has travelled, 0..1, for the caption's spectrum bar. */
   rays: number[];
+  /** Each ray's line, for a service's name to ride into the glass: where it
+      meets the glass (CSS px), the angle it runs out at, how far its
+      leading edge still is from the glass, and how much of it is on screen. */
+  leads: Array<{ x: number; y: number; angle: number; front: number; room: number }>;
 }
 
 /* ---- Timeline, in scroll progress. Negative is the section still
@@ -649,7 +653,13 @@ export function createPrismScene(canvas: HTMLCanvasElement, colors: readonly str
       c.globalCompositeOperation = 'source-over';
     }
 
+    const leads = rays.map((_, i) => {
+      const am = aHi - i * w - w / 2;
+      return { x: E.x, y: E.y, angle: am, front: front[i], room: reach(E, am) };
+    });
+
     return {
+      leads,
       tag: {
         x: X.x,
         y: X.y,

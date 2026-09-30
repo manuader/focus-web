@@ -82,3 +82,7 @@ export const HERO_DIRECTION: HeroDirection = 'A';
 
 Imágenes, logos, motifs (`rings.svg`, `reticle.svg`) y fuentes se copiaron a
 `public/assets/` y `src/app/fonts/` desde el proyecto original.
+
+## Contenido para redes
+
+El pipeline de contenido de FOCUS (design system para piezas, skills, CLI `./focus` y campañas de Instagram) vive en [`content/`](content/README.md). Tiene el mismo flujo que content-urbe. Reemplaza a la carpeta `instagram/` de la tanda anterior.

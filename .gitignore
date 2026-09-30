@@ -27,6 +27,3 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# instagram: capturas del sitio (se regeneran con capture.mjs) y cuadros de control
-/instagram/produccion/capturas/
-/instagram/entregables/_control/

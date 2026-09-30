@@ -1,0 +1,5 @@
+# Entorno único del repo (.venv). Lo instala ./focus setup.
+numpy
+scipy
+pillow
+imageio-ffmpeg    # ffmpeg con x264 y AAC, sin depender del sistema

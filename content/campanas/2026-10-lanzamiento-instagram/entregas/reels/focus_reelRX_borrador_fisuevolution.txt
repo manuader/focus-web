@@ -1,0 +1,3 @@
+FisuEvolution es un juego para iPhone que va de "fisura" a Dios en treinta niveles: Swift 6, economía simulada y balanceada a mano, sin cuentas y sin rastreo. Todavía no salió; está en camino a la App Store.
+Además de marcas y sitios, diseñamos y programamos productos. ¿Tenés uno en camino? Escribinos.
+#focuscreatives #desarrolloios #productodigital #gamedev

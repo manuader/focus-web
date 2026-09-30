@@ -1,0 +1,7 @@
+{
+  "name": "content-focus",
+  "private": true,
+  "description": "Pipeline de contenido de FOCUS creatives: motor de piezas y captura del sitio.",
+  "type": "module",
+  "dependencies": { "playwright": "^1.56.0" }
+}

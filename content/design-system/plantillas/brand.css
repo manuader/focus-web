@@ -1,0 +1,70 @@
+/* FOCUS · tokens para piezas de redes. Copia 1:1 de src/app/globals.css de
+   focus-web (misma paleta, mismas fuentes) y de los estilos de texto del
+   sitio. Las rutas asumen que el servidor estático sirve la raíz de este
+   repo (./focus lo levanta solo). */
+
+@font-face { font-family: 'Rotis'; font-weight: 300; font-style: normal; src: url('/design-system/fonts/RotisSemiSansStd-Light.otf'); }
+@font-face { font-family: 'Rotis'; font-weight: 300; font-style: italic; src: url('/design-system/fonts/RotisSemiSansStd-LightIt.otf'); }
+@font-face { font-family: 'Rotis'; font-weight: 400; font-style: italic; src: url('/design-system/fonts/RotisSemiSansStd-Italic.otf'); }
+@font-face { font-family: 'Rotis'; font-weight: 700; font-style: normal; src: url('/design-system/fonts/RotisSemiSansStd-Bold.otf'); }
+@font-face { font-family: 'Rotis'; font-weight: 800; font-style: normal; src: url('/design-system/fonts/RotisSemiSansStd-ExtraBold.otf'); }
+@font-face { font-family: 'Serif4'; font-style: italic; font-weight: 200 900; src: url('/design-system/fonts/SourceSerif4-Italic-latin.woff2') format('woff2'); }
+@font-face { font-family: 'Serif4'; font-style: normal; font-weight: 200 900; src: url('/design-system/fonts/SourceSerif4-latin.woff2') format('woff2'); }
+
+:root {
+  --magenta: #ff00ff;
+  --blue: #0033ff;
+  --blue-text: #5b8cff;
+  --green: #00ff33;
+  --ink: #0a0a0b;
+  --ink-2: #17181b;
+  --paper: #f6f6f4;
+  --g100: #e7e9ec;
+  --g300: #a7acb4;
+  --g400: #7c818a;
+  --g700: #3a3d42;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { background: var(--ink); overflow: hidden; }
+body { font-family: 'Rotis', 'Helvetica Neue', Arial, sans-serif; color: var(--paper); -webkit-font-smoothing: antialiased; }
+
+#stage { position: relative; width: 1080px; height: 1920px; overflow: hidden; background: var(--ink); }
+#stage.post { height: 1350px; }
+
+.abs { position: absolute; }
+.fill { position: absolute; inset: 0; }
+.layer { position: absolute; inset: 0; will-change: filter, opacity, transform; }
+
+/* Enunciado: frase de marca en Light, caja normal (Nosotros, Foco). */
+.t-title { font-weight: 300; letter-spacing: -0.025em; line-height: 1.02; }
+/* Titular: Rotis ExtraBold en mayúsculas, apretado (QUÉ HACEMOS, CASOS, MIRAR). */
+.t-head { font-weight: 800; letter-spacing: -0.035em; line-height: 0.95; text-transform: uppercase; }
+/* Bajada del titular: serif itálica en caja normal ("lo que ya es tuyo"). */
+.t-subserif { font-family: 'Serif4', Georgia, serif; font-style: italic; font-weight: 400; letter-spacing: 0; text-transform: none; color: var(--g300); }
+.t-bold { font-weight: 700; letter-spacing: -0.02em; line-height: 0.98; }
+.t-caps { text-transform: uppercase; }
+.t-body { font-weight: 300; line-height: 1.32; }
+/* Eyebrow de sección: serif itálica con filete de 54 px, como en el sitio. */
+.t-eyebrow { font-family: 'Serif4', Georgia, serif; font-style: italic; font-weight: 400; font-size: 40px; color: var(--g300); letter-spacing: 0; }
+.t-eyebrow::before { content: ''; display: inline-block; width: 64px; height: 1px; background: currentColor; vertical-align: middle; margin-right: 22px; }
+/* Micro-rótulo: bold en mayúsculas con tracking 0,26 em (pistas, etiquetas). */
+.t-label { font-weight: 700; text-transform: uppercase; letter-spacing: 0.26em; font-size: 24px; color: var(--g300); }
+.t-serif { font-family: 'Serif4', Georgia, serif; font-style: italic; font-weight: 400; letter-spacing: -0.01em; text-transform: none; }
+/* Énfasis dentro de un enunciado: la palabra en ExtraBold (.em del sitio). */
+.t-em { font-weight: 800; }
+.t-mono { font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; font-size: 24px; color: var(--g400); }
+.t-light-it { font-weight: 300; font-style: italic; }
+
+.w { display: inline-block; white-space: pre; will-change: filter, opacity, transform; }
+.rgb { position: relative; display: inline-block; }
+.rgb > span { position: absolute; left: 0; top: 0; mix-blend-mode: screen; white-space: pre; }
+.rgb > span.base { position: relative; visibility: hidden; }
+
+.grain { position: absolute; inset: 0; pointer-events: none; mix-blend-mode: overlay; opacity: .09; background-size: 540px 960px; image-rendering: pixelated; }
+.vignette { position: absolute; inset: 0; pointer-events: none; background: radial-gradient(ellipse 80% 70% at 50% 50%, transparent 55%, rgba(0,0,0,.55) 100%); }
+
+.frame1 { outline: 1px solid rgba(167,172,180,.35); outline-offset: 0; }
+.tag { display: inline-block; font-weight: 700; font-size: 22px; letter-spacing: .12em; text-transform: uppercase; color: var(--g100); border: 1px solid var(--g700); padding: 10px 14px; margin: 0 10px 10px 0; }
+.rule { height: 1px; background: var(--g700); }
+.accent-rule { display: inline-block; width: 56px; height: 2px; vertical-align: middle; margin-right: 18px; }

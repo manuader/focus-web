@@ -1,0 +1,61 @@
+#!/bin/bash
+# focus · pipeline de contenido de FOCUS creatives. Todo lo que Claude (o vos) corre para producir una pieza.
+#
+#   ./focus setup                          instala el entorno (una vez por máquina)
+#   ./focus list                           plantillas y campañas
+#   ./focus new <campaña> <tipo> <slug>    crea una pieza (tipo: reel · carrusel · historia) desde la plantilla
+#   ./focus stills <pieza> <t1,t2,…>       reel: cuadros de control + hoja de contactos (work/_control)
+#   ./focus render <pieza>                 reel: video 1080×1920 30 fps + banda sonora original + portada (-14 LUFS)
+#   ./focus pieza <pieza>                  carrusel o historia: un PNG por cuadro + hoja
+#   ./focus campana <campaña>              renderiza todas las piezas de una campaña + captions + hoja resumen
+#   ./focus captions <campaña>             exporta los captions de las fichas a entregas/
+#   ./focus capture [toma…]                graba focuscreatives.net en un teléfono con tiempo virtual (work/capturas)
+#   ./focus verify <campaña>               oráculo de entrega de una campaña (exit 0 = lista)
+#   ./focus check                          oráculo del repo (estructura, skills, links, secretos, tamaños)
+#
+# <pieza> es la ruta del .js de la pieza (campanas/<c>/reels/r01) y <campaña> la carpeta campanas/<c>.
+set -e
+ROOT="$(cd "$(dirname "$0")" && pwd)"
+KIT="$ROOT/.claude/skills/focus-contenido/kit"; TPL="$ROOT/.claude/skills/focus-contenido/templates"
+PY="${FOCUS_PY:-$ROOT/.venv/bin/python}"; [ -x "$PY" ] || PY=python3
+export FOCUS_PY="$PY"
+rel() { local p="${1%.js}"; p="${p#./}"; echo "${p#$ROOT/}"; }
+name_of() { sed -n "s/.*name: .\(focus_[^'\"]*\).*/\1/p" "$ROOT/$1.js" | head -1; }
+render_reel() {
+  local p; p="$(rel "$1")"; local out="$ROOT/$(dirname "$(dirname "$p")")/entregas/reels"; local n; n="$(name_of "$p")"
+  node "$KIT/render.mjs" "$p" >/dev/null
+  "$PY" "$KIT/audio.py" "$out/$n.cues.json"
+  rm -f "$out/$n.silent.mp4" "$out/$n.wav" "$out/$n.cues.json"; echo "OK   $out/$n.mp4"; }
+cmd="${1:-help}"; shift || true
+case "$cmd" in
+  setup) exec bash "$ROOT/setup.sh" "$@" ;;
+  list)
+    echo "── Plantillas (./focus new <campaña> <tipo> <slug>)"; for f in "$TPL"/*.js; do echo "  $(basename "${f%.js}")"; done
+    echo "── Campañas"; for d in "$ROOT"/campanas/*/; do echo "  campanas/$(basename "$d")  ($(ls "$d"reels/*.js 2>/dev/null | wc -l | tr -d ' ') reels · $(ls "$d"posts/*.js 2>/dev/null | wc -l | tr -d ' ') carruseles · $(ls "$d"historias/*.js 2>/dev/null | wc -l | tr -d ' ') historias)"; done ;;
+  new)
+    c="$1"; t="$2"; slug="$3"; [ -n "$c" ] && [ -n "$t" ] && [ -n "$slug" ] || { echo "uso: ./focus new <campaña> <reel|carrusel|historia> <slug>"; exit 1; }
+    case "$t" in reel) sub=reels ;; carrusel) sub=posts ;; historia) sub=historias ;; *) echo "tipo: reel · carrusel · historia"; exit 1 ;; esac
+    d="$ROOT/campanas/$c/$sub"; mkdir -p "$d"; f="$d/$slug.js"; [ -e "$f" ] && { echo "$f ya existe"; exit 1; }
+    sed "s/NOMBRE_PIEZA/focus_${t}_${slug}/" "$TPL/$t.js" > "$f"; echo "Pieza en campanas/$c/$sub/$slug.js · editala y corré ./focus stills o ./focus pieza" ;;
+  stills)
+    p="$(rel "$1")"; mkdir -p "$ROOT/work/_control"; rm -f "$ROOT/work/_control/"*_[0-9]*.jpg
+    node "$KIT/render.mjs" "$p" --stills "$2" >/dev/null; n="$(name_of "$p")"
+    "$PY" "$KIT/sheet.py" "$ROOT/work/_control/${n}_" "$ROOT/work/_control/hoja_${n}.jpg"; rm -f "$ROOT/work/_control/${n}_"[0-9]*.jpg
+    echo "Hoja: work/_control/hoja_${n}.jpg (miralá antes de renderizar)" ;;
+  render) render_reel "$1" ;;
+  pieza)
+    p="$(rel "$1")"; node "$KIT/render.mjs" "$p" --png >/dev/null; n="$(name_of "$p")"
+    d="$ROOT/$(dirname "$(dirname "$p")")/entregas/$(basename "$(dirname "$p")")/$n"
+    "$PY" "$KIT/grid.py" "$d" "$ROOT/work/_control/hoja_${n}.jpg" 2>/dev/null || true; echo "OK   $d (hoja en work/_control/hoja_${n}.jpg)" ;;
+  campana)
+    c="$(rel "$1")"; mkdir -p "$ROOT/work/_control"
+    for f in "$ROOT/$c"/posts/*.js "$ROOT/$c"/historias/*.js; do [ -e "$f" ] && "$0" pieza "${f%.js}"; done
+    ls "$ROOT/$c"/reels/*.js 2>/dev/null | sed 's/\.js$//' | xargs -P "${FOCUS_JOBS:-3}" -I{} "$0" render {}
+    "$PY" "$KIT/captions.py" "$ROOT/$c"
+    "$PY" "$KIT/resumen.py" "$ROOT/$c/entregas" ;;
+  captions) exec "$PY" "$KIT/captions.py" "$ROOT/$(rel "$1")" ;;
+  capture) exec node "$KIT/capture.mjs" "$@" ;;
+  verify)  exec bash "$KIT/verify-campana.sh" "$(rel "$1")" ;;
+  check)   exec bash "$ROOT/verify.sh" "$@" ;;
+  *) sed -n '2,15p' "$0" | sed 's/^# \{0,1\}//' ;;
+esac

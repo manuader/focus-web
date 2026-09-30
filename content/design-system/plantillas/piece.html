@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>FOCUS · pieza</title>
+<link rel="stylesheet" href="brand.css">
+<script src="engine.js"></script>
+</head>
+<body>
+<div id="stage"></div>
+<script>
+  // ?id=campanas/<campaña>/reels/r01 → carga /campanas/<campaña>/reels/r01.js, que llama a F.mount(spec)
+  const id = new URLSearchParams(location.search).get('id');
+  const s = document.createElement('script');
+  s.src = '/' + id + '.js';
+  document.body.appendChild(s);
+</script>
+</body>
+</html>

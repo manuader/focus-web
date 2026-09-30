@@ -1,0 +1,10 @@
+# entornos
+.venv/
+node_modules/
+# trabajo en curso y capturas del sitio (se regeneran con ./focus capture)
+work/
+# intermedios del render
+campanas/*/entregas/reels/*.silent.mp4
+campanas/*/entregas/reels/*.wav
+campanas/*/entregas/reels/*.cues.json
+.DS_Store

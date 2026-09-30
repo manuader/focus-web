@@ -508,6 +508,8 @@ export const COPY = {
     /* The card's link line, by where it goes. */
     visitSite: { es: 'Ver sitio', en: 'Visit site' },
     visitIg: { es: 'Ver en Instagram', en: 'View on Instagram' },
+    /* Under the deck: it turns sideways, the page keeps going down. */
+    hint: { es: 'Deslizá de costado para ver más casos', en: 'Swipe sideways for more projects' },
     /* The empty frame that closes the gallery. */
     nextName: { es: 'Tu marca, la próxima', en: 'Your brand, next' },
     nextCat: { es: 'Enfoquemos lo que ya es tuyo', en: "Let's bring yours into focus" },
@@ -573,6 +575,8 @@ export const COPY = {
     refraccion: { es: 'Refracción', en: 'Refraction' },
     umbral: { es: 'Umbral', en: 'Threshold' },
     trabajo: { es: 'Trabajo', en: 'Work' },
+    prevCase: { es: 'Caso anterior', en: 'Previous project' },
+    nextCase: { es: 'Caso siguiente', en: 'Next project' },
     foco: { es: 'Foco', en: 'Focus' },
     contacto: { es: 'Contacto', en: 'Contact' },
   },

@@ -15,18 +15,11 @@ import { useReducedMotion } from '@/hooks/useMediaQuery';
 import { Eyebrow } from '@/components/ui/Eyebrow';
 import { WORKS, SERVICE_BY_ID, ACCENT_TEXT, COPY } from '@/lib/content';
 import styles from './trabajo.module.css';
-import { useCaseStops } from './useCaseStops';
 
 const clamp01 = (v: number) => Math.max(0, Math.min(1, v));
 const pad2 = (n: number) => String(n).padStart(2, '0');
-const easeInOut = (x: number) => (x < 0.5 ? 4 * x ** 3 : 1 - (-2 * x + 2) ** 3 / 2);
 const easeOut = (x: number) => 1 - (1 - x) ** 3;
 
-/**
- * Share of each case's stretch of scroll spent travelling; the rest it holds
- * still in the centre, so every case gets its moment instead of sliding past.
- */
-const TRAVEL = 0.64;
 /** Centre to first neighbour, and neighbour to neighbour, in card widths. */
 const SPREAD = 0.8;
 const SPREAD_FAR = 0.44;
@@ -34,42 +27,47 @@ const SPREAD_FAR = 0.44;
 const TURN = 42;
 /** Scroll has to rest this long before the case in the centre starts playing. */
 const DWELL = 850;
-/** Rest before the deck settles on the nearest case and the wait begins. */
+/** Rest before the deck counts as settled and the wait begins. */
 const SETTLE = 140;
-/** A sideways drag this long, in px, turns the deck by one case on touch. */
-const SWIPE = 44;
+/** A mouse drag this long, in px, is a drag and not a click. */
+const DRAG = 6;
 
 type CardState = '' | 'wait' | 'play';
 
 /**
- * The case gallery, as a deck seen through a lens. Vertical scroll turns the
- * deck while the section is pinned: the case in the centre faces the reader,
- * sharp and lit, and its neighbours turn away behind it, darker and out of
- * focus. Under it, its name and rubro fade in as it lands.
+ * The case gallery, as a deck seen through a lens, that turns sideways. The
+ * deck is a horizontal scroller: a trackpad or a finger swipes it, a mouse
+ * drags it or uses the arrows, and the page's own vertical scroll goes past
+ * it untouched. The case in the centre faces the reader, sharp and lit, and
+ * its neighbours turn away behind it, darker and out of focus. Under it, its
+ * name and rubro fade in as it lands.
  *
- * Let the scroll rest for under a second and the logo in the centre fades
- * into a short film of the work itself: a launch film of the site playing on
- * a phone, or the account's feed and reels. Every film opens and closes on
- * the same artwork as the card, so the fade has no seam. Scroll again and it
- * fades back to the logo.
+ * Let the deck rest for under a second and the logo in the centre fades into
+ * a short film of the work itself: a launch film of the site playing on a
+ * phone, or the account's feed and reels. Every film opens and closes on the
+ * same artwork as the card, so the fade has no seam. Turn it again, or scroll
+ * the page away, and it fades back to the logo.
  *
- * The deck is dealt in as the section scrolls into view: the cards rise from
- * below, the centre one first, and fan out into place. While it turns, the
- * cards lean into the travel. The scroll stops at every case (see
- * useCaseStops), so each film gets its moment; on touch, a sideways swipe
- * also turns the deck by one.
- *
- * Scroll sets a target; a short rAF loop eases the deck toward it, so a
- * wheel's steps arrive as one glide. All of it is written through refs,
- * inline transforms and data attributes; React never re-renders on scroll.
+ * The scroller lays out a row of even slots and snaps each one to the
+ * centre; inside its slot, every frame, each card gets the transform that fans it
+ * into the deck (the offset from its place in the row, its turn and scale),
+ * read from the scroller's position. The deck is dealt in as the section
+ * scrolls into view, and the cards lean into the travel while it turns. All
+ * of it is written through refs, inline transforms and data attributes;
+ * React never re-renders on scroll.
  */
 export function Trabajo() {
   const { t } = useTranslate();
   const reduce = useReducedMotion();
   const sectionRef = useRef<HTMLElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
+  const deckRef = useRef<HTMLDivElement>(null);
   const countRef = useRef<HTMLSpanElement>(null);
+  const prevRef = useRef<HTMLButtonElement>(null);
+  const nextRef = useRef<HTMLButtonElement>(null);
+  /** The slots in the row (they snap), and the cards that turn inside them. */
   const cardRefs = useRef<Array<HTMLElement | null>>([]);
+  const turnRefs = useRef<Array<HTMLSpanElement | null>>([]);
   const captionRefs = useRef<Array<HTMLDivElement | null>>([]);
   const videoRefs = useRef<Array<HTMLVideoElement | null>>([]);
   const n = WORKS.length;
@@ -77,23 +75,32 @@ export function Trabajo() {
   const total = n + 1;
 
   const motion = useRef({
-    cur: 0,
-    target: 0,
     raf: 0,
-    active: 0,
-    primed: false,
+    active: -1,
+    /** Card width, and the distance between two cards in the row. */
     w: 0,
+    step: 1,
     vh: 0,
-    /** How far the deck has been dealt in: 0 below the fold, 1 once pinned. */
+    /** Where the deck was on the last frame, to tell how fast it turns. */
+    last: 0,
+    lean: 0,
+    /** How far the deck has been dealt in: 0 below the fold, 1 once in view. */
     enter: 1,
     enterTarget: 1,
+    primed: false,
     settle: 0,
     dwell: 0,
     pause: 0,
   });
-  const swipe = useRef({ x: 0, y: 0, on: false, moved: false });
+  const drag = useRef({ x: 0, left: 0, id: -1, on: false, moved: false, t: 0, v: 0 });
 
-  /** Move a card between logo, the three-second wait, and its film. */
+  /** The deck's position, as a case index (fractional while it turns). */
+  const position = useCallback(() => {
+    const deck = deckRef.current;
+    return deck ? deck.scrollLeft / motion.current.step : 0;
+  }, []);
+
+  /** Move a card between logo, the short wait, and its film. */
   const setState = useCallback((i: number, state: CardState) => {
     const card = cardRefs.current[i];
     if (card) card.dataset.state = state;
@@ -101,15 +108,15 @@ export function Trabajo() {
   }, []);
 
   /**
-   * Turn the deck to `pos` (a case index, fractional while travelling).
-   * `enter` is how far it has been dealt in, `lean` how hard it is turning
-   * (-1 to 1, signed by direction).
+   * Fan the deck out around `pos`. `enter` is how far it has been dealt in,
+   * `lean` how hard it is turning (-1 to 1, signed by direction).
    */
   const apply = useCallback(
     (pos: number, enter: number, lean: number) => {
       const m = motion.current;
-      cardRefs.current.forEach((el, i) => {
-        if (!el) return;
+      turnRefs.current.forEach((el, i) => {
+        const slot = cardRefs.current[i];
+        if (!el || !slot) return;
         const o = i - pos;
         const a = Math.abs(o);
         const dir = Math.sign(o);
@@ -117,7 +124,8 @@ export function Trabajo() {
         const far = Math.max(0, a - 1);
         // Dealt in from below: the centre card leads, the rest trail by distance.
         const q = 1 - easeOut(clamp01(enter * 1.55 - Math.min(a, 3) * 0.18));
-        const x = dir * (near * SPREAD + far * SPREAD_FAR) * m.w * (1 + q * 0.5);
+        // Where the deck wants the card, less where the row already put it.
+        const x = dir * (near * SPREAD + far * SPREAD_FAR) * m.w * (1 + q * 0.5) - o * m.step;
         const y = q * m.vh * 0.46;
         const scale = (1 - 0.12 * near - 0.05 * Math.min(far, 2)) * (1 - 0.2 * q);
         const ry = -dir * near * TURN - lean * 9 * (1 - near);
@@ -128,7 +136,7 @@ export function Trabajo() {
           2,
         )}deg) scale(${scale.toFixed(4)})`;
         el.style.opacity = clamp01(1.25 - q * 1.25).toFixed(3);
-        el.style.zIndex = String(100 - Math.round(a * 10));
+        slot.style.zIndex = String(100 - Math.round(a * 10));
         el.style.visibility = a > 3.4 || q >= 1 ? 'hidden' : 'visible';
         el.style.setProperty('--n', near.toFixed(3));
         el.style.setProperty('--far', Math.min(far, 2).toFixed(3));
@@ -150,31 +158,39 @@ export function Trabajo() {
           countRef.current.textContent = `${pad2(Math.min(best + 1, n))} / ${pad2(n)}`;
           countRef.current.dataset.off = best >= n ? '1' : '0';
         }
+        // Straight on the DOM: React drops the clicks of a button whose
+        // disabled prop is set, even after the DOM has enabled it.
+        if (prevRef.current) prevRef.current.disabled = best <= 0;
+        if (nextRef.current) nextRef.current.disabled = best >= total - 1;
       }
     },
     [n, total],
   );
 
+  /**
+   * One frame: read where the deck is and fan it out. Keeps running while
+   * the deck turns, the lean dies down or the deal-in plays.
+   */
   const tick = useCallback(() => {
     const m = motion.current;
     m.raf = 0;
-    const gap = m.target - m.cur;
-    m.cur = reduce || Math.abs(gap) < 0.0008 ? m.target : m.cur + gap * 0.15;
+    const pos = position();
+    const v = pos - m.last;
+    m.last = pos;
+    // How fast it turns is the lean: strongest mid-turn, none at rest.
+    const leanTarget = reduce ? 0 : Math.max(-1, Math.min(1, v * 9));
+    m.lean =
+      Math.abs(leanTarget - m.lean) < 0.002 ? leanTarget : m.lean + (leanTarget - m.lean) * 0.18;
     const rise = m.enterTarget - m.enter;
     m.enter = reduce || Math.abs(rise) < 0.002 ? m.enterTarget : m.enter + rise * 0.13;
-    // What is left to travel is the lean: strongest mid-turn, none at rest.
-    apply(m.cur, m.enter, reduce ? 0 : Math.max(-1, Math.min(1, (m.target - m.cur) * 1.7)));
-    if (m.cur !== m.target || m.enter !== m.enterTarget) m.raf = requestAnimationFrame(tick);
-  }, [apply, reduce]);
+    apply(pos, m.enter, m.lean);
+    if (v !== 0 || m.lean !== 0 || m.enter !== m.enterTarget) m.raf = requestAnimationFrame(tick);
+  }, [apply, position, reduce]);
 
-  const glideTo = useCallback(
-    (pos: number) => {
-      const m = motion.current;
-      m.target = pos;
-      if (!m.raf) m.raf = requestAnimationFrame(tick);
-    },
-    [tick],
-  );
+  const frame = useCallback(() => {
+    const m = motion.current;
+    if (!m.raf) m.raf = requestAnimationFrame(tick);
+  }, [tick]);
 
   /** Start fetching a case's film ahead of time, so it can start on cue. */
   const prime = useCallback(
@@ -206,42 +222,25 @@ export function Trabajo() {
     });
   }, [setState]);
 
-  useWindowScroll(() => {
+  /**
+   * Any movement, of the deck or of the page, sends the film away. Once
+   * both rest with the deck in view, the wait for the centre case's film
+   * begins.
+   */
+  const settle = useCallback(() => {
     const section = sectionRef.current;
     const m = motion.current;
     if (!section) return;
+    rest();
     const r = section.getBoundingClientRect();
     const vh = window.innerHeight;
-    const p = clamp01(-r.top / Math.max(1, r.height - vh));
-
-    // Stepped: travel between neighbours, then hold the one in the centre.
-    const u = p * (total - 1);
-    const k = Math.min(Math.floor(u), total - 2);
-    const pos = k + easeInOut(clamp01((u - k - (1 - TRAVEL) / 2) / TRAVEL));
-
-    // Dealt in over the screen of scroll before the section pins.
-    m.vh = vh;
-    m.enterTarget = reduce ? 1 : clamp01(1 - r.top / vh);
-
-    // Land where the reader is on the first frame; glide after that.
-    if (!m.primed) {
-      m.primed = true;
-      m.cur = pos;
-      m.enter = m.enterTarget;
-    }
-    glideTo(pos);
-
-    // Any scroll sends the film away. Once it rests, the deck settles on the
-    // nearest case and the wait for its film begins.
-    rest();
     const onStage = r.top < vh * 0.35 && r.bottom > vh * 0.65;
-    if (!onStage) return;
+    if (!onStage || drag.current.on) return;
     // The wait is short: the film of the case being turned to is already on
     // its way by the time the deck lands on it.
-    prime(Math.max(0, Math.min(total - 1, Math.round(pos))));
+    prime(Math.max(0, Math.min(total - 1, Math.round(position()))));
     m.settle = window.setTimeout(() => {
-      const i = Math.max(0, Math.min(total - 1, Math.round(m.target)));
-      glideTo(i);
+      const i = Math.max(0, Math.min(total - 1, Math.round(position())));
       const video = videoRefs.current[i];
       if (!video || !video.getAttribute('src')) return;
       setState(i, 'wait');
@@ -251,7 +250,7 @@ export function Trabajo() {
         video
           .play()
           .then(() => {
-            // Scroll may have moved on while the video was getting ready.
+            // The deck may have moved on while the video was getting ready.
             if (cardRefs.current[i]?.dataset.state === 'wait') {
               setState(i, 'play');
               prime(i + 1);
@@ -260,29 +259,60 @@ export function Trabajo() {
           .catch(() => setState(i, ''));
       }, DWELL - SETTLE);
     }, SETTLE);
+  }, [position, prime, rest, setState, total]);
+
+  useWindowScroll(() => {
+    const section = sectionRef.current;
+    const m = motion.current;
+    if (!section) return;
+    const r = section.getBoundingClientRect();
+    const vh = window.innerHeight;
+    // Dealt in over most of the screen of scroll before the section lands.
+    m.vh = vh;
+    m.enterTarget = reduce ? 1 : clamp01((vh - r.top) / (vh * 0.8));
+    // Land where the reader is on the first frame; ease after that.
+    if (!m.primed) {
+      m.primed = true;
+      m.enter = m.enterTarget;
+    }
+    frame();
+    // Far from the deck there is nothing to start or stop.
+    if (r.bottom < -vh || r.top > vh * 2) return;
+    settle();
   });
 
   useEffect(() => {
     const section = sectionRef.current;
-    if (!section) return;
+    const deck = deckRef.current;
+    if (!section || !deck) return;
     const m = motion.current;
     const remeasure = () => {
-      m.w = cardRefs.current[0]?.offsetWidth ?? 0;
+      const first = cardRefs.current[0];
+      const second = cardRefs.current[1];
+      m.w = first?.offsetWidth ?? 0;
+      m.step = Math.max(1, (second?.offsetLeft ?? 0) - (first?.offsetLeft ?? 0));
+      m.last = position();
       m.primed = false;
       window.dispatchEvent(new Event('scroll'));
     };
     remeasure();
     const ro = new ResizeObserver(remeasure);
     ro.observe(section);
+    const turn = () => {
+      frame();
+      settle();
+    };
+    deck.addEventListener('scroll', turn, { passive: true });
     // A tab in the background has no reader: stop the film. Back in view,
     // the wait starts over as if the scroll had just come to rest.
     const hidden = () => {
       if (document.hidden) rest();
-      else window.dispatchEvent(new Event('scroll'));
+      else settle();
     };
     document.addEventListener('visibilitychange', hidden);
     return () => {
       ro.disconnect();
+      deck.removeEventListener('scroll', turn);
       document.removeEventListener('visibilitychange', hidden);
       cancelAnimationFrame(m.raf);
       clearTimeout(m.settle);
@@ -290,19 +320,22 @@ export function Trabajo() {
       clearTimeout(m.pause);
       m.raf = 0;
     };
-  }, [rest]);
+  }, [frame, position, rest, settle]);
 
-  /** Glide the page to the point where case `i` sits in the centre. */
-  const scrollToCase = useCaseStops(sectionRef, total, reduce);
+  /** Turn the deck until case `i` sits in the centre. */
+  const scrollToCase = useCallback(
+    (i: number) => {
+      const to = Math.max(0, Math.min(total - 1, i));
+      deckRef.current?.scrollTo({
+        left: to * motion.current.step,
+        behavior: reduce ? 'auto' : 'smooth',
+      });
+    },
+    [reduce, total],
+  );
 
   /** A card off to the side is a way to get to it, not a link out yet. */
   const bringForward = (i: number) => (e: MouseEvent<HTMLElement>) => {
-    if (swipe.current.moved) {
-      // The end of a swipe is not a tap on whatever was under the finger.
-      swipe.current.moved = false;
-      e.preventDefault();
-      return;
-    }
     if (i === motion.current.active) return;
     e.preventDefault();
     scrollToCase(i);
@@ -321,21 +354,64 @@ export function Trabajo() {
     stageRef.current?.style.setProperty('--py', '0');
   };
 
-  /** On touch the deck also turns the way it looks like it should: sideways. */
-  const swipeStart = (e: PointerEvent<HTMLDivElement>) => {
-    if (e.pointerType === 'mouse') return;
-    swipe.current = { x: e.clientX, y: e.clientY, on: true, moved: false };
+  /**
+   * A mouse has no sideways scroll of its own, so it drags the deck. Touch
+   * and trackpads scroll it natively; a mouse wheel scrolls the page.
+   */
+  const dragStart = (e: PointerEvent<HTMLDivElement>) => {
+    const deck = deckRef.current;
+    if (!deck || e.pointerType !== 'mouse' || e.button !== 0) return;
+    drag.current = {
+      x: e.clientX,
+      left: deck.scrollLeft,
+      id: e.pointerId,
+      on: false,
+      moved: false,
+      t: e.timeStamp,
+      v: 0,
+    };
   };
-  const swipeEnd = (e: PointerEvent<HTMLDivElement>) => {
-    const s = swipe.current;
-    if (!s.on) return;
-    s.on = false;
-    const dx = e.clientX - s.x;
-    const dy = e.clientY - s.y;
-    if (Math.abs(dx) < SWIPE || Math.abs(dx) < Math.abs(dy) * 1.3) return;
-    s.moved = true;
-    const to = motion.current.active + (dx < 0 ? 1 : -1);
-    scrollToCase(Math.max(0, Math.min(total - 1, to)));
+  const dragMove = (e: PointerEvent<HTMLDivElement>) => {
+    const deck = deckRef.current;
+    const d = drag.current;
+    if (!deck || d.id !== e.pointerId || !(e.buttons & 1)) return;
+    const dx = e.clientX - d.x;
+    if (!d.on) {
+      if (Math.abs(dx) < DRAG) return;
+      d.on = true;
+      deck.setPointerCapture(e.pointerId);
+      deck.dataset.drag = '1';
+      rest();
+    }
+    const left = d.left - dx;
+    const dt = Math.max(1, e.timeStamp - d.t);
+    d.v = (left - deck.scrollLeft) / dt;
+    d.t = e.timeStamp;
+    deck.scrollLeft = left;
+  };
+  const dragEnd = (e: PointerEvent<HTMLDivElement>) => {
+    const deck = deckRef.current;
+    const d = drag.current;
+    if (!deck || d.id !== e.pointerId) return;
+    d.id = -1;
+    if (!d.on) return;
+    d.on = false;
+    // The end of a drag is not a click on whatever was under the pointer.
+    d.moved = true;
+    window.setTimeout(() => {
+      d.moved = false;
+    }, 0);
+    // Released mid-throw, the deck goes on to the next case in that direction.
+    const pos = position();
+    const to = Math.abs(d.v) > 0.4 ? (d.v > 0 ? Math.ceil(pos) : Math.floor(pos)) : Math.round(pos);
+    scrollToCase(to);
+    // Snapping stays off until the glide has landed, or it would cut it short.
+    const done = () => {
+      delete deck.dataset.drag;
+      deck.removeEventListener('scrollend', done);
+    };
+    deck.addEventListener('scrollend', done);
+    window.setTimeout(done, 700);
   };
 
   return (
@@ -343,12 +419,11 @@ export function Trabajo() {
       ref={sectionRef}
       id="trabajo"
       className={styles.trabajo}
-      style={{ '--cases': total } as CSSProperties}
       aria-label={t(COPY.a11y.trabajo)}
     >
       <div
         ref={stageRef}
-        className={styles.sticky}
+        className={styles.stage}
         data-playing="0"
         style={{ '--dwell': `${DWELL - SETTLE}ms` } as CSSProperties}
         onPointerMove={tilt}
@@ -371,18 +446,49 @@ export function Trabajo() {
             </Eyebrow>
             <h2 className={styles.title}>{t(COPY.trabajo.title)}</h2>
           </div>
-          <span ref={countRef} className={styles.count} data-off="0">
-            01 / {pad2(n)}
-          </span>
+          <div className={styles.controls}>
+            <span ref={countRef} className={styles.count} data-off="0">
+              01 / {pad2(n)}
+            </span>
+            <button
+              ref={prevRef}
+              type="button"
+              className={styles.arrow}
+              aria-label={t(COPY.a11y.prevCase)}
+              onClick={() => scrollToCase(motion.current.active - 1)}
+            >
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M15 5l-7 7 7 7" />
+              </svg>
+            </button>
+            <button
+              ref={nextRef}
+              type="button"
+              className={styles.arrow}
+              aria-label={t(COPY.a11y.nextCase)}
+              onClick={() => scrollToCase(motion.current.active + 1)}
+            >
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
+          </div>
         </div>
 
         <div className={styles.body}>
           <div
+            ref={deckRef}
             className={styles.deck}
-            onPointerDown={swipeStart}
-            onPointerUp={swipeEnd}
-            onPointerCancel={() => {
-              swipe.current.on = false;
+            onPointerDown={dragStart}
+            onPointerMove={dragMove}
+            onPointerUp={dragEnd}
+            onPointerCancel={dragEnd}
+            onDragStart={(e) => e.preventDefault()}
+            onClickCapture={(e) => {
+              if (!drag.current.moved) return;
+              drag.current.moved = false;
+              e.preventDefault();
+              e.stopPropagation();
             }}
           >
             {WORKS.map((w, i) => {
@@ -403,32 +509,39 @@ export function Trabajo() {
                   onClick={bringForward(i)}
                   onFocus={() => i !== motion.current.active && scrollToCase(i)}
                 >
-                  <span className={styles.face}>
-                    <Image
-                      src={w.img}
-                      alt=""
-                      fill
-                      sizes="(max-width: 700px) 80vw, 600px"
-                      className={styles.art}
-                    />
-                    {w.video && (
-                      <video
-                        ref={(el) => {
-                          videoRefs.current[i] = el;
-                        }}
-                        className={styles.film}
-                        data-src={w.video}
-                        muted
-                        loop
-                        playsInline
-                        preload="none"
-                        disablePictureInPicture
-                        aria-hidden="true"
-                        tabIndex={-1}
+                  <span
+                    ref={(el) => {
+                      turnRefs.current[i] = el;
+                    }}
+                    className={styles.turn}
+                  >
+                    <span className={styles.face}>
+                      <Image
+                        src={w.img}
+                        alt=""
+                        fill
+                        sizes="(max-width: 700px) 80vw, 600px"
+                        className={styles.art}
                       />
-                    )}
-                    <span className={styles.sheen} />
-                    {w.video && <span className={styles.wait} />}
+                      {w.video && (
+                        <video
+                          ref={(el) => {
+                            videoRefs.current[i] = el;
+                          }}
+                          className={styles.film}
+                          data-src={w.video}
+                          muted
+                          loop
+                          playsInline
+                          preload="none"
+                          disablePictureInPicture
+                          aria-hidden="true"
+                          tabIndex={-1}
+                        />
+                      )}
+                      <span className={styles.sheen} />
+                      {w.video && <span className={styles.wait} />}
+                    </span>
                   </span>
                 </a>
               );
@@ -444,9 +557,16 @@ export function Trabajo() {
               onClick={bringForward(n)}
               onFocus={() => n !== motion.current.active && scrollToCase(n)}
             >
-              <span className={`${styles.face} ${styles.faceEmpty}`}>
-                <span className={styles.plus} aria-hidden="true" />
-                <span className={styles.nextLabel}>{t(COPY.trabajo.cta)}</span>
+              <span
+                ref={(el) => {
+                  turnRefs.current[n] = el;
+                }}
+                className={styles.turn}
+              >
+                <span className={`${styles.face} ${styles.faceEmpty}`}>
+                  <span className={styles.plus} aria-hidden="true" />
+                  <span className={styles.nextLabel}>{t(COPY.trabajo.cta)}</span>
+                </span>
               </span>
             </a>
           </div>
@@ -484,6 +604,11 @@ export function Trabajo() {
               </p>
             </div>
           </div>
+
+          <p className={styles.hint} aria-hidden="true">
+            <span className={styles.hintLine} />
+            {t(COPY.trabajo.hint)}
+          </p>
         </div>
       </div>
     </section>

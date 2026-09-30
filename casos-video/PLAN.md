@@ -104,7 +104,6 @@ node casos-video/scripts/capturar-instagram.mjs --cdp http://127.0.0.1:9223 chil
 | Entrega | `casos-video/verify.sh` | `VERIFY_EXIT 0`: cada caso de `WORKS` con `video` tiene su mp4 de 720 × 900, de la duración que declara, sin audio, de menos de 2,5 MB, y el primer y el último cuadro coinciden con la tarjeta |
 | Sitio | `npx tsc --noEmit`, `npm run lint` y `npm run build` | Sin errores |
 | Sitio en pantalla | `scripts/qa-sitio.mjs` | Capturas en escritorio, laptop y dos teléfonos; la película arranca a menos de un segundo |
-| Paradas | `scripts/qa-paradas.mjs` | La rueda, el trackpad y el dedo frenan en cada caso (un caso por gesto), y por los extremos se sale de la sección |
 
 ## 7. Decisiones abiertas (son del estudio)
 

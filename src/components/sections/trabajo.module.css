@@ -2,6 +2,8 @@
    Casos — el mazo visto por un lente
    El caso del centro mira al lector, nítido y a tamaño pleno;
    los vecinos giran hacia atrás, más oscuros y fuera de foco.
+   El mazo es un carrusel: se desliza de costado (dedo, trackpad,
+   arrastre o flechas) y el scroll vertical sigue de largo.
    Trabajo.tsx escribe por tarjeta, por frame, la transformación
    y dos variables: --n (0 en el centro, 1 en el primer vecino)
    y --far (cuánto más allá del primer vecino). Acá se traducen
@@ -12,17 +14,15 @@
 
 .trabajo {
   position: relative;
-  /* One screen to pin, plus 40vh of scroll per case: adding cases lengthens
-     the section instead of speeding the deck up. --cases is set from WORKS
-     (plus the closing frame) in Trabajo.tsx. */
-  height: calc(100vh + var(--cases, 5) * 40vh);
   background: var(--focus-ink);
 }
-.sticky {
-  position: sticky;
-  top: 0;
+/* Una pantalla, sin fijarse: la página pasa de largo y el mazo gira de
+   costado adentro de ella. */
+.stage {
+  position: relative;
   height: 100vh;
   height: 100svh;
+  min-height: 600px;
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -32,7 +32,7 @@
   background: radial-gradient(ellipse 90% 60% at 50% 58%, #141416 0%, var(--focus-ink) 70%);
   /* The card is the one size everything hangs off: as wide as it can be
      while the header above and the caption below still fit. */
-  --w: min(36vw, 600px, calc((100svh - 318px) * 0.8));
+  --w: min(36vw, 600px, calc((100svh - 350px) * 0.8));
   --enter: 1;
 }
 
@@ -83,7 +83,7 @@
 .header > * {
   transition: opacity 0.7s ease;
 }
-.sticky[data-playing='1'] .header > * {
+.stage[data-playing='1'] .header > * {
   opacity: 0.42;
 }
 .eyebrow {
@@ -97,8 +97,14 @@
   letter-spacing: -0.035em;
   text-transform: uppercase;
 }
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-bottom: 0.3em;
+}
 .count {
-  padding-bottom: 0.5em;
+  margin-right: 14px;
   font-size: 13px;
   font-weight: 700;
   letter-spacing: 0.26em;
@@ -110,6 +116,43 @@
 /* El marco vacío no es un caso más: no lleva número. */
 .count[data-off='1'] {
   opacity: 0;
+}
+.arrow {
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  padding: 0;
+  border: 1px solid rgba(246, 246, 244, 0.26);
+  border-radius: 50%;
+  background: transparent;
+  color: var(--focus-paper);
+  cursor: pointer;
+  transition:
+    border-color 0.4s,
+    background 0.4s,
+    opacity 0.4s;
+}
+.arrow svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.arrow:hover:not(:disabled) {
+  border-color: var(--focus-paper);
+  background: rgba(246, 246, 244, 0.06);
+}
+.arrow:focus-visible {
+  outline: 2px solid var(--focus-paper);
+  outline-offset: 3px;
+}
+.arrow:disabled {
+  opacity: 0.28;
+  cursor: default;
 }
 
 /* ---- El mazo ---- */
@@ -123,28 +166,68 @@
   justify-content: center;
   padding-bottom: 2vh;
 }
+/* Un carrusel de verdad: la fila de tarjetas se desplaza de costado y
+   frena con cada caso en el centro. Las tarjetas van a 0,8 de ancho una de
+   otra (se pisan un poco), y los márgenes dejan que la primera y la última
+   lleguen al centro. Arriba y abajo hay aire para la sombra y el vuelo de
+   la entrada, que el scroller si no recortaría. */
 .deck {
+  --pad: calc(var(--w) * 0.14);
   flex: none;
-  height: calc(var(--w) * 1.25);
   position: relative;
-  /* El scroll vertical es del navegador; el arrastre de costado, del mazo. */
-  touch-action: pan-y;
+  display: flex;
+  align-items: center;
+  margin: calc(var(--pad) * -1) 0;
+  padding: var(--pad) calc(50% - var(--w) * 0.4);
+  overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  cursor: grab;
+  -webkit-overflow-scrolling: touch;
 }
+.deck::-webkit-scrollbar {
+  display: none;
+}
+/* Mientras el mouse arrastra, el imán se apaga: lo vuelve a prender el
+   planeo hasta el caso más cercano. */
+.deck[data-drag='1'] {
+  scroll-snap-type: none;
+  cursor: grabbing;
+}
+.deck[data-drag='1'] .card {
+  cursor: grabbing;
+}
+/* El lugar de cada caso en la fila: es lo que el carrusel centra y lo que
+   nunca se transforma (el navegador calcula el imán con la caja ya girada,
+   y el mazo lo correría de lugar). Lo que se ve y se toca es .turn. */
 .card {
+  position: relative;
+  flex: none;
+  width: var(--w);
+  aspect-ratio: 4 / 5;
+  margin: 0 calc(var(--w) * -0.1);
+  scroll-snap-align: center;
+  scroll-snap-stop: always;
+  display: block;
+  color: var(--focus-paper);
+  pointer-events: none;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-user-drag: none;
+  user-select: none;
+}
+.turn {
   --n: 0;
   --far: 0;
   position: absolute;
-  left: 50%;
-  top: 50%;
-  width: var(--w);
-  aspect-ratio: 4 / 5;
-  margin: calc(var(--w) * -0.625) 0 0 calc(var(--w) * -0.5);
+  inset: 0;
   display: block;
-  color: var(--focus-paper);
+  pointer-events: auto;
   will-change: transform;
-  -webkit-tap-highlight-color: transparent;
 }
-.card:focus-visible {
+.card:focus-visible .face {
   outline: 2px solid var(--focus-paper);
   outline-offset: 6px;
 }
@@ -356,11 +439,52 @@
   color: var(--focus-gray-400);
 }
 
+/* Debajo del pie, la consigna: el mazo se desliza de costado. */
+.hint {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin: 18px 0 0;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--focus-gray-400);
+  opacity: calc(var(--enter) * 0.9);
+  transition: opacity 0.7s ease;
+}
+.stage[data-playing='1'] .hint {
+  opacity: 0.35;
+}
+.hintLine {
+  position: relative;
+  width: 34px;
+  height: 1px;
+  overflow: hidden;
+  background: rgba(246, 246, 244, 0.18);
+}
+.hintLine::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--focus-paper);
+  transform: translate3d(-100%, 0, 0);
+  animation: trabajoHint 2.4s cubic-bezier(0.6, 0, 0.3, 1) infinite;
+}
+@keyframes trabajoHint {
+  60%,
+  100% {
+    transform: translate3d(100%, 0, 0);
+  }
+}
+
 /* Pantallas bajas (una laptop): el encabezado se achica para que la tarjeta
    no pague la diferencia. */
 @media (min-width: 701px) and (max-height: 800px) {
-  .sticky {
-    --w: min(36vw, 600px, calc((100svh - 262px) * 0.8));
+  .stage {
+    --w: min(36vw, 600px, calc((100svh - 288px) * 0.8));
   }
   .header {
     padding-top: 84px;
@@ -370,6 +494,9 @@
   }
   .captions {
     padding-top: 16px;
+  }
+  .hint {
+    margin-top: 12px;
   }
   .cat {
     margin-top: 5px;
@@ -382,8 +509,8 @@
 @media (max-width: 700px) {
   /* En el teléfono la tarjeta es casi todo el ancho: los vecinos asoman por
      los bordes y la película se ve a un tamaño que vale la pena. */
-  .sticky {
-    --w: min(80vw, calc((100svh - 266px) * 0.8));
+  .stage {
+    --w: min(80vw, calc((100svh - 292px) * 0.8));
   }
   .header {
     padding: 80px var(--edge) 0;
@@ -403,8 +530,17 @@
     scale: 1.035;
   }
   .count {
+    margin-right: 0;
     font-size: 10.5px;
     letter-spacing: 0.24em;
+  }
+  /* En el teléfono el dedo desliza: las flechas sobran. */
+  .arrow {
+    display: none;
+  }
+  .hint {
+    margin-top: 12px;
+    font-size: 9px;
   }
   .mark {
     width: 14px;
@@ -446,7 +582,8 @@
 @media (prefers-reduced-motion: reduce) {
   .film,
   .wait,
-  .sheen::after {
+  .sheen::after,
+  .hintLine::after {
     display: none;
   }
 }

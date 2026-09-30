@@ -18,12 +18,12 @@ export default function Home() {
         <Hero />
         <Ticker />
         <Manifiesto />
+        <Servicios />
+        <Trabajo />
         <Valores />
         <Superposicion />
-        <Servicios />
         <Refraccion />
         <Umbral />
-        <Trabajo />
         <Foco />
         <Contacto />
       </main>

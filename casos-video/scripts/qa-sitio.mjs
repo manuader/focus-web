@@ -19,21 +19,30 @@ for (const [name, [w, h, mobile]] of Object.entries(SIZES)) {
   const page = await ctx.newPage();
   await page.goto(url, { waitUntil: 'networkidle' });
   await page.waitForTimeout(3500); // la entrada del sitio
-  const at = (f) => page.evaluate((f) => { const s = document.querySelector('#trabajo'); const top = s.getBoundingClientRect().top + scrollY; scrollTo({ top: top + (s.offsetHeight - innerHeight) * f, behavior: "instant" }); }, f);
+  // La página, en pantallas desde el tope de la sección; el mazo, en casos.
+  const at = (f) => page.evaluate((f) => { const s = document.querySelector('#trabajo'); scrollTo({ top: s.getBoundingClientRect().top + scrollY + innerHeight * f, behavior: 'instant' }); }, f);
+  const turn = (k) => page.evaluate((k) => { const d = document.querySelector('#trabajo [class*=deck]'); const c = d.children; d.scrollTo({ left: (c[1].offsetLeft - c[0].offsetLeft) * k, behavior: 'instant' }); }, k);
   const shot = (tag) => page.screenshot({ path: path.join(out, `${name}-${tag}.png`) });
-  const state = () => page.evaluate(() => [...document.querySelectorAll('#trabajo a')].map((a) => a.dataset.state || '-').join(''));
-  // La entrada: a mitad de camino y recién fijada.
-  await at(-0.16); await page.waitForTimeout(900); await shot('0-entra-a'); await at(-0.07); await page.waitForTimeout(900); await shot('0-entra-b');
+  const state = () => page.evaluate(() => [...document.querySelectorAll('#trabajo [class*=deck] a')].map((a) => a.dataset.state || '-').join(''));
+  // La entrada: a mitad de camino y ya en pantalla.
+  await at(-0.6); await page.waitForTimeout(900); await shot('0-entra-a'); await at(-0.25); await page.waitForTimeout(900); await shot('0-entra-b');
   await at(0); await page.waitForTimeout(350); await shot('1-asienta');
   await page.waitForTimeout(250); const s1 = await state();
   await page.waitForTimeout(900); const s2 = await state();
   await page.waitForTimeout(2600); await shot('2-pelicula');
-  // A mitad de un giro, y el segundo caso corriendo.
-  await at(1.5 / 9); await page.waitForTimeout(120); await shot('3-giro'); const s3 = await state();
-  await at(3 / 9); await page.waitForTimeout(5200); await shot('4-caso4');
-  await at(1); await page.waitForTimeout(900); await shot('5-final');
-  const card = await page.evaluate(() => { const c = document.querySelector('#trabajo a'); return [c.offsetWidth, c.offsetHeight]; });
-  console.log(name, `${w}×${h}`, 'tarjeta', card.join('×'), '| a 0,6 s:', s1, '| a 1,5 s:', s2, '| girando:', s3);
+  // A mitad de un giro, y el cuarto caso corriendo.
+  await turn(1.5); await page.waitForTimeout(60); await shot('3-giro'); const s3 = await state();
+  await turn(3); await page.waitForTimeout(5200); await shot('4-caso4');
+  const total = await page.evaluate(() => document.querySelectorAll('#trabajo [class*=deck] a').length);
+  await turn(total - 1); await page.waitForTimeout(900); await shot('5-final');
+  // La página sigue de largo: bajar desde el mazo no lo gira.
+  await turn(0); await page.waitForTimeout(300); await page.mouse.move(w / 2, h / 2);
+  for (let i = 0; i < 6; i++) { await page.mouse.wheel(0, 120); await page.waitForTimeout(40); }
+  await page.waitForTimeout(600);
+  const pasa = await page.evaluate(() => ({ top: Math.round(document.querySelector('#trabajo').getBoundingClientRect().top), left: document.querySelector('#trabajo [class*=deck]').scrollLeft }));
+  await shot('6-sigue');
+  const card = await page.evaluate(() => { const c = document.querySelector('#trabajo [class*=deck] a'); return [c.offsetWidth, c.offsetHeight]; });
+  console.log(name, `${w}×${h}`, 'tarjeta', card.join('×'), '| a 0,6 s:', s1, '| a 1,5 s:', s2, '| girando:', s3, '| rueda vertical:', JSON.stringify(pasa));
   await ctx.close();
 }
 await b.close();

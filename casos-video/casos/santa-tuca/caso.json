@@ -1,0 +1,9 @@
+{
+  "id": "santa-tuca", "tipo": "audiovisual", "cliente": "@santatuca", "handle": "santatuca", "tema": "oscuro",
+  "vertical": { "url": "https://www.youtube.com/shorts/oikM4_RKBTg", "desde": 14.0 },
+  "youtube": {
+    "url": "https://www.youtube.com/watch?v=Dkbqc6D8Vs0", "seccion": [20, 40], "desde": 1.0,
+    "titulo": "Recorriendo la ciudad medieval de Gante",
+    "canal": "Santa Tuca"
+  }
+}

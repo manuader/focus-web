@@ -329,7 +329,16 @@ export const WORKS: WorkCard[] = [
 ];
 
 /**
- * The brand poster the threshold opens onto (and hero C's backdrop). Its
+ * The film the threshold opens onto: a loop of colour and circles (its first
+ * and last frames match), silent, with its first frame as the poster.
+ */
+export const UMBRAL_FILM = {
+  src: '/assets/umbral.mp4',
+  poster: '/assets/umbral-poster.jpg',
+};
+
+/**
+ * The brand poster behind hero C. Its
  * tagline is part of the artwork, so each language has its own file: the
  * English one has the line reset in the poster's face, Rotis Semi Sans Light
  * Italic, at the same width as the logo above it.

@@ -145,18 +145,10 @@
   opacity: 0.3;
 }
 
-/* Nav CTA — fills with green on hover, text stays ink. */
+/* The shared optical button owns the visual treatment. This local hook only
+   prevents the compact navigation action from shrinking in the flex row. */
 .navCta {
-  position: relative;
-  padding: 13px 24px;
-  background: var(--focus-paper);
-  color: var(--focus-ink);
-  overflow: hidden;
-  transition: background 0.35s, color 0.35s, transform 0.4s var(--ease-out-expo);
-}
-.navCta:hover {
-  background: var(--focus-green);
-  color: var(--focus-ink);
+  flex: none;
 }
 
 /* ---- Mobile menu (hamburger + full-screen overlay) ---- */
@@ -276,21 +268,7 @@
   flex-wrap: wrap;
 }
 .menuCta {
-  display: inline-flex;
-  align-items: center;
-  gap: 12px;
-  padding: 16px 28px;
-  background: var(--focus-paper);
-  color: var(--focus-ink);
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  transition: background 0.3s, color 0.3s;
-}
-.menuCta:active {
-  background: var(--focus-green);
-  color: var(--focus-ink);
+  flex: none;
 }
 .menuMail {
   font-size: 12px;

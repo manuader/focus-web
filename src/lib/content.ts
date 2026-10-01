@@ -49,7 +49,7 @@ export type ServiceId =
   | 'direccion-de-arte'
   | 'social-media'
   | 'audiovisual'
-  | 'estrategia'
+  | 'automatizaciones-ia'
   | 'web'
   | 'editorial-packaging';
 
@@ -85,6 +85,24 @@ export interface WorkCard {
   /** Optional line under the tags — only where there is more to say than the
       tags already say. Leave it out and the card simply does not show one. */
   desc?: Localized;
+  /** Optional editorial detail. Every card already inherits the shared case
+      layout; adding this data progressively fills its challenge, solution,
+      dates and destinations without changing component code or styling. */
+  caseStudy?: {
+    /** The most important, plain-language description of FOCUS's scope. */
+    service: Localized;
+    /** The situation the work had to improve, without claiming unverified results. */
+    challenge?: Localized;
+    /** What FOCUS actually delivered. */
+    solution?: Localized;
+    /** Human-readable dates/status. Unknown dates stay explicit rather than invented. */
+    period?: Localized;
+    /** One or more real destinations, rendered as separate calls to action. */
+    links?: Array<{
+      label: Localized;
+      href: string;
+    }>;
+  };
   /** Card artwork: the client's mark on its own background, 4:5. */
   img: string;
   /**
@@ -117,14 +135,12 @@ export const NAV_LINKS: NavLink[] = [
 /** Marquee words: the disciplines, named the way each language names them. */
 export const TICKER_ITEMS: Localized[] = [
   { es: 'Identidad de marca', en: 'Brand identity' },
-  { es: 'Dirección de arte', en: 'Art direction' },
-  { es: 'Social media management', en: 'Social media management' },
+  { es: 'Gestión de redes sociales', en: 'Social media management' },
   { es: 'Páginas web', en: 'Websites' },
-  { es: 'Contenido audiovisual', en: 'Video & motion' },
-  { es: 'Contenido con inteligencia artificial', en: 'AI-powered content' },
-  { es: 'Estrategia', en: 'Strategy' },
-  { es: 'Editorial', en: 'Editorial' },
-  { es: 'Packaging', en: 'Packaging' },
+  { es: 'Automatizaciones con IA', en: 'AI automations' },
+  { es: 'Edición de video', en: 'Video editing' },
+  { es: 'Campañas publicitarias', en: 'Advertising campaigns' },
+  { es: 'Editorial y packaging', en: 'Editorial & packaging' },
 ];
 
 export const SERVICES: ServiceRow[] = [
@@ -134,58 +150,58 @@ export const SERVICES: ServiceRow[] = [
     img: '/assets/img-01.jpg',
     title: { es: 'Identidad de marca', en: 'Brand identity' },
     detail: {
-      es: 'Naming, isologotipo, sistema completo, manual',
-      en: 'Naming, logo, visual system, brand guidelines',
-    },
-  },
-  {
-    id: 'direccion-de-arte',
-    n: '02',
-    img: '/assets/img-02.jpg',
-    title: { es: 'Dirección de arte', en: 'Art direction' },
-    detail: {
-      es: 'Campañas, producción fotográfica, styling',
-      en: 'Campaigns, photo shoots, styling',
+      es: 'Naming, logo y sistema visual',
+      en: 'Naming, logo and visual system',
     },
   },
   {
     id: 'social-media',
-    n: '03',
+    n: '02',
     img: '/assets/img-03.jpg',
-    title: { es: 'Social media management', en: 'Social media management' },
+    title: { es: 'Gestión de redes sociales', en: 'Social media management' },
     detail: {
-      es: 'Contenido, planificación, comunidad, métricas',
-      en: 'Content, planning, community, analytics',
-    },
-  },
-  {
-    id: 'audiovisual',
-    n: '04',
-    img: '/assets/img-04.jpg',
-    title: { es: 'Contenido audiovisual', en: 'Video & motion' },
-    detail: {
-      es: 'Piezas para social, film de marca, motion',
-      en: 'Social video, brand films, animation',
-    },
-  },
-  {
-    id: 'estrategia',
-    n: '05',
-    img: '/assets/img-05.jpg',
-    title: { es: 'Estrategia', en: 'Strategy' },
-    detail: {
-      es: 'Posicionamiento, arquitectura, tono de voz',
-      en: 'Positioning, brand architecture, tone of voice',
+      es: 'Estrategia, contenido y comunidad',
+      en: 'Strategy, content and community',
     },
   },
   {
     id: 'web',
-    n: '06',
+    n: '03',
     img: '/assets/img-06.jpg',
     title: { es: 'Páginas web', en: 'Websites' },
     detail: {
-      es: 'Diseño, desarrollo, SEO, mantenimiento',
-      en: 'Design, development, SEO, maintenance',
+      es: 'Diseño, desarrollo y mantenimiento',
+      en: 'Design, development and maintenance',
+    },
+  },
+  {
+    id: 'automatizaciones-ia',
+    n: '04',
+    img: '/assets/img-05.jpg',
+    title: { es: 'Automatizaciones con IA', en: 'AI automations' },
+    detail: {
+      es: 'Flujos, integraciones y agentes',
+      en: 'Workflows, integrations and agents',
+    },
+  },
+  {
+    id: 'audiovisual',
+    n: '05',
+    img: '/assets/img-04.jpg',
+    title: { es: 'Edición de video', en: 'Video editing' },
+    detail: {
+      es: 'Reels, YouTube y motion',
+      en: 'Reels, YouTube and motion',
+    },
+  },
+  {
+    id: 'direccion-de-arte',
+    n: '06',
+    img: '/assets/img-02.jpg',
+    title: { es: 'Campañas publicitarias', en: 'Advertising campaigns' },
+    detail: {
+      es: 'Concepto, producción y piezas',
+      en: 'Concept, production and assets',
     },
   },
   {
@@ -194,8 +210,8 @@ export const SERVICES: ServiceRow[] = [
     img: '/assets/img-01.jpg',
     title: { es: 'Editorial y packaging', en: 'Editorial & packaging' },
     detail: {
-      es: 'Libros, catálogos, etiquetas, estuchería',
-      en: 'Books, catalogs, labels, boxes',
+      es: 'Libros, catálogos y packaging',
+      en: 'Books, catalogs and packaging',
     },
   },
 ];
@@ -208,6 +224,12 @@ export const SERVICES: ServiceRow[] = [
 export const SERVICE_BY_ID = Object.fromEntries(
   SERVICES.map((s) => [s.id, s] as const),
 ) as Record<ServiceId, ServiceRow>;
+
+/** Card labels describe the singular delivery made for one client. Only
+    services whose gallery wording differs from the catalogue need an entry. */
+export const CASE_SERVICE_TITLE: Partial<Record<ServiceId, Localized>> = {
+  web: { es: 'Página web', en: 'Website' },
+};
 
 /* Real cases. Each card carries the client's logo and links to where the work
    can be seen: their Instagram, or the live site when the job was the site.
@@ -252,6 +274,34 @@ export const WORKS: WorkCard[] = [
     client: 'Top Láser',
     category: { es: 'Imprenta', en: 'Print shop' },
     services: ['web'],
+    caseStudy: {
+      service: {
+        es: 'Web + armado de Instagram',
+        en: 'Website + Instagram setup',
+      },
+      challenge: {
+        es: 'Ordenar una oferta amplia y presentarla con claridad en los canales digitales de la imprenta.',
+        en: 'Organize a broad offer and present it clearly across the print shop’s digital channels.',
+      },
+      solution: {
+        es: 'Diseñamos una web que reúne servicios, trabajos y contacto, y preparamos el perfil de Instagram para presentar la marca con coherencia.',
+        en: 'We designed a website that brings services, work and contact together, then set up Instagram to present the brand consistently.',
+      },
+      period: {
+        es: 'Proyecto finalizado · 2026',
+        en: 'Completed project · 2026',
+      },
+      links: [
+        {
+          label: { es: 'Ver página web', en: 'View website' },
+          href: 'https://toplaserimprenta.com',
+        },
+        {
+          label: { es: 'Ver Instagram', en: 'View Instagram' },
+          href: 'https://www.instagram.com/toplaserimprenta',
+        },
+      ],
+    },
     img: '/assets/clients/toplaser-web-card.jpg',
     video: '/assets/cases/top-laser-web.mp4',
     href: 'https://toplaserimprenta.com',
@@ -272,7 +322,23 @@ export const WORKS: WorkCard[] = [
     id: 'santa-tuca',
     client: '@santatuca',
     category: { es: 'Creador de contenido', en: 'Content creator' },
-    services: ['audiovisual', 'social-media'],
+    services: ['audiovisual'],
+    caseStudy: {
+      service: {
+        es: 'Edición de reels + YouTube',
+        en: 'Reels + YouTube editing',
+      },
+      links: [
+        {
+          label: { es: 'Ver Instagram', en: 'View Instagram' },
+          href: 'https://www.instagram.com/santatuca',
+        },
+        {
+          label: { es: 'Ver YouTube', en: 'View YouTube' },
+          href: 'https://www.youtube.com/watch?v=JJ1ip-b2TWw',
+        },
+      ],
+    },
     /* The one line the tags do not already carry: which formats. */
     desc: {
       es: 'Edición de reels y videos de YouTube.',
@@ -282,16 +348,6 @@ export const WORKS: WorkCard[] = [
     video: '/assets/cases/santa-tuca.mp4',
     href: 'https://www.instagram.com/santatuca',
     accent: 'blue',
-  },
-  {
-    id: 'top-laser',
-    client: 'Top Láser',
-    category: { es: 'Imprenta', en: 'Print shop' },
-    services: ['identidad', 'social-media', 'audiovisual'],
-    img: '/assets/clients/toplaser-card.jpg',
-    video: '/assets/cases/top-laser.mp4',
-    href: 'https://www.instagram.com/toplaserimprenta',
-    accent: 'green',
   },
   {
     id: 'chuchones',
@@ -507,7 +563,7 @@ export const COPY = {
     title: { es: 'Casos', en: 'Projects' },
     cta: { es: 'Tu caso acá', en: "You're next" },
     /* The card's link line, by where it goes. */
-    visitSite: { es: 'Ver sitio', en: 'Visit site' },
+    visitSite: { es: 'Ver página web', en: 'View website' },
     visitIg: { es: 'Ver en Instagram', en: 'View on Instagram' },
     /* Under the deck: it turns sideways, the page keeps going down. */
     hint: { es: 'Deslizá de costado para ver más casos', en: 'Swipe sideways for more projects' },

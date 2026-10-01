@@ -81,7 +81,7 @@
 .band {
   position: relative;
   display: block;
-  height: 60px;
+  height: 64px;
   overflow: hidden;
   color: var(--focus-paper);
   opacity: var(--band-opacity);
@@ -107,7 +107,7 @@
   position: relative;
   z-index: 1;
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto;
+  grid-template-columns: 38px minmax(160px, 0.95fr) minmax(170px, 1.05fr);
   align-items: center;
   gap: 16px;
   height: 100%;
@@ -131,27 +131,22 @@
 }
 
 .bandDetail {
-  max-width: 240px;
+  min-width: 0;
+  max-width: 300px;
   color: var(--focus-paper);
-  font-size: clamp(11.5px, 1.05vw, 13px);
-  font-weight: 400;
-  line-height: 1.45;
-  text-align: right;
-  opacity: 0;
-  transform: translateX(10px);
-  transition: opacity 0.35s, transform 0.35s;
+  font-size: clamp(14px, 1.15vw, 16px);
+  font-weight: 600;
+  line-height: 1.22;
+  text-align: left;
+  opacity: var(--detail-progress);
+  transform: translateX(calc((1 - var(--detail-progress)) * 14px));
+  will-change: opacity, transform;
 }
 
 .band:hover .bandFill,
 .band:focus-visible .bandFill {
   --hover-y: 1.12;
   filter: saturate(1.35) drop-shadow(0 0 16px var(--c));
-}
-
-.band:hover .bandDetail,
-.band:focus-visible .bandDetail {
-  opacity: 1;
-  transform: none;
 }
 
 .band:focus-visible {
@@ -235,8 +230,15 @@
     flex-basis: 47%;
   }
 
+  .bandRow {
+    grid-template-columns: 34px minmax(135px, 0.9fr) minmax(150px, 1.1fr);
+    gap: 12px;
+    padding-inline: 14px;
+  }
+
   .bandDetail {
-    display: none;
+    max-width: none;
+    font-size: 14px;
   }
 }
 
@@ -265,14 +267,14 @@
 
   .stage {
     display: grid;
-    grid-template-rows: minmax(190px, 1fr) auto;
+    grid-template-rows: minmax(145px, 0.7fr) auto;
   }
 
   .bench {
     grid-area: 1 / 1;
     min-width: 0;
     height: auto;
-    min-height: 190px;
+    min-height: 145px;
   }
 
   .bands {
@@ -282,17 +284,24 @@
   }
 
   .band {
-    height: 42px;
+    height: 60px;
   }
 
   .bandRow {
-    grid-template-columns: 34px minmax(0, 1fr);
-    gap: 10px;
-    padding: 0 14px;
+    grid-template-columns: 24px minmax(0, 0.88fr) minmax(0, 1.12fr);
+    gap: 6px;
+    padding: 0 8px;
   }
 
   .bandTitle {
-    font-size: clamp(14px, 4.1vw, 18px);
+    font-size: clamp(13px, 3.8vw, 17px);
+    line-height: 1.02;
+  }
+
+  .bandDetail {
+    max-width: none;
+    font-size: clamp(13px, 3.25vw, 14px);
+    line-height: 1.18;
   }
 
   .foot {
@@ -310,11 +319,16 @@
   }
 
   .band {
-    height: 36px;
+    height: 46px;
   }
 
   .bandTitle {
     font-size: 13px;
+  }
+
+  .bandDetail {
+    font-size: 12px;
+    line-height: 1.12;
   }
 }
 
@@ -327,5 +341,10 @@
   .bandFill,
   .bandDetail {
     transition: none;
+  }
+
+  .bandDetail {
+    opacity: 1;
+    transform: none;
   }
 }

@@ -14,6 +14,7 @@
 
 .trabajo {
   position: relative;
+  padding-bottom: clamp(64px, 8vw, 120px);
   background: var(--focus-ink);
 }
 /* Una pantalla, sin fijarse: la página pasa de largo y el mazo gira de
@@ -156,15 +157,16 @@
 }
 
 /* ---- El mazo ---- */
-/* El mazo y su pie van juntos, centrados en lo que queda de pantalla: el
-   nombre del caso queda pegado a su tarjeta, no al borde de abajo. */
+/* La identidad aparece antes del mazo: primero se entiende qué caso es y
+   qué hizo FOCUS; después se entra a la pieza. Ambos viven en el mismo
+   bloque para conservar una distancia estable en cualquier pantalla. */
 .body {
   flex: 1;
   min-height: 0;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding-bottom: 2vh;
+  padding: clamp(18px, 2.4vh, 28px) 0 2vh;
 }
 /* Un carrusel de verdad: la fila de tarjetas se desplaza de costado y
    frena con cada caso en el centro. Las tarjetas van a 0,8 de ancho una de
@@ -255,6 +257,11 @@
 .card[data-state='play'] .face {
   scale: 1.045;
 }
+/* La ficha piloto ya gana presencia con el video. No la agrandamos también:
+   así nunca invade el nombre y el servicio que viven debajo. */
+.caseCard[data-state='play'] .face {
+  scale: 1;
+}
 /* Logos, no fotos: fuera de foco se desenfocan; en foco quedan como vinieron. */
 .art {
   object-fit: cover;
@@ -280,6 +287,108 @@
 .card[data-state='play'] .film {
   opacity: 1;
   transition: opacity 0.6s cubic-bezier(0.33, 0, 0.15, 1);
+}
+.caseCard[data-state='details'] .film {
+  opacity: 0.2;
+  filter: saturate(0.65) contrast(1.08);
+}
+
+/* ---- Ficha editorial del caso piloto ----
+   La información esencial permanece debajo de la tarjeta. Esta capa añade
+   contexto y destinos sólo al pedirlos o cuando termina la película. */
+.caseOverlay {
+  position: absolute;
+  z-index: 4;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  padding: clamp(38px, calc(var(--w) * 0.09), 56px)
+    clamp(28px, calc(var(--w) * 0.075), 46px)
+    clamp(28px, calc(var(--w) * 0.075), 46px);
+  background: linear-gradient(
+    180deg,
+    rgba(10, 10, 11, 0.18) 0%,
+    rgba(10, 10, 11, 0.83) 30%,
+    #0a0a0b 100%
+  );
+  color: var(--focus-paper);
+  opacity: 0;
+  transform: translate3d(0, 22px, 0);
+  visibility: hidden;
+  pointer-events: none;
+  transition:
+    opacity 0.38s ease,
+    transform 0.55s var(--ease-out-expo),
+    visibility 0s linear 0.55s;
+}
+.caseCard[data-state='details'] .caseOverlay {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+  visibility: visible;
+  pointer-events: auto;
+  transition-delay: 0s;
+}
+.caseIntro {
+  display: grid;
+  gap: clamp(3px, calc(var(--w) * 0.009), 6px);
+}
+.overlayClient {
+  font-size: clamp(30px, calc(var(--w) * 0.082), 52px);
+  font-weight: 800;
+  line-height: 0.95;
+  letter-spacing: -0.035em;
+  text-transform: uppercase;
+}
+.overlayService {
+  max-width: 24ch;
+  color: var(--focus-green);
+  font-size: clamp(17px, calc(var(--w) * 0.04), 25px);
+  font-weight: 800;
+  line-height: 1.02;
+  text-transform: uppercase;
+}
+.caseSection {
+  display: grid;
+  gap: clamp(6px, calc(var(--w) * 0.012), 9px);
+}
+.caseIntro + .caseSection {
+  margin-top: clamp(24px, calc(var(--w) * 0.055), 34px);
+}
+.caseSection + .caseSection {
+  margin-top: clamp(18px, calc(var(--w) * 0.04), 26px);
+}
+.caseLabel {
+  color: var(--focus-gray-300);
+  font-size: clamp(17px, calc(var(--w) * 0.033), 21px);
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  line-height: 1.05;
+  text-transform: uppercase;
+}
+.caseCopy {
+  max-width: 48ch;
+  font-size: clamp(16px, calc(var(--w) * 0.029), 19px);
+  line-height: 1.32;
+  color: rgba(246, 246, 244, 0.9);
+}
+.casePeriod {
+  width: 100%;
+  margin-top: auto;
+  color: var(--focus-gray-300);
+  font-size: clamp(16px, calc(var(--w) * 0.029), 18px);
+  font-weight: 700;
+  line-height: 1.3;
+  text-align: center;
+}
+.caseLinks {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(14px, calc(var(--w) * 0.035), 22px);
+  margin-top: clamp(12px, calc(var(--w) * 0.025), 16px);
+}
+.caseLinksPush {
+  margin-top: auto;
 }
 /* Sombra de los vecinos: tinta sobre la tarjeta, no un filtro, para que
    valga igual sobre el logo y sobre la película. */
@@ -404,14 +513,15 @@
   border-color: var(--focus-magenta);
 }
 
-/* ---- Pie: el nombre y el rubro del caso en foco ---- */
+/* ---- Encabezado del caso en foco, antes de la tarjeta ---- */
 .captions {
   flex: none;
   position: relative;
   z-index: 3;
   display: grid;
   justify-items: center;
-  padding: 24px var(--edge) 0;
+  min-height: clamp(72px, 10vh, 104px);
+  padding: 0 var(--edge) clamp(14px, 2.2vh, 24px);
   pointer-events: none;
 }
 .caption {
@@ -444,46 +554,36 @@
   text-transform: uppercase;
   color: var(--focus-gray-400);
 }
-
-/* Debajo del pie, la consigna: el mazo se desliza de costado. */
-.hint {
-  flex: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-  margin: 18px 0 0;
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.24em;
+.caseCaption .name {
+  font-size: clamp(28px, 3.2vw, 44px);
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  line-height: 0.92;
   text-transform: uppercase;
-  color: var(--focus-gray-400);
-  opacity: calc(var(--enter) * 0.9);
-  transition: opacity 0.7s ease;
 }
-.stage[data-playing='1'] .hint {
-  opacity: 0.35;
+.caseIdentity {
+  width: max-content;
+  max-width: 90vw;
+  margin-inline: auto;
+  text-align: left;
 }
-.hintLine {
-  position: relative;
-  width: 34px;
-  height: 1px;
-  overflow: hidden;
-  background: rgba(246, 246, 244, 0.18);
+.primaryService {
+  max-width: min(90vw, 720px);
+  margin: 3px 0 0;
+  font-size: clamp(17px, 1.8vw, 24px);
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  line-height: 1;
+  text-transform: uppercase;
 }
-.hintLine::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: var(--focus-paper);
-  transform: translate3d(-100%, 0, 0);
-  animation: trabajoHint 2.4s cubic-bezier(0.6, 0, 0.3, 1) infinite;
-}
-@keyframes trabajoHint {
-  60%,
-  100% {
-    transform: translate3d(100%, 0, 0);
-  }
+.caseCategory {
+  margin: 0 0 8px;
+  font-size: clamp(14px, 1.1vw, 16px);
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  line-height: 1;
+  text-transform: uppercase;
+  color: var(--focus-gray-300);
 }
 
 /* Pantallas bajas (una laptop): el encabezado se achica para que la tarjeta
@@ -499,10 +599,8 @@
     font-size: clamp(36px, 7vh, 52px);
   }
   .captions {
-    padding-top: 16px;
-  }
-  .hint {
-    margin-top: 12px;
+    min-height: 68px;
+    padding-bottom: 12px;
   }
   .cat {
     margin-top: 5px;
@@ -544,10 +642,6 @@
   .arrow {
     display: none;
   }
-  .hint {
-    margin-top: 12px;
-    font-size: 9px;
-  }
   .mark {
     width: 14px;
     height: 14px;
@@ -569,7 +663,8 @@
     bottom: 12px;
   }
   .captions {
-    padding: 16px var(--edge) 0;
+    min-height: 62px;
+    padding: 0 var(--edge) 10px;
   }
   .name {
     font-size: 19px;
@@ -583,13 +678,52 @@
     font-size: 9.5px;
     letter-spacing: 0.18em;
   }
+  .caseCaption .name {
+    font-size: 26px;
+  }
+  .primaryService,
+  .caseCategory {
+    font-size: 17px;
+  }
+  .caseCategory {
+    margin-bottom: 5px;
+    font-size: 13px;
+  }
+  .caseOverlay {
+    padding: 26px 18px 18px;
+  }
+  .caseIntro + .caseSection {
+    margin-top: 18px;
+  }
+  .caseSection + .caseSection {
+    margin-top: 13px;
+  }
+  .overlayClient {
+    font-size: 28px;
+  }
+  .overlayService {
+    font-size: 15px;
+  }
+  .caseLabel {
+    font-size: 15px;
+  }
+  .caseCopy {
+    font-size: 14px;
+    line-height: 1.24;
+  }
+  .casePeriod {
+    font-size: 14px;
+  }
+  .caseLinks {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .film,
   .wait,
-  .sheen::after,
-  .hintLine::after {
+  .sheen::after {
     display: none;
   }
 }

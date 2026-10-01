@@ -98,8 +98,6 @@
 }
 .btn {
   justify-content: space-between;
-  padding: 22px 30px;
-  font-size: 12px;
   overflow-wrap: anywhere;
 }
 
@@ -112,8 +110,5 @@
   .actions { gap: 12px; }
   .btn {
     width: 100%;
-    padding: 19px 20px;
-    font-size: 11px;
-    letter-spacing: 0.14em;
   }
 }

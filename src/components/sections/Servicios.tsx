@@ -25,10 +25,14 @@ export function Servicios() {
     rays.forEach((progress, index) => {
       const band = bandRefs.current[index];
       if (!band) return;
+      // The service resolves first; its scope follows as a second beat once
+      // the ray has already made the title legible.
+      const detailProgress = Math.max(0, Math.min(1, (progress - 0.42) / 0.34));
       band.style.setProperty('--band-opacity', (0.22 + progress * 0.78).toFixed(4));
       band.style.setProperty('--band-scale', (0.1 + progress * 0.9).toFixed(4));
       band.style.setProperty('--band-saturation', (0.7 + progress * 0.6).toFixed(3));
       band.style.setProperty('--band-glow', `${(progress * 11).toFixed(2)}px`);
+      band.style.setProperty('--detail-progress', detailProgress.toFixed(4));
     });
   }, []);
 
@@ -68,6 +72,7 @@ export function Servicios() {
                   '--band-scale': 0.1,
                   '--band-saturation': 0.7,
                   '--band-glow': '0px',
+                  '--detail-progress': 0,
                 } as CSSProperties}
               >
                 <span className={styles.bandFill} aria-hidden="true" />

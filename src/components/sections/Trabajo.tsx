@@ -13,9 +13,15 @@ import { useTranslate } from '@/hooks/useTranslate';
 import { useWindowScroll } from '@/hooks/useWindowScroll';
 import { useReducedMotion } from '@/hooks/useMediaQuery';
 import { Eyebrow } from '@/components/ui/Eyebrow';
-import { WORKS, SERVICE_BY_ID, ACCENT_TEXT, COPY } from '@/lib/content';
+import {
+  WORKS,
+  SERVICE_BY_ID,
+  CASE_SERVICE_TITLE,
+  ACCENT_TEXT,
+  COPY,
+} from '@/lib/content';
+import { CaseStudyOverlay } from './CaseStudyOverlay';
 import styles from './trabajo.module.css';
-import { useScrollHold } from './useScrollHold';
 
 const clamp01 = (v: number) => Math.max(0, Math.min(1, v));
 const pad2 = (n: number) => String(n).padStart(2, '0');
@@ -33,7 +39,7 @@ const SETTLE = 140;
 /** A mouse drag this long, in px, is a drag and not a click. */
 const DRAG = 6;
 
-type CardState = '' | 'wait' | 'play';
+type CardState = '' | 'wait' | 'play' | 'details';
 
 /**
  * The case gallery, as a deck seen through a lens, that turns sideways. The
@@ -55,10 +61,9 @@ type CardState = '' | 'wait' | 'play';
  * read from the scroller's position. The deck is dealt in as the section
  * scrolls into view, and the cards lean into the travel while it turns.
  *
- * Scrolled past with a wheel or a trackpad, the page stops on the section
- * for a moment (see useScrollHold), so the film of the first case gets to
- * start even for a reader who was not going to stop. All
- * of it is written through refs, inline transforms and data attributes;
+ * The page keeps its native vertical scroll at all times; watching the film
+ * is optional and never holds the reader inside the section. All of it is
+ * written through refs, inline transforms and data attributes;
  * React never re-renders on scroll.
  */
 export function Trabajo() {
@@ -75,6 +80,8 @@ export function Trabajo() {
   const turnRefs = useRef<Array<HTMLSpanElement | null>>([]);
   const captionRefs = useRef<Array<HTMLDivElement | null>>([]);
   const videoRefs = useRef<Array<HTMLVideoElement | null>>([]);
+  /** Case studies that reached their last frame keep their information open. */
+  const endedRefs = useRef(new Set<number>());
   const n = WORKS.length;
   /** The cases plus the empty frame at the end. */
   const total = n + 1;
@@ -109,7 +116,9 @@ export function Trabajo() {
   const setState = useCallback((i: number, state: CardState) => {
     const card = cardRefs.current[i];
     if (card) card.dataset.state = state;
-    if (stageRef.current) stageRef.current.dataset.playing = state === 'play' ? '1' : '0';
+    if (stageRef.current) {
+      stageRef.current.dataset.playing = state === 'play' || state === 'details' ? '1' : '0';
+    }
   }, []);
 
   /**
@@ -216,6 +225,7 @@ export function Trabajo() {
     const m = motion.current;
     clearTimeout(m.settle);
     clearTimeout(m.dwell);
+    endedRefs.current.clear();
     cardRefs.current.forEach((card, i) => {
       if (!card || !card.dataset.state) return;
       const wasPlaying = card.dataset.state === 'play';
@@ -252,6 +262,7 @@ export function Trabajo() {
       m.dwell = window.setTimeout(() => {
         clearTimeout(m.pause);
         video.currentTime = 0;
+        endedRefs.current.delete(i);
         video
           .play()
           .then(() => {
@@ -326,8 +337,6 @@ export function Trabajo() {
       m.raf = 0;
     };
   }, [frame, position, rest, settle]);
-
-  useScrollHold(sectionRef, reduce);
 
   /** Turn the deck until case `i` sits in the centre. */
   const scrollToCase = useCallback(
@@ -483,6 +492,52 @@ export function Trabajo() {
         </div>
 
         <div className={styles.body}>
+          {/* One identity block at a time, before the film: the reader knows
+              whose case this is and what FOCUS did before watching it. */}
+          <div className={styles.captions}>
+            {WORKS.map((w, i) => {
+              const service = w.caseStudy
+                ? t(w.caseStudy.service)
+                : w.services
+                    .map((id) => t(CASE_SERVICE_TITLE[id] ?? SERVICE_BY_ID[id].title))
+                    .join(' + ');
+
+              return (
+                <div
+                  key={w.id}
+                  ref={(el) => {
+                    captionRefs.current[i] = el;
+                  }}
+                  className={`${styles.caption} ${styles.caseCaption}`}
+                  aria-hidden="true"
+                >
+                  <div className={styles.caseIdentity}>
+                    <p className={styles.caseCategory}>{t(w.category)}</p>
+                    <h3 className={styles.name}>{w.client}</h3>
+                  </div>
+                  <p
+                    className={styles.primaryService}
+                    style={{ color: ACCENT_TEXT[w.accent] }}
+                  >
+                    {service}
+                  </p>
+                </div>
+              );
+            })}
+            <div
+              ref={(el) => {
+                captionRefs.current[n] = el;
+              }}
+              className={styles.caption}
+              aria-hidden="true"
+            >
+              <p className={styles.name}>{t(COPY.trabajo.nextName)}</p>
+              <p className={styles.cat} style={{ color: 'var(--focus-magenta)' }}>
+                {t(COPY.trabajo.nextCat)}
+              </p>
+            </div>
+          </div>
+
           <div
             ref={deckRef}
             className={styles.deck}
@@ -499,58 +554,77 @@ export function Trabajo() {
             }}
           >
             {WORKS.map((w, i) => {
-              const ig = w.href.includes('instagram.com');
+              const service = w.caseStudy
+                ? t(w.caseStudy.service)
+                : w.services
+                    .map((id) => t(CASE_SERVICE_TITLE[id] ?? SERVICE_BY_ID[id].title))
+                    .join(' + ');
+              const face = (
+                <span
+                  ref={(el) => {
+                    turnRefs.current[i] = el;
+                  }}
+                  className={styles.turn}
+                >
+                  <span className={styles.face}>
+                    <Image
+                      src={w.img}
+                      alt=""
+                      fill
+                      sizes="(max-width: 700px) 80vw, 600px"
+                      className={styles.art}
+                    />
+                    {w.video && (
+                      <video
+                        ref={(el) => {
+                          videoRefs.current[i] = el;
+                        }}
+                        className={styles.film}
+                        data-src={w.video}
+                        muted
+                        playsInline
+                        preload="none"
+                        disablePictureInPicture
+                        aria-hidden="true"
+                        tabIndex={-1}
+                        onEnded={() => {
+                          endedRefs.current.add(i);
+                          setState(i, 'details');
+                        }}
+                      />
+                    )}
+                    <span className={styles.sheen} />
+                    {w.video && <span className={styles.wait} />}
+                    <CaseStudyOverlay work={w} />
+                  </span>
+                </span>
+              );
+
               return (
-                <a
+                <article
                   key={w.id}
                   ref={(el) => {
                     cardRefs.current[i] = el;
                   }}
-                  href={w.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={styles.card}
-                  aria-label={`${w.client}, ${t(w.category)}. ${w.services
-                    .map((id) => t(SERVICE_BY_ID[id].title))
-                    .join(', ')}. ${t(ig ? COPY.trabajo.visitIg : COPY.trabajo.visitSite)}`}
+                  className={`${styles.card} ${styles.caseCard}`}
+                  tabIndex={0}
+                  aria-label={`${w.client}, ${service}. ${t(w.category)}.`}
                   onClick={bringForward(i)}
-                  onFocus={() => i !== motion.current.active && scrollToCase(i)}
+                  onFocus={() => {
+                    if (i !== motion.current.active) scrollToCase(i);
+                    setState(i, 'details');
+                  }}
+                  onBlur={(e) => {
+                    if (e.currentTarget.contains(e.relatedTarget as Node)) return;
+                    if (!endedRefs.current.has(i)) settle();
+                  }}
+                  onPointerEnter={() => setState(i, 'details')}
+                  onPointerLeave={() => {
+                    if (!endedRefs.current.has(i)) settle();
+                  }}
                 >
-                  <span
-                    ref={(el) => {
-                      turnRefs.current[i] = el;
-                    }}
-                    className={styles.turn}
-                  >
-                    <span className={styles.face}>
-                      <Image
-                        src={w.img}
-                        alt=""
-                        fill
-                        sizes="(max-width: 700px) 80vw, 600px"
-                        className={styles.art}
-                      />
-                      {w.video && (
-                        <video
-                          ref={(el) => {
-                            videoRefs.current[i] = el;
-                          }}
-                          className={styles.film}
-                          data-src={w.video}
-                          muted
-                          loop
-                          playsInline
-                          preload="none"
-                          disablePictureInPicture
-                          aria-hidden="true"
-                          tabIndex={-1}
-                        />
-                      )}
-                      <span className={styles.sheen} />
-                      {w.video && <span className={styles.wait} />}
-                    </span>
-                  </span>
-                </a>
+                  {face}
+                </article>
               );
             })}
 
@@ -577,45 +651,6 @@ export function Trabajo() {
               </span>
             </a>
           </div>
-
-          {/* One caption at a time, under the case in the centre. */}
-          <div className={styles.captions}>
-            {WORKS.map((w, i) => (
-              <div
-                key={w.id}
-                ref={(el) => {
-                  captionRefs.current[i] = el;
-                }}
-                className={styles.caption}
-                aria-hidden="true"
-              >
-                <h3 className={styles.name}>{w.client}</h3>
-                <p className={styles.cat} style={{ color: ACCENT_TEXT[w.accent] }}>
-                  {t(w.category)}
-                </p>
-                <p className={styles.services}>
-                  {w.services.map((id) => t(SERVICE_BY_ID[id].title)).join(' · ')}
-                </p>
-              </div>
-            ))}
-            <div
-              ref={(el) => {
-                captionRefs.current[n] = el;
-              }}
-              className={styles.caption}
-              aria-hidden="true"
-            >
-              <p className={styles.name}>{t(COPY.trabajo.nextName)}</p>
-              <p className={styles.cat} style={{ color: 'var(--focus-magenta)' }}>
-                {t(COPY.trabajo.nextCat)}
-              </p>
-            </div>
-          </div>
-
-          <p className={styles.hint} aria-hidden="true">
-            <span className={styles.hintLine} />
-            {t(COPY.trabajo.hint)}
-          </p>
         </div>
       </div>
     </section>

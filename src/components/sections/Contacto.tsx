@@ -8,6 +8,7 @@ import { useReducedMotion } from '@/hooks/useMediaQuery';
 import { useChromaticFlicker } from '@/hooks/useChromaticFlicker';
 import { Reveal } from '@/components/ui/Reveal';
 import { MagneticLink } from '@/components/ui/MagneticLink';
+import { FocusButtonContent } from '@/components/ui/FocusButtonContent';
 import { COPY, CONTACT } from '@/lib/content';
 import styles from './contacto.module.css';
 import ui from '@/components/ui/ui.module.css';
@@ -63,10 +64,9 @@ export function Contacto() {
           <div className={styles.actions}>
             <MagneticLink
               href={`mailto:${CONTACT.email}`}
-              className={`${ui.btn} ${ui.btnSolid} ${styles.btn}`}
+              className={`${ui.focusBtn} ${ui.focusBtnSecondary} ${styles.btn}`}
             >
-              {CONTACT.email}
-              <span className={ui.btnLine} style={{ width: 30 }} />
+              <FocusButtonContent>{CONTACT.email}</FocusButtonContent>
             </MagneticLink>
 
             <MagneticLink
@@ -74,11 +74,10 @@ export function Contacto() {
               target="_blank"
               rel="noopener noreferrer"
               accent="var(--focus-green)"
-              className={`${ui.btn} ${ui.btnGhost} ${styles.btn}`}
+              className={`${ui.focusBtn} ${ui.focusBtnSecondary} ${styles.btn}`}
               aria-label={`WhatsApp ${CONTACT.whatsapp}`}
             >
-              WhatsApp
-              <span className={ui.btnLine} style={{ width: 30 }} />
+              <FocusButtonContent>WhatsApp</FocusButtonContent>
             </MagneticLink>
 
             <MagneticLink
@@ -86,10 +85,9 @@ export function Contacto() {
               target="_blank"
               rel="noopener noreferrer"
               accent="var(--focus-magenta)"
-              className={`${ui.btn} ${ui.btnGhost} ${styles.btn}`}
+              className={`${ui.focusBtn} ${ui.focusBtnPrimary} ${ui.focusBtnInverted} ${styles.btn}`}
             >
-              {t(COPY.contacto.agendar)}
-              <span className={ui.btnLine} style={{ width: 30 }} />
+              <FocusButtonContent>{t(COPY.contacto.agendar)}</FocusButtonContent>
             </MagneticLink>
           </div>
         </div>

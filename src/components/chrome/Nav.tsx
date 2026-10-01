@@ -6,8 +6,10 @@ import { useLanguage } from '@/context/LanguageContext';
 import { useTranslate } from '@/hooks/useTranslate';
 import { useWindowScroll } from '@/hooks/useWindowScroll';
 import { useMagnetic } from '@/hooks/useMagnetic';
+import { FocusButtonContent } from '@/components/ui/FocusButtonContent';
 import { NAV_LINKS, COPY, CONTACT } from '@/lib/content';
 import styles from './chrome.module.css';
+import ui from '@/components/ui/ui.module.css';
 
 export function Nav() {
   const { lang, setLang } = useLanguage();
@@ -82,8 +84,12 @@ export function Nav() {
             </a>
           ))}
           {LangToggle}
-          <a ref={ctaRef} href="#contacto" className={styles.navCta}>
-            {t(COPY.cta)}
+          <a
+            ref={ctaRef}
+            href="#contacto"
+            className={`${ui.focusBtn} ${ui.focusBtnPrimary} ${ui.focusBtnCompact} ${styles.navCta}`}
+          >
+            <FocusButtonContent>{t(COPY.cta)}</FocusButtonContent>
           </a>
         </div>
 
@@ -123,11 +129,11 @@ export function Nav() {
           {LangToggle}
           <a
             href="#contacto"
-            className={styles.menuCta}
+            className={`${ui.focusBtn} ${ui.focusBtnPrimary} ${styles.menuCta}`}
             tabIndex={open ? 0 : -1}
             onClick={() => setOpen(false)}
           >
-            {t(COPY.cta)}
+            <FocusButtonContent>{t(COPY.cta)}</FocusButtonContent>
           </a>
           <a href={`mailto:${CONTACT.email}`} className={styles.menuMail} tabIndex={open ? 0 : -1}>
             {CONTACT.email}

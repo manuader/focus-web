@@ -6,6 +6,7 @@ import { useHeroLens } from '@/hooks/useHeroLens';
 import { useChromaticFlicker } from '@/hooks/useChromaticFlicker';
 import { Eyebrow } from '@/components/ui/Eyebrow';
 import { MagneticLink } from '@/components/ui/MagneticLink';
+import { FocusButtonContent } from '@/components/ui/FocusButtonContent';
 import { RingsMotif } from '@/components/ui/RingsMotif';
 import { COPY } from '@/lib/content';
 import styles from './hero.module.css';
@@ -66,15 +67,9 @@ export function HeroUmbral() {
           <p className={styles.aPara}>{t(COPY.hero.a.para)}</p>
           <MagneticLink
             href="#trabajo"
-            className={`${ui.btn} ${ui.btnGhost}`}
-            style={{
-              padding: '15px 26px',
-              fontSize: 11,
-              letterSpacing: '0.22em',
-            }}
+            className={`${ui.focusBtn} ${ui.focusBtnSecondary} ${ui.focusBtnInverted}`}
           >
-            {t(COPY.hero.a.cta)}
-            <span className={ui.btnLine} />
+            <FocusButtonContent>{t(COPY.hero.a.cta)}</FocusButtonContent>
           </MagneticLink>
         </div>
       </div>

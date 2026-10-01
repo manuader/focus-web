@@ -11,7 +11,7 @@ import {
 } from 'react';
 import { useTranslate } from '@/hooks/useTranslate';
 import { useWindowScroll } from '@/hooks/useWindowScroll';
-import { useReducedMotion } from '@/hooks/useMediaQuery';
+import { useMediaQuery, useReducedMotion } from '@/hooks/useMediaQuery';
 import { Eyebrow } from '@/components/ui/Eyebrow';
 import {
   WORKS,
@@ -32,8 +32,8 @@ const SPREAD = 0.8;
 const SPREAD_FAR = 0.44;
 /** How far a neighbour turns away from the reader, in degrees. */
 const TURN = 42;
-/** Scroll has to rest this long before the case in the centre starts playing. */
-const DWELL = 850;
+/** A brief rest confirms the intended case without making impatient readers wait. */
+const DWELL = 500;
 /** Rest before the deck counts as settled and the wait begins. */
 const SETTLE = 140;
 /** A mouse drag this long, in px, is a drag and not a click. */
@@ -69,6 +69,7 @@ type CardState = '' | 'wait' | 'play' | 'details';
 export function Trabajo() {
   const { t } = useTranslate();
   const reduce = useReducedMotion();
+  const touch = useMediaQuery('(hover: none), (pointer: coarse)');
   const sectionRef = useRef<HTMLElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
   const deckRef = useRef<HTMLDivElement>(null);
@@ -357,6 +358,46 @@ export function Trabajo() {
     scrollToCase(i);
   };
 
+  /**
+   * Touch has no hover. One tap pauses the film and opens the case; the next
+   * tap on the card resumes from that frame (or restarts an ended film).
+   * Links inside the overlay are excluded so they remain one-tap actions.
+   */
+  const toggleTouchCase = (i: number) => (e: MouseEvent<HTMLElement>) => {
+    if ((e.target as HTMLElement).closest('a')) return;
+    if (i !== motion.current.active) {
+      e.preventDefault();
+      scrollToCase(i);
+      return;
+    }
+    if (!touch) return;
+
+    e.preventDefault();
+    const card = cardRefs.current[i];
+    const video = videoRefs.current[i];
+    if (!card) return;
+
+    clearTimeout(motion.current.settle);
+    clearTimeout(motion.current.dwell);
+
+    if (card.dataset.state !== 'details') {
+      video?.pause();
+      setState(i, 'details');
+      return;
+    }
+
+    endedRefs.current.delete(i);
+    if (!video) {
+      setState(i, '');
+      return;
+    }
+    if (video.ended || video.currentTime >= video.duration - 0.1) video.currentTime = 0;
+    video
+      .play()
+      .then(() => setState(i, 'play'))
+      .catch(() => setState(i, ''));
+  };
+
   /** With a mouse, the case in the centre tips toward the pointer. */
   const tilt = (e: PointerEvent<HTMLDivElement>) => {
     const stage = stageRef.current;
@@ -609,17 +650,20 @@ export function Trabajo() {
                   className={`${styles.card} ${styles.caseCard}`}
                   tabIndex={0}
                   aria-label={`${w.client}, ${service}. ${t(w.category)}.`}
-                  onClick={bringForward(i)}
+                  onClick={touch ? toggleTouchCase(i) : bringForward(i)}
                   onFocus={() => {
                     if (i !== motion.current.active) scrollToCase(i);
-                    setState(i, 'details');
+                    if (!touch) setState(i, 'details');
                   }}
                   onBlur={(e) => {
                     if (e.currentTarget.contains(e.relatedTarget as Node)) return;
                     if (!endedRefs.current.has(i)) settle();
                   }}
-                  onPointerEnter={() => setState(i, 'details')}
-                  onPointerLeave={() => {
+                  onPointerEnter={(e) => {
+                    if (e.pointerType === 'mouse') setState(i, 'details');
+                  }}
+                  onPointerLeave={(e) => {
+                    if (e.pointerType !== 'mouse') return;
                     if (!endedRefs.current.has(i)) settle();
                   }}
                 >

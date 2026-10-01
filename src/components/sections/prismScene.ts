@@ -22,6 +22,8 @@ export interface SceneBox {
   /** The free band left for the prism, below the heading and caption, in CSS px. */
   top: number;
   bottom: number;
+  /** Optional exact band mouths at the canvas edge, in CSS px. */
+  rayEntries?: Array<{ y: number; half: number }>;
 }
 
 export interface SceneFrame {
@@ -184,11 +186,13 @@ export function createPrismScene(canvas: HTMLCanvasElement, colors: readonly str
   let cx = 0;
   let cy = 0;
   let S = 0;
+  let rayEntries: SceneBox['rayEntries'];
 
   function resize(box: SceneBox, pixelRatio: number) {
     W = box.W;
     H = box.H;
     dpr = pixelRatio;
+    rayEntries = box.rayEntries;
     canvas.width = Math.round(W * dpr);
     canvas.height = Math.round(H * dpr);
     const bw = Math.max(1, Math.ceil(W / 4));
@@ -320,6 +324,49 @@ export function createPrismScene(canvas: HTMLCanvasElement, colors: readonly str
     const drawFan = (g: CanvasRenderingContext2D) => {
       for (let i = 0; i < n; i++) {
         if (rays[i] <= 0) continue;
+        const entry = rayEntries?.[i];
+        if (entry) {
+          // In the optical-bench layout, each ray leaves the exact mouth of
+          // its service band. Measuring those mouths keeps the colour blocks
+          // and the light physically continuous at every responsive size.
+          const k = rays[i];
+          const sx = -1;
+          const sy = entry.y;
+          const half = Math.max(1, entry.half - 0.5);
+          const tip = 1.2;
+          const fx = sx + (E.x - sx) * k;
+          const fyTop = sy - half + (E.y - tip - (sy - half)) * k;
+          const fyBottom = sy + half + (E.y + tip - (sy + half)) * k;
+          const shimmer = 0.94 + 0.06 * Math.sin(t * 1.7 + i * 1.3);
+          const grd = g.createLinearGradient(sx, sy, E.x, E.y);
+          grd.addColorStop(0, `rgba(${rgb[i]},${0.9 * shimmer})`);
+          grd.addColorStop(0.72, `rgba(${rgb[i]},${0.96 * shimmer})`);
+          grd.addColorStop(1, `rgba(${rgb[i]},${0.78 * shimmer})`);
+          g.fillStyle = grd;
+          g.beginPath();
+          g.moveTo(sx, sy - half);
+          g.lineTo(fx, fyTop);
+          g.lineTo(fx, fyBottom);
+          g.lineTo(sx, sy + half);
+          g.closePath();
+          g.fill();
+
+          if (k < 1) {
+            const fy = (fyTop + fyBottom) / 2;
+            const hr = 12 + Math.hypot(fx - sx, fy - sy) * 0.035;
+            const hg = g.createRadialGradient(fx, fy, 0, fx, fy, hr);
+            hg.addColorStop(0, `rgba(255,255,255,${0.75 * (1 - k * 0.6)})`);
+            hg.addColorStop(0.3, `rgba(${rgb[i]},.6)`);
+            hg.addColorStop(1, `rgba(${rgb[i]},0)`);
+            g.globalCompositeOperation = 'lighter';
+            g.fillStyle = hg;
+            g.beginPath();
+            g.arc(fx, fy, hr, 0, TAU);
+            g.fill();
+            g.globalCompositeOperation = 'source-over';
+          }
+          continue;
+        }
         const a1 = aHi - i * w;
         const a0 = a1 - w;
         const R = far[i];

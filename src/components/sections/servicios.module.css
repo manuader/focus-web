@@ -85,8 +85,7 @@
   overflow: hidden;
   color: var(--focus-paper);
   opacity: var(--band-opacity);
-  transform: translateX(var(--band-shift));
-  will-change: opacity, transform;
+  will-change: opacity;
 }
 
 .bandFill {
@@ -98,7 +97,7 @@
     var(--c) 62%
   );
   --hover-y: 1;
-  transform-origin: left;
+  transform-origin: right;
   transform: scaleX(var(--band-scale)) scaleY(var(--hover-y));
   filter: saturate(var(--band-saturation)) drop-shadow(0 0 var(--band-glow) var(--c));
   will-change: filter, transform;

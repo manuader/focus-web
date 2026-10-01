@@ -26,7 +26,6 @@ export function Servicios() {
       const band = bandRefs.current[index];
       if (!band) return;
       band.style.setProperty('--band-opacity', (0.22 + progress * 0.78).toFixed(4));
-      band.style.setProperty('--band-shift', `${(-34 * (1 - progress)).toFixed(2)}px`);
       band.style.setProperty('--band-scale', (0.1 + progress * 0.9).toFixed(4));
       band.style.setProperty('--band-saturation', (0.7 + progress * 0.6).toFixed(3));
       band.style.setProperty('--band-glow', `${(progress * 11).toFixed(2)}px`);
@@ -66,7 +65,6 @@ export function Servicios() {
                 style={{
                   '--c': SPECTRUM[index],
                   '--band-opacity': 0.22,
-                  '--band-shift': '-34px',
                   '--band-scale': 0.1,
                   '--band-saturation': 0.7,
                   '--band-glow': '0px',
@@ -85,7 +83,11 @@ export function Servicios() {
           </div>
 
           <div className={styles.bench}>
-            <PrismaCompacto sectionRef={sectionRef} onRays={syncBands} />
+            <PrismaCompacto
+              sectionRef={sectionRef}
+              bandRefs={bandRefs}
+              onRays={syncBands}
+            />
           </div>
         </div>
 

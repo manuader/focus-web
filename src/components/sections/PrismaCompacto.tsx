@@ -12,11 +12,12 @@ const clamp = (value: number, min: number, max: number) => Math.max(min, Math.mi
 
 interface Props {
   sectionRef: RefObject<HTMLElement | null>;
+  bandRefs: RefObject<Array<HTMLAnchorElement | null>>;
   onRays: (rays: readonly number[]) => void;
 }
 
 /** The current prism, driven in both directions by the section scroll. */
-export function PrismaCompacto({ sectionRef, onRays }: Props) {
+export function PrismaCompacto({ sectionRef, bandRefs, onRays }: Props) {
   const { t } = useTranslate();
   const reduce = useReducedMotion();
   const panelRef = useRef<HTMLDivElement>(null);
@@ -48,8 +49,24 @@ export function PrismaCompacto({ sectionRef, onRays }: Props) {
       const width = canvas.clientWidth;
       const height = canvas.clientHeight;
       if (width < 10 || height < 10) return;
+      const canvasBox = canvas.getBoundingClientRect();
+      const measuredEntries = bandRefs.current.map((band) => {
+        const box = band?.getBoundingClientRect();
+        if (!box) return null;
+        return {
+          y: box.top + box.height / 2 - canvasBox.top,
+          half: box.height / 2,
+        };
+      });
+      const rayEntries =
+        measuredEntries.length === SPECTRUM.length &&
+        measuredEntries.every(
+          (entry) => entry !== null && entry.y + entry.half > 0 && entry.y - entry.half < height,
+        )
+          ? measuredEntries.filter((entry): entry is { y: number; half: number } => entry !== null)
+          : undefined;
       scene.resize(
-        { W: width, H: height, top: 24, bottom: height - 24 },
+        { W: width, H: height, top: 24, bottom: height - 24, rayEntries },
         Math.min(window.devicePixelRatio || 1, 2, Math.sqrt(3.2e6 / (width * height))),
       );
     };
@@ -124,7 +141,7 @@ export function PrismaCompacto({ sectionRef, onRays }: Props) {
       ro.disconnect();
       window.removeEventListener('scroll', onScroll);
     };
-  }, [onRays, reduce, sectionRef]);
+  }, [bandRefs, onRays, reduce, sectionRef]);
 
   return (
     <div ref={panelRef} className={styles.prismPanel}>

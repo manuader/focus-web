@@ -1,12 +1,18 @@
-/* Servicios — the original editorial list, now led by the current prism. */
-.servicios {
+/*
+ * Servicios — the previous optical-bench composition, with the current
+ * three-dimensional prism. It is one natural section: no sticky stage,
+ * scroll stops or multi-viewport spacer.
+ */
+.prisma {
   position: relative;
-  padding: 150px 40px 130px;
-  background: var(--focus-paper);
-  color: var(--focus-ink);
+  padding: 88px 40px 34px;
+  overflow: hidden;
+  background: var(--focus-ink);
+  color: var(--focus-paper);
 }
 
 .inner {
+  width: 100%;
   max-width: 1320px;
   margin: 0 auto;
 }
@@ -16,17 +22,17 @@
   align-items: flex-end;
   justify-content: space-between;
   gap: 40px;
-  margin-bottom: 64px;
+  margin-bottom: 30px;
   flex-wrap: wrap;
 }
 
 .eyebrow {
-  margin-bottom: 26px;
+  margin-bottom: 16px;
 }
 
 .title {
   margin: 0;
-  font-size: clamp(38px, 5.4vw, 86px);
+  font-size: clamp(28px, 3.4vw, 54px);
   line-height: 0.95;
   font-weight: 800;
   letter-spacing: -0.035em;
@@ -34,55 +40,134 @@
 }
 
 .intro {
-  margin: 0;
-  max-width: 360px;
-  font-size: 15px;
-  line-height: 1.65;
-  font-weight: 300;
-  color: var(--focus-gray-700);
-}
-
-/* The prism stays dramatic, but occupies one panel instead of 460vh. */
-.prismPanel {
-  position: relative;
-  height: clamp(390px, 44vw, 560px);
-  margin-bottom: 78px;
-  overflow: hidden;
-  background: var(--focus-ink);
-  isolation: isolate;
-}
-
-.prismPanel::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  pointer-events: none;
-  border: 1px solid rgba(246, 246, 244, 0.16);
-  box-shadow: inset 0 0 90px rgba(0, 0, 0, 0.34);
-}
-
-.prismEquation {
-  position: absolute;
-  z-index: 2;
-  top: 24px;
-  left: 28px;
+  max-width: 340px;
   margin: 0;
   color: var(--focus-gray-300);
-  font-size: 11px;
+  font-size: 15px;
+  font-weight: 300;
+  line-height: 1.6;
+}
+
+.stage {
+  position: relative;
+  display: flex;
+  align-items: stretch;
+  min-height: clamp(480px, 61vh, 650px);
+}
+
+.bands {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex: 0 0 min(42%, 520px);
+  flex-direction: column;
+  justify-content: center;
+  gap: 7px;
+}
+
+.band {
+  position: relative;
+  display: block;
+  height: 60px;
+  overflow: hidden;
+  color: var(--focus-paper);
+  opacity: 0;
+  transform: translateX(-44px);
+}
+
+.stage[data-visible='1'] .band {
+  animation: focServiceBand 0.8s var(--ease-out-expo) forwards;
+  animation-delay: calc(var(--i) * 65ms);
+}
+
+.bandFill {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--c) 38%, var(--focus-ink)) 0%,
+    var(--c) 62%
+  );
+  transform-origin: left;
+  transition: filter 0.35s var(--ease-out-expo), transform 0.35s var(--ease-out-expo);
+}
+
+.bandRow {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 16px;
+  height: 100%;
+  padding: 0 20px;
+}
+
+.bandNum {
+  font-size: clamp(16px, 1.4vw, 23px);
+  font-weight: 300;
+  -webkit-text-fill-color: transparent;
+  -webkit-text-stroke: 1.1px currentColor;
+}
+
+.bandTitle {
+  margin: 0;
+  font-size: clamp(15px, 1.55vw, 23px);
   font-weight: 800;
-  letter-spacing: 0.18em;
+  line-height: 1;
+  letter-spacing: 0.02em;
   text-transform: uppercase;
 }
 
-.prismEquation span {
+.bandDetail {
+  max-width: 240px;
   color: var(--focus-paper);
+  font-size: clamp(11.5px, 1.05vw, 13px);
+  font-weight: 400;
+  line-height: 1.45;
+  text-align: right;
+  opacity: 0;
+  transform: translateX(10px);
+  transition: opacity 0.35s, transform 0.35s;
 }
 
-.prismEquation i {
-  margin: 0 8px;
-  color: var(--focus-green);
-  font-style: normal;
+.band:hover .bandFill,
+.band:focus-visible .bandFill {
+  filter: saturate(1.3) drop-shadow(0 0 14px var(--c));
+  transform: scaleY(1.12);
+}
+
+.band:hover .bandDetail,
+.band:focus-visible .bandDetail {
+  opacity: 1;
+  transform: none;
+}
+
+.band:focus-visible {
+  outline: 2px solid var(--focus-paper);
+  outline-offset: 3px;
+}
+
+.bench {
+  position: relative;
+  flex: 1 1 420px;
+  min-width: 320px;
+}
+
+.prismPanel {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background: var(--focus-ink);
+}
+
+.prismPanel::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(circle at 48% 55%, transparent 32%, var(--focus-ink) 82%);
+  opacity: 0.24;
 }
 
 .prismCanvas {
@@ -96,8 +181,8 @@
 .prismTag {
   position: absolute;
   z-index: 2;
-  left: 0;
   top: 0;
+  left: 0;
   padding: 6px 4px;
   color: var(--focus-ink);
   font-size: clamp(10px, 0.9vw, 13px);
@@ -111,102 +196,109 @@
   color: var(--focus-blue);
 }
 
-.list {
+.foot {
   display: flex;
-  flex-direction: column;
-  border-top: 2px solid var(--focus-ink);
-}
-
-.row {
-  display: grid;
-  grid-template-columns: 110px 1fr auto;
-  align-items: center;
-  gap: 28px;
-  padding: 38px 8px;
-  border-bottom: 2px solid var(--focus-ink);
-  color: var(--focus-ink);
-  transition: padding 0.45s var(--ease-out-expo), color 0.35s;
-}
-
-.row:hover {
-  padding-left: 34px;
-  color: var(--focus-blue);
-}
-
-.row:focus-visible {
-  outline: 3px solid var(--focus-blue);
-  outline-offset: 4px;
-}
-
-.rowNum {
-  font-size: clamp(28px, 3vw, 48px);
-  font-weight: 300;
-  letter-spacing: -0.02em;
-  color: transparent;
-  -webkit-text-stroke: 1.5px var(--focus-ink);
-}
-
-.row:hover .rowNum {
-  -webkit-text-stroke-color: var(--focus-blue);
-}
-
-.rowTitle {
-  margin: 0;
-  font-size: clamp(28px, 4vw, 60px);
-  font-weight: 800;
-  letter-spacing: -0.03em;
+  justify-content: space-between;
+  gap: 14px;
+  padding-top: 8px;
+  color: var(--focus-gray-400);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.26em;
   text-transform: uppercase;
-  line-height: 1;
 }
 
-.rowDetail {
-  max-width: 230px;
-  color: var(--focus-gray-500);
-  font-size: 12px;
-  font-weight: 300;
-  line-height: 1.5;
-  text-align: right;
+.foot b {
+  color: var(--focus-green);
 }
 
-@media (max-width: 700px) {
-  .servicios {
-    padding: 96px var(--edge) 88px;
+@keyframes focServiceBand {
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (max-width: 900px) {
+  .stage {
+    min-height: 540px;
   }
 
-  .header {
-    margin-bottom: 48px;
+  .bands {
+    flex-basis: 47%;
   }
 
-  .prismPanel {
-    height: min(118vw, 470px);
-    min-height: 380px;
-    margin-right: calc(-1 * var(--edge));
-    margin-bottom: 54px;
-    margin-left: calc(-1 * var(--edge));
-  }
-
-  .prismEquation {
-    top: 20px;
-    left: var(--edge);
-  }
-
-  .row {
-    grid-template-columns: 64px 1fr;
-    gap: 16px;
-    padding: 26px 4px;
-  }
-
-  .row:hover {
-    padding-left: 18px;
-  }
-
-  .rowDetail {
+  .bandDetail {
     display: none;
   }
 }
 
+@media (max-width: 760px) {
+  .prisma {
+    padding: 84px var(--edge) 30px;
+  }
+
+  .header {
+    display: block;
+    margin-bottom: 24px;
+  }
+
+  .title {
+    font-size: clamp(30px, 9vw, 42px);
+  }
+
+  .intro {
+    display: none;
+  }
+
+  .stage {
+    display: grid;
+    min-height: 0;
+  }
+
+  .bench {
+    grid-area: 1 / 1;
+    min-width: 0;
+    height: min(105vw, 450px);
+  }
+
+  .bands {
+    grid-area: 2 / 1;
+    gap: 5px;
+    padding-top: 8px;
+  }
+
+  .band {
+    height: 54px;
+  }
+
+  .bandRow {
+    grid-template-columns: 34px minmax(0, 1fr);
+    gap: 10px;
+    padding: 0 14px;
+  }
+
+  .bandTitle {
+    font-size: clamp(14px, 4.1vw, 18px);
+  }
+
+  .foot {
+    padding-top: 20px;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .row {
+  .band {
+    opacity: 1;
+    transform: none;
+  }
+
+  .stage[data-visible='1'] .band {
+    animation: none;
+  }
+
+  .bandFill,
+  .bandDetail {
     transition: none;
   }
 }

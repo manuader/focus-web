@@ -112,10 +112,6 @@ export function PrismaCompacto() {
 
   return (
     <div ref={panelRef} className={styles.prismPanel}>
-      <p className={styles.prismEquation} aria-hidden="true">
-        <span>7</span> {t({ es: 'disciplinas', en: 'disciplines' })} <i>→</i> <span>1</span>{' '}
-        {t({ es: 'marca', en: 'brand' })}
-      </p>
       <canvas ref={canvasRef} className={styles.prismCanvas} aria-hidden="true" />
       <a ref={tagRef} href="#contacto" className={styles.prismTag}>
         {t(COPY.servicios.beam)}

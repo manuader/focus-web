@@ -1,67 +1,52 @@
 'use client';
 
-import { useRef, type CSSProperties } from 'react';
 import { useTranslate } from '@/hooks/useTranslate';
+import { useReveal } from '@/hooks/useReveal';
 import { Reveal } from '@/components/ui/Reveal';
 import { Eyebrow } from '@/components/ui/Eyebrow';
 import { SERVICES, COPY } from '@/lib/content';
-import { useReducedMotion } from '@/hooks/useMediaQuery';
-import { Prisma } from './Prisma';
-import { stops } from './prismScene';
-import { useScrollSteps } from './useScrollSteps';
+import { PrismaCompacto } from './PrismaCompacto';
 import styles from './servicios.module.css';
 
 /**
- * Services as an inverted prism: the spectrum goes in, one white beam comes
- * out. Each service is one ray of colour; all seven together make the white
- * beam that is the client's brand.
- *
- * Scroll-scrubbed: a tall section with a sticky 100vh stage. The heading
- * sits on top; the scene (the prism, the rays, the caption and the names
- * flying into their rays) is Prisma, the same one on every screen size,
- * laid out for the width it gets.
- *
- * The scroll stops briefly on every service so they arrive one by one: the
- * wheel steps through them (useScrollSteps), and touch snaps to the same
- * points (the markers below).
+ * The original editorial services list, with the current prism kept as a
+ * compact visual statement. The prism plays once on entry instead of holding
+ * the page for a multi-screen, scroll-scrubbed sequence.
  */
-const STOPS = stops(SERVICES.length);
-
 export function Servicios() {
   const { t } = useTranslate();
-  const sectionRef = useRef<HTMLElement>(null);
-  const headerRef = useRef<HTMLDivElement>(null);
-  useScrollSteps(sectionRef, STOPS, useReducedMotion());
+  const title = useReveal<HTMLHeadingElement>(70);
 
   return (
-    <section
-      ref={sectionRef}
-      id="servicios"
-      className={styles.prisma}
-      aria-label={t(COPY.a11y.servicios)}
-    >
-      {STOPS.map((at) => (
-        <span
-          key={at}
-          className={styles.stop}
-          style={{ '--at': at } as CSSProperties}
-          aria-hidden="true"
-        />
-      ))}
-      <div className={styles.sticky}>
-        <div ref={headerRef} className={styles.header}>
+    <section className={styles.servicios} id="servicios" aria-label={t(COPY.a11y.servicios)}>
+      <div className={styles.inner}>
+        <div className={styles.header}>
           <div>
             <Reveal className={styles.eyebrow}>
-              <Eyebrow section line="var(--focus-blue)" color="var(--focus-gray-300)">
+              <Eyebrow section line="var(--focus-blue)" color="var(--focus-gray-700)">
                 {t(COPY.servicios.eyebrow)}
               </Eyebrow>
             </Reveal>
-            <h2 className={styles.title}>{t(COPY.servicios.title)}</h2>
+            <h2 ref={title.ref} className={styles.title} style={title.style}>
+              {t(COPY.servicios.title)}
+            </h2>
           </div>
-          <p className={styles.intro}>{t(COPY.servicios.intro)}</p>
+          <Reveal>
+            <p className={styles.intro}>{t(COPY.servicios.intro)}</p>
+          </Reveal>
         </div>
 
-        <Prisma sectionRef={sectionRef} headerRef={headerRef} />
+        <PrismaCompacto />
+
+        <div className={styles.list}>
+          {SERVICES.map((service) => (
+            <a key={service.n} href="#contacto" className={styles.row}>
+              <span className={styles.rowNum}>{service.n}</span>
+              <h3 className={styles.rowTitle}>{t(service.title)}</h3>
+              <span className={styles.rowDetail}>{t(service.detail)}</span>
+            </a>
+          ))}
+        </div>
       </div>
     </section>
   );

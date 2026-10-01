@@ -1,392 +1,212 @@
-/* ============================================================
-   Servicios — el prisma invertido
-   El espectro entra, un solo haz blanco sale. Cada servicio es
-   un rayo de color, y los siete juntos son el haz blanco: la
-   marca del cliente.
-
-   La misma escena en todas las pantallas (ver Prisma.tsx y
-   prismScene.ts): un prisma de verdad en un canvas, el espectro
-   que sube desde abajo a la izquierda, un servicio por rayo con
-   su leyenda arriba, y al final el haz blanco. El nombre de cada
-   servicio baja de la leyenda a su rayo y se funde en él. Solo
-   cambia el armado: en el teléfono todo va en una columna; en
-   pantalla ancha la introducción vuelve al costado del título y
-   la escena se abre a lo ancho.
-
-   Scroll-scrubbed: siete pasos, y cada uno necesita su tramo de
-   scroll para leerse. Todo lo que anima por frame lo escribe el
-   componente sobre `style`; acá viven el layout y los estados de
-   reposo.
-   ============================================================ */
-
-.prisma {
+/* Servicios — the original editorial list, now led by the current prism. */
+.servicios {
   position: relative;
-  height: 460vh;
-  height: 460svh;
-  background: var(--focus-ink);
-  color: var(--focus-paper);
-}
-/* Las paradas, una por servicio y una al final: puntos de imán para el
-   scroll táctil (globals.css prende el imán solo con puntero grueso). En
-   progreso de la sección: 0 cuando se fija, 1 cuando la suelta. */
-.stop {
-  position: absolute;
-  left: 0;
-  top: calc(var(--at) * (100% - 100svh));
-  width: 1px;
-  height: 1px;
-  scroll-snap-align: start;
-  scroll-snap-stop: always;
-  pointer-events: none;
-}
-/* svh y no vh: con la barra de Safari entrando y saliendo, 100vh
-   cambiaría el alto del canvas en pleno scroll. */
-.sticky {
-  position: sticky;
-  top: 0;
-  height: 100vh;
-  height: 100svh;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  padding: 0 40px;
-  --pad: 40px;
+  padding: 150px 40px 130px;
+  background: var(--focus-paper);
+  color: var(--focus-ink);
 }
 
-/* ---- Encabezado ---- */
-.header {
-  position: relative;
-  z-index: 1;
+.inner {
   max-width: 1320px;
   margin: 0 auto;
-  width: 100%;
-  flex: none;
-  padding-top: 88px;
+}
+
+.header {
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
   gap: 40px;
+  margin-bottom: 64px;
   flex-wrap: wrap;
 }
+
 .eyebrow {
-  margin-bottom: 16px;
+  margin-bottom: 26px;
 }
-/* Más chico que en el resto del sitio: acá el título comparte una
-   ventana de 100vh con la escena completa. */
+
 .title {
   margin: 0;
-  font-size: clamp(28px, 3.4vw, 54px);
+  font-size: clamp(38px, 5.4vw, 86px);
   line-height: 0.95;
   font-weight: 800;
   letter-spacing: -0.035em;
   text-transform: uppercase;
 }
+
 .intro {
   margin: 0;
-  max-width: 340px;
+  max-width: 360px;
   font-size: 15px;
-  line-height: 1.6;
+  line-height: 1.65;
   font-weight: 300;
-  color: var(--focus-gray-300);
+  color: var(--focus-gray-700);
 }
 
-/* ---- Escena ---- */
-.scene {
-  /* El tamaño del nombre de un servicio: el del título de la leyenda y
-     el del nombre en vuelo, que despega de él. */
-  --name: clamp(20px, 1.9vw, 28px);
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  flex: 1;
-  min-height: 0;
-}
-/* A sangre, detrás del título y de la leyenda: el haz y los rayos
-   pueden correr hasta los bordes de la pantalla. */
-.canvas {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  display: block;
-  z-index: 0;
-  pointer-events: none;
-}
-
-/* La etiqueta del haz. La posición y el giro los escribe el loop. */
-.tag {
-  position: absolute;
-  left: 0;
-  top: 0;
-  z-index: 1;
-  padding: 6px 4px;
-  font-size: clamp(10.5px, 0.95vw, 14px);
-  font-weight: 800;
-  letter-spacing: 0.2em;
-  white-space: nowrap;
-  color: var(--focus-ink);
-  opacity: 0;
-  pointer-events: none;
-}
-
-/* El nombre de un servicio en vuelo, de la leyenda a su rayo. Sale
-   con la misma letra que el título, en su color, y al fundirse (--m)
-   se vuelve luz. La posición, el giro y la escala los escribe el loop. */
-.chip {
-  --m: 0;
-  position: absolute;
-  left: 0;
-  top: 0;
-  z-index: 2;
-  font-size: var(--name);
-  font-weight: 800;
-  line-height: 1.05;
-  letter-spacing: 0.02em;
-  text-transform: uppercase;
-  white-space: nowrap;
-  color: color-mix(in srgb, var(--c) calc(55% + var(--m) * 45%), #fff);
-  text-shadow:
-    0 0 calc(8px + var(--m) * 16px) var(--c),
-    0 0 2px color-mix(in srgb, var(--c) 50%, #fff);
-  opacity: 0;
-  pointer-events: none;
-  will-change: transform, opacity;
-}
-
-/* ---- Leyenda: arriba, bajo el título, para leerla antes que el rayo ---- */
-.legend {
+/* The prism stays dramatic, but occupies one panel instead of 460vh. */
+.prismPanel {
   position: relative;
-  z-index: 1;
-  max-width: 1320px;
-  width: 100%;
-  margin: 0 auto;
-  padding-top: 22px;
-}
-/* Un velo de tinta: si un rayo sube hasta la leyenda, se apaga antes
-   de llegar al texto. */
-.legend::before {
-  content: '';
-  position: absolute;
-  z-index: -1;
-  left: calc(-1 * var(--pad) - 50vw);
-  right: calc(-1 * var(--pad) - 50vw);
-  top: 0;
-  bottom: -40px;
-  background: linear-gradient(
-    to bottom,
-    var(--focus-ink) 0%,
-    var(--focus-ink) calc(100% - 40px),
-    color-mix(in srgb, var(--focus-ink) 0%, transparent) 100%
-  );
-  pointer-events: none;
-}
-.segs {
-  display: flex;
-  gap: 5px;
-  max-width: 620px;
-  margin-bottom: 18px;
-}
-.seg {
-  position: relative;
-  flex: 1;
-  height: 3px;
+  height: clamp(390px, 44vw, 560px);
+  margin-bottom: 78px;
   overflow: hidden;
-  background: rgba(246, 246, 244, 0.12);
+  background: var(--focus-ink);
+  isolation: isolate;
 }
-.seg::after {
+
+.prismPanel::before {
   content: '';
   position: absolute;
   inset: 0;
-  background: var(--c);
-  transform: scaleX(var(--lit, 0));
-  transform-origin: left;
-  box-shadow: 0 0 10px var(--c);
-}
-
-/* Todas las leyendas ocupan la misma celda: la leyenda mide lo que
-   la más alta y no salta de alto al cambiar de servicio. */
-.slides {
-  display: grid;
-  max-width: 620px;
-}
-.slide {
-  grid-area: 1 / 1;
-  display: grid;
-  grid-template-columns: auto 1fr;
-  align-items: start;
-  gap: 0 20px;
-  color: var(--focus-paper);
-  opacity: 0;
-  transform: translateY(12px);
-  transition:
-    opacity 0.4s ease,
-    transform 0.7s var(--ease-out-expo);
+  z-index: 1;
   pointer-events: none;
-}
-.slide[data-on='1'] {
-  opacity: 1;
-  transform: none;
-  pointer-events: auto;
-}
-.slide:focus-visible {
-  outline: 2px solid var(--focus-paper);
-  outline-offset: 4px;
-}
-.slideNum {
-  font-size: clamp(46px, 4.4vw, 66px);
-  font-weight: 300;
-  line-height: 0.82;
-  letter-spacing: -0.02em;
-  -webkit-text-fill-color: transparent;
-  /* Aclarado con blanco: el azul de marca puro casi no se ve sobre tinta. */
-  -webkit-text-stroke: 1.2px color-mix(in srgb, var(--c) 70%, #fff);
-  filter: drop-shadow(0 0 12px color-mix(in srgb, var(--c) 55%, transparent));
-}
-.slideText {
-  display: block;
-  min-width: 0;
-}
-/* Cuando el nombre sale hacia su rayo, un barrido de su color cruza
-   el título (--sw va de 0 a 1 mientras despega; lo escribe el loop). */
-.slideTitle {
-  --sw: 0;
-  margin: 0 0 8px;
-  font-size: var(--name);
-  font-weight: 800;
-  line-height: 1.05;
-  letter-spacing: 0.02em;
-  text-transform: uppercase;
-  background: linear-gradient(
-    100deg,
-    var(--focus-paper) calc(var(--sw) * 150% - 50%),
-    color-mix(in srgb, var(--c) 60%, #fff) calc(var(--sw) * 150% - 25%),
-    var(--focus-paper) calc(var(--sw) * 150%)
-  );
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-.slideDetail {
-  display: block;
-  font-size: clamp(14px, 1.1vw, 16px);
-  font-weight: 300;
-  line-height: 1.45;
-  color: var(--focus-gray-300);
+  border: 1px solid rgba(246, 246, 244, 0.16);
+  box-shadow: inset 0 0 90px rgba(0, 0, 0, 0.34);
 }
 
-/* El cierre: los siete nombres en su color, uno detrás del otro,
-   y el llamado. Los colores se aclaran con blanco para que el azul
-   de marca pase contraste como texto chico. */
-.slideEnd {
-  display: block;
-}
-.endList {
-  margin: 0 0 16px;
-  font-size: clamp(12.5px, 1vw, 14.5px);
-  font-weight: 800;
-  line-height: 1.6;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-.endList span {
-  color: color-mix(in srgb, var(--c) 62%, #fff);
-}
-.endList span:not(:last-child)::after {
-  content: ' · ';
-  color: var(--focus-gray-500);
-}
-.endCta {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 12px 18px;
-  font-size: 12px;
+.prismEquation {
+  position: absolute;
+  z-index: 2;
+  top: 24px;
+  left: 28px;
+  margin: 0;
+  color: var(--focus-gray-300);
+  font-size: 11px;
   font-weight: 800;
   letter-spacing: 0.18em;
   text-transform: uppercase;
+}
+
+.prismEquation span {
+  color: var(--focus-paper);
+}
+
+.prismEquation i {
+  margin: 0 8px;
+  color: var(--focus-green);
+  font-style: normal;
+}
+
+.prismCanvas {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.prismTag {
+  position: absolute;
+  z-index: 2;
+  left: 0;
+  top: 0;
+  padding: 6px 4px;
   color: var(--focus-ink);
-  background: var(--focus-paper);
-}
-.endCta:focus-visible {
-  outline: 2px solid var(--focus-paper);
-  outline-offset: 3px;
-}
-
-/* Pantallas bajas (una laptop): el encabezado se aprieta para que el
-   prisma no pague la diferencia. */
-@media (min-width: 761px) and (max-height: 800px) {
-  .header {
-    padding-top: 80px;
-  }
-  .eyebrow {
-    margin-bottom: 10px;
-  }
-  .legend {
-    padding-top: 16px;
-  }
-  .segs {
-    margin-bottom: 14px;
-  }
+  font-size: clamp(10px, 0.9vw, 13px);
+  font-weight: 800;
+  letter-spacing: 0.2em;
+  white-space: nowrap;
+  opacity: 0;
 }
 
-/* ============================================================
-   Angosto: todo en una columna. Sin introducción, la leyenda
-   pegada al título y la escena debajo.
-   ============================================================ */
-@media (max-width: 760px) {
-  .sticky {
-    padding: 0 var(--edge);
-    --pad: var(--edge);
+.prismTag:hover {
+  color: var(--focus-blue);
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  border-top: 2px solid var(--focus-ink);
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 110px 1fr auto;
+  align-items: center;
+  gap: 28px;
+  padding: 38px 8px;
+  border-bottom: 2px solid var(--focus-ink);
+  color: var(--focus-ink);
+  transition: padding 0.45s var(--ease-out-expo), color 0.35s;
+}
+
+.row:hover {
+  padding-left: 34px;
+  color: var(--focus-blue);
+}
+
+.row:focus-visible {
+  outline: 3px solid var(--focus-blue);
+  outline-offset: 4px;
+}
+
+.rowNum {
+  font-size: clamp(28px, 3vw, 48px);
+  font-weight: 300;
+  letter-spacing: -0.02em;
+  color: transparent;
+  -webkit-text-stroke: 1.5px var(--focus-ink);
+}
+
+.row:hover .rowNum {
+  -webkit-text-stroke-color: var(--focus-blue);
+}
+
+.rowTitle {
+  margin: 0;
+  font-size: clamp(28px, 4vw, 60px);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  text-transform: uppercase;
+  line-height: 1;
+}
+
+.rowDetail {
+  max-width: 230px;
+  color: var(--focus-gray-500);
+  font-size: 12px;
+  font-weight: 300;
+  line-height: 1.5;
+  text-align: right;
+}
+
+@media (max-width: 700px) {
+  .servicios {
+    padding: 96px var(--edge) 88px;
   }
+
   .header {
-    padding-top: 84px;
-    display: block;
+    margin-bottom: 48px;
   }
-  .title {
-    font-size: clamp(30px, 9vw, 42px);
+
+  .prismPanel {
+    height: min(118vw, 470px);
+    min-height: 380px;
+    margin-right: calc(-1 * var(--edge));
+    margin-bottom: 54px;
+    margin-left: calc(-1 * var(--edge));
   }
-  .intro {
+
+  .prismEquation {
+    top: 20px;
+    left: var(--edge);
+  }
+
+  .row {
+    grid-template-columns: 64px 1fr;
+    gap: 16px;
+    padding: 26px 4px;
+  }
+
+  .row:hover {
+    padding-left: 18px;
+  }
+
+  .rowDetail {
     display: none;
   }
-  .scene {
-    --name: 19px;
-  }
-  .tag {
-    font-size: 10.5px;
-  }
-  .legend {
-    padding-top: 18px;
-  }
-  .legend::before {
-    left: calc(-1 * var(--edge));
-    right: calc(-1 * var(--edge));
-  }
-  .segs {
-    gap: 4px;
-    margin-bottom: 16px;
-  }
-  .slide {
-    gap: 0 16px;
-  }
-  .slideNum {
-    font-size: 46px;
-  }
-  .slideTitle {
-    margin-bottom: 6px;
-  }
-  .slideDetail {
-    font-size: 14px;
-  }
-  .endList {
-    margin-bottom: 14px;
-    font-size: 12.5px;
-  }
 }
 
-/* Sin movimiento: el nombre no vuela; el resto del aparato se arma
-   igual con el scroll, sin respiración (la corta el componente). */
 @media (prefers-reduced-motion: reduce) {
-  .chip {
-    display: none;
+  .row {
+    transition: none;
   }
 }

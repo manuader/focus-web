@@ -1,8 +1,7 @@
 'use client';
 
-import type { CSSProperties } from 'react';
+import { useCallback, useRef, type CSSProperties } from 'react';
 import { useTranslate } from '@/hooks/useTranslate';
-import { useInView } from '@/hooks/useInView';
 import { Reveal } from '@/components/ui/Reveal';
 import { Eyebrow } from '@/components/ui/Eyebrow';
 import { SERVICES, COPY } from '@/lib/content';
@@ -18,10 +17,29 @@ import styles from './servicios.module.css';
  */
 export function Servicios() {
   const { t } = useTranslate();
-  const [stageRef, inView] = useInView<HTMLDivElement>({ threshold: 0.15 });
+  const sectionRef = useRef<HTMLElement>(null);
+  const bandRefs = useRef<Array<HTMLAnchorElement | null>>([]);
+
+  /** The canvas is the source of truth: every band follows its actual ray. */
+  const syncBands = useCallback((rays: readonly number[]) => {
+    rays.forEach((progress, index) => {
+      const band = bandRefs.current[index];
+      if (!band) return;
+      band.style.setProperty('--band-opacity', (0.22 + progress * 0.78).toFixed(4));
+      band.style.setProperty('--band-shift', `${(-34 * (1 - progress)).toFixed(2)}px`);
+      band.style.setProperty('--band-scale', (0.1 + progress * 0.9).toFixed(4));
+      band.style.setProperty('--band-saturation', (0.7 + progress * 0.6).toFixed(3));
+      band.style.setProperty('--band-glow', `${(progress * 11).toFixed(2)}px`);
+    });
+  }, []);
 
   return (
-    <section className={styles.prisma} id="servicios" aria-label={t(COPY.a11y.servicios)}>
+    <section
+      ref={sectionRef}
+      className={styles.prisma}
+      id="servicios"
+      aria-label={t(COPY.a11y.servicios)}
+    >
       <div className={styles.inner}>
         <div className={styles.header}>
           <div>
@@ -35,16 +53,23 @@ export function Servicios() {
           <p className={styles.intro}>{t(COPY.servicios.intro)}</p>
         </div>
 
-        <div ref={stageRef} className={styles.stage} data-visible={inView ? '1' : '0'}>
+        <div className={styles.stage}>
           <div className={styles.bands}>
             {SERVICES.map((service, index) => (
               <a
                 key={service.n}
+                ref={(element) => {
+                  bandRefs.current[index] = element;
+                }}
                 href="#contacto"
                 className={styles.band}
                 style={{
                   '--c': SPECTRUM[index],
-                  '--i': index,
+                  '--band-opacity': 0.22,
+                  '--band-shift': '-34px',
+                  '--band-scale': 0.1,
+                  '--band-saturation': 0.7,
+                  '--band-glow': '0px',
                 } as CSSProperties}
               >
                 <span className={styles.bandFill} aria-hidden="true" />
@@ -60,7 +85,7 @@ export function Servicios() {
           </div>
 
           <div className={styles.bench}>
-            <PrismaCompacto />
+            <PrismaCompacto sectionRef={sectionRef} onRays={syncBands} />
           </div>
         </div>
 

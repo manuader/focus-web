@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, type RefObject } from 'react';
 import { useTranslate } from '@/hooks/useTranslate';
 import { useReducedMotion } from '@/hooks/useMediaQuery';
 import { COPY } from '@/lib/content';
@@ -8,10 +8,15 @@ import { createPrismScene, type PrismScene } from './prismScene';
 import { SPECTRUM } from './spectrum';
 import styles from './servicios.module.css';
 
-const FINAL_PROGRESS = 0.92;
+const clamp = (value: number, min: number, max: number) => Math.max(min, Math.min(max, value));
 
-/** The current prism, condensed into one self-playing editorial panel. */
-export function PrismaCompacto() {
+interface Props {
+  sectionRef: RefObject<HTMLElement | null>;
+  onRays: (rays: readonly number[]) => void;
+}
+
+/** The current prism, driven in both directions by the section scroll. */
+export function PrismaCompacto({ sectionRef, onRays }: Props) {
   const { t } = useTranslate();
   const reduce = useReducedMotion();
   const panelRef = useRef<HTMLDivElement>(null);
@@ -28,9 +33,16 @@ export function PrismaCompacto() {
 
     let raf = 0;
     let visible = false;
-    let played = false;
-    let progress = reduce ? FINAL_PROGRESS : -0.16;
-    let startedAt = 0;
+    let primed = false;
+    let shown = -0.16;
+
+    const progress = () => {
+      const section = sectionRef.current;
+      if (!section) return -0.16;
+      const rect = section.getBoundingClientRect();
+      const range = Math.max(1, rect.height - window.innerHeight);
+      return clamp(-rect.top / range, -0.16, 0.96);
+    };
 
     const measure = () => {
       const width = canvas.clientWidth;
@@ -63,18 +75,19 @@ export function PrismaCompacto() {
       raf = 0;
       if (!visible) return;
 
-      if (!played && !reduce) {
-        if (!startedAt) startedAt = now;
-        const elapsed = (now - startedAt) / 1900;
-        progress = Math.min(FINAL_PROGRESS, -0.16 + elapsed * (FINAL_PROGRESS + 0.16));
-        if (progress >= FINAL_PROGRESS) played = true;
+      const target = progress();
+      if (!primed || reduce) {
+        shown = target;
+        primed = true;
       } else {
-        progress = FINAL_PROGRESS;
-        played = true;
+        shown += (target - shown) * 0.18;
+        if (Math.abs(target - shown) < 0.0001) shown = target;
       }
 
-      placeTag(scene.render(progress, reduce ? 0 : now / 1000));
-      if (!reduce || !played) raf = requestAnimationFrame(frame);
+      const sceneFrame = scene.render(shown, reduce ? 0 : now / 1000);
+      placeTag(sceneFrame);
+      onRays(sceneFrame.rays);
+      if (!reduce || shown !== target) raf = requestAnimationFrame(frame);
     };
 
     const kick = () => {
@@ -98,17 +111,20 @@ export function PrismaCompacto() {
       measure();
       kick();
     });
+    const onScroll = () => kick();
 
     io.observe(panel);
     ro.observe(canvas);
+    window.addEventListener('scroll', onScroll, { passive: true });
     measure();
 
     return () => {
       cancelAnimationFrame(raf);
       io.disconnect();
       ro.disconnect();
+      window.removeEventListener('scroll', onScroll);
     };
-  }, [reduce]);
+  }, [onRays, reduce, sectionRef]);
 
   return (
     <div ref={panelRef} className={styles.prismPanel}>

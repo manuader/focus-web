@@ -348,12 +348,22 @@
   line-height: 1.02;
   text-transform: uppercase;
 }
+.caseNotice {
+  margin-top: clamp(24px, calc(var(--w) * 0.055), 34px);
+  color: var(--focus-paper);
+  font-size: clamp(17px, calc(var(--w) * 0.033), 21px);
+  font-weight: 700;
+  line-height: 1.25;
+}
 .caseSection {
   display: grid;
   gap: clamp(6px, calc(var(--w) * 0.012), 9px);
 }
 .caseIntro + .caseSection {
   margin-top: clamp(24px, calc(var(--w) * 0.055), 34px);
+}
+.caseNotice + .caseSection {
+  margin-top: clamp(18px, calc(var(--w) * 0.04), 26px);
 }
 .caseSection + .caseSection {
   margin-top: clamp(18px, calc(var(--w) * 0.04), 26px);
@@ -389,6 +399,11 @@
 }
 .caseLinksPush {
   margin-top: auto;
+}
+.caseLinksSingle {
+  width: min(100%, 300px);
+  margin-inline: auto;
+  grid-template-columns: minmax(0, 1fr);
 }
 /* Sombra de los vecinos: tinta sobre la tarjeta, no un filtro, para que
    valga igual sobre el logo y sobre la película. */
@@ -695,6 +710,10 @@
   .caseIntro + .caseSection {
     margin-top: 18px;
   }
+  .caseNotice {
+    margin-top: 18px;
+    font-size: 15px;
+  }
   .caseSection + .caseSection {
     margin-top: 13px;
   }
@@ -717,6 +736,9 @@
   .caseLinks {
     grid-template-columns: 1fr;
     gap: 12px;
+  }
+  .caseLinksSingle {
+    width: 100%;
   }
 }
 

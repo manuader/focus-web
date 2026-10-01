@@ -85,6 +85,10 @@ export interface WorkCard {
   /** Optional line under the tags — only where there is more to say than the
       tags already say. Leave it out and the card simply does not show one. */
   desc?: Localized;
+  /** Short availability state shown beside the client's category. */
+  status?: Localized;
+  /** Longer status note shown inside the case detail overlay. */
+  notice?: Localized;
   /** Optional editorial detail. Every card already inherits the shared case
       layout; adding this data progressively fills its challenge, solution,
       dates and destinations without changing component code or styling. */
@@ -310,9 +314,14 @@ export const WORKS: WorkCard[] = [
   /* Everything else, social media first. */
   {
     id: 'chillin',
-    client: '@chillin1390bar',
+    client: 'Chill In',
     category: { es: 'Bar', en: 'Bar' },
     services: ['social-media'],
+    status: { es: 'Próximamente', en: 'Coming soon' },
+    notice: {
+      es: 'Próximamente durante octubre',
+      en: 'Coming during October',
+    },
     img: '/assets/clients/chillin-card.jpg',
     video: '/assets/cases/chillin.mp4',
     href: 'https://www.instagram.com/chillin1390bar',
@@ -320,7 +329,7 @@ export const WORKS: WorkCard[] = [
   },
   {
     id: 'santa-tuca',
-    client: '@santatuca',
+    client: 'Santa Tuca',
     category: { es: 'Creador de contenido', en: 'Content creator' },
     services: ['audiovisual'],
     caseStudy: {
@@ -351,9 +360,19 @@ export const WORKS: WorkCard[] = [
   },
   {
     id: 'chuchones',
-    client: '@chuchones_wines',
+    client: 'Chuchones Wines',
     category: { es: 'Vinos boutique', en: 'Boutique wines' },
     services: ['social-media'],
+    caseStudy: {
+      service: {
+        es: 'Gestión de redes sociales',
+        en: 'Social media management',
+      },
+      period: {
+        es: 'Proyecto finalizado · marzo–agosto de 2026',
+        en: 'Completed project · March–August 2026',
+      },
+    },
     img: '/assets/clients/chuchones-card.jpg',
     video: '/assets/cases/chuchones.mp4',
     href: 'https://www.instagram.com/chuchones_wines',
@@ -361,12 +380,22 @@ export const WORKS: WorkCard[] = [
   },
   {
     id: 'rsh-consultora',
-    client: '@rsh_consultora',
+    client: 'RSH Consultora',
     category: {
       es: 'Licenciado en seguridad e higiene',
       en: 'Health and safety consultancy',
     },
     services: ['social-media'],
+    caseStudy: {
+      service: {
+        es: 'Gestión de redes sociales',
+        en: 'Social media management',
+      },
+      period: {
+        es: 'Proyecto finalizado · agosto–diciembre de 2025',
+        en: 'Completed project · August–December 2025',
+      },
+    },
     img: '/assets/clients/rsh-consultora-card.jpg',
     video: '/assets/cases/rsh-consultora.mp4',
     href: 'https://www.instagram.com/rsh_consultora',
@@ -374,7 +403,7 @@ export const WORKS: WorkCard[] = [
   },
   {
     id: 'fernanda-estetica',
-    client: '@esteticaintegralfernanda',
+    client: 'Estética Integral Fernanda',
     category: { es: 'Estética y salud', en: 'Beauty and wellness' },
     services: ['social-media'],
     img: '/assets/clients/fernanda-estetica-card.jpg',
@@ -564,7 +593,7 @@ export const COPY = {
     cta: { es: 'Tu caso acá', en: "You're next" },
     /* The card's link line, by where it goes. */
     visitSite: { es: 'Ver página web', en: 'View website' },
-    visitIg: { es: 'Ver en Instagram', en: 'View on Instagram' },
+    visitIg: { es: 'Ver Instagram', en: 'View Instagram' },
     /* Under the deck: it turns sideways, the page keeps going down. */
     hint: { es: 'Deslizá de costado para ver más casos', en: 'Swipe sideways for more projects' },
     /* The empty frame that closes the gallery. */

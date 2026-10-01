@@ -32,10 +32,10 @@ const SPREAD = 0.8;
 const SPREAD_FAR = 0.44;
 /** How far a neighbour turns away from the reader, in degrees. */
 const TURN = 42;
-/** A brief rest confirms the intended case without making impatient readers wait. */
-const DWELL = 500;
-/** Rest before the deck counts as settled and the wait begins. */
-const SETTLE = 140;
+/** The centred case starts almost immediately; this only filters swipe frames. */
+const DWELL = 70;
+/** Minimal debounce so cards crossed during a swipe do not flash their films. */
+const SETTLE = 70;
 /** A mouse drag this long, in px, is a drag and not a click. */
 const DRAG = 6;
 
@@ -351,9 +351,20 @@ export function Trabajo() {
     [reduce, total],
   );
 
-  /** A card off to the side is a way to get to it, not a link out yet. */
+  /**
+   * A card off to the side moves to the centre. A centred card opens its
+   * details on click too, covering the case where it slid under a still mouse
+   * and the browser therefore never emitted a new pointer-enter event.
+   */
   const bringForward = (i: number) => (e: MouseEvent<HTMLElement>) => {
-    if (i === motion.current.active) return;
+    if ((e.target as HTMLElement).closest('a')) return;
+    if (i === motion.current.active) {
+      e.preventDefault();
+      clearTimeout(motion.current.settle);
+      clearTimeout(motion.current.dwell);
+      setState(i, 'details');
+      return;
+    }
     e.preventDefault();
     scrollToCase(i);
   };
@@ -553,7 +564,10 @@ export function Trabajo() {
                   aria-hidden="true"
                 >
                   <div className={styles.caseIdentity}>
-                    <p className={styles.caseCategory}>{t(w.category)}</p>
+                    <p className={styles.caseCategory}>
+                      {t(w.category)}
+                      {w.status ? ` · ${t(w.status)}` : ''}
+                    </p>
                     <h3 className={styles.name}>{w.client}</h3>
                   </div>
                   <p

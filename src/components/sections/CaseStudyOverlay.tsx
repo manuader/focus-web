@@ -35,6 +35,8 @@ export function CaseStudyOverlay({ work }: { work: WorkCard }) {
         <span className={styles.overlayService}>{service}</span>
       </span>
 
+      {work.notice && <span className={styles.caseNotice}>{t(work.notice)}</span>}
+
       {study?.challenge && (
         <span className={styles.caseSection}>
           <span className={styles.caseLabel}>
@@ -59,7 +61,11 @@ export function CaseStudyOverlay({ work }: { work: WorkCard }) {
 
       {study?.period && <span className={styles.casePeriod}>{t(study.period)}</span>}
 
-      <span className={`${styles.caseLinks} ${!study?.period ? styles.caseLinksPush : ''}`}>
+      <span
+        className={`${styles.caseLinks} ${
+          links.length === 1 ? styles.caseLinksSingle : ''
+        } ${!study?.period ? styles.caseLinksPush : ''}`}
+      >
         {links.map((link, linkIndex) => (
           <a
             key={link.href}
